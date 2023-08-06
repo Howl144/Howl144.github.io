@@ -26,7 +26,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://howl144.github.io/img/00005/1.png">
 <meta property="article:published_time" content="2022-02-09T01:42:19.000Z">
-<meta property="article:modified_time" content="2023-08-06T10:40:04.637Z">
+<meta property="article:modified_time" content="2023-08-06T12:17:01.199Z">
 <meta property="article:author" content="Deng Ye">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://howl144.github.io/img/00005/1.png">
@@ -362,7 +362,7 @@
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp">&gt;<span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> Container&gt; <br>&gt;<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">g</span><span class="hljs-params">(Container c)</span></span><br><span class="hljs-function">&gt;</span>&#123; <br>	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp;&amp; x: c) &#123; … &#125; <br>&gt;&#125;<br></code></pre></td></tr></table></figure>
 <p>这里我们不知道容器迭代接口的签名( the signatures of the container’s iteration interfaces)，但是通过使用<code>auto&amp;&amp;</code>，我们可以确信我们正在遍历的值没有产生额外的副本。如果需要完美转发绑定值，则可以像往常一样在变量上调用<code>std::forward&lt;T&gt;()</code>。这使得一种“延迟”的完美转发成为可能。有关示例，请参见《c++ template 2nd》p167。<br>除了引用之外，还可以组合auto说明符来创建const对象、指针、成员指针等等，但auto必须声明成“main”类型说明符（基本数据类型）。它不能嵌套在模板参数中或跟在基本数据类型后面的声明部分中（ part of the declarator that follows the type specifier）。具体请看下面的示例：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cpp">&gt;<span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt; <span class="hljs-keyword">struct</span> <span class="hljs-title class_">X</span> &#123; T <span class="hljs-type">const</span> m; &#125;; <br>&gt;<span class="hljs-keyword">auto</span> <span class="hljs-type">const</span> N = <span class="hljs-number">400u</span>; <span class="hljs-comment">// OK: constant of type </span><br><br>&gt;<span class="hljs-keyword">auto</span>* gp = (<span class="hljs-type">void</span>*)<span class="hljs-literal">nullptr</span>; <span class="hljs-comment">// OK: gp has type void* </span><br><br>&gt;X&lt;<span class="hljs-keyword">auto</span>&gt; xa = <span class="hljs-built_in">X</span>&lt;<span class="hljs-type">int</span>&gt;(); <span class="hljs-comment">// ERROR: auto in template </span><br><br>&gt;<span class="hljs-type">int</span> <span class="hljs-type">const</span> <span class="hljs-keyword">auto</span>::*pm2 = &amp;X&lt;<span class="hljs-type">int</span>&gt;::m; <span class="hljs-comment">// ERROR: auto is &gt;part of the “declarator”</span><br></code></pre></td></tr></table></figure>
-<p>最后两个例子不让通过的原因在于C++委员会认为，额外的实施成本和滥用潜力超过了好处 :(。</p>
+<p>最后两个例子不让通过的原因在于C++委员会认为，额外的实施成本和滥用潜力超过了好处 ☹️。</p>
 </blockquote>
 <hr>
 <h3 id="推导返回类型-c-14"><a href="#推导返回类型-c-14" class="headerlink" title="推导返回类型 c++14"></a>推导返回类型 c++14</h3><blockquote>
@@ -442,7 +442,7 @@
 </blockquote>
 <hr>
 <blockquote>
-<p>最后问大家一个小问题，auto会不会计算出表达式结果的值？，decltype会不会计算出表达式结果的值？，decltype(auto)呢？相信大家看完本篇文章后，这些问题就会不攻自破了 :) 。如果本篇文章帮您解决了理论上难以理解的问题，记得点个赞哦！</p>
+<p>最后问大家一个小问题，auto会不会计算出表达式结果的值？，decltype会不会计算出表达式结果的值？，decltype(auto)呢？相信大家看完本篇文章后，这些问题就会不攻自破了 🙂 。如果本篇文章帮您解决了理论上难以理解的问题，记得点个赞哦！</p>
 </blockquote>
 
                 
