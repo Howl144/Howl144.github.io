@@ -26,7 +26,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://howl144.github.io/img%5C00004%5Cindex.png">
 <meta property="article:published_time" content="2022-01-28T00:51:32.000Z">
-<meta property="article:modified_time" content="2023-08-06T09:43:55.511Z">
+<meta property="article:modified_time" content="2023-08-06T10:39:56.900Z">
 <meta property="article:author" content="Deng Ye">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://howl144.github.io/img%5C00004%5Cindex.png">
@@ -327,46 +327,46 @@
 <blockquote>
 <p>在分析之前我先把该程序的内存分布图画出来帮大家理解，见下图：</p>
 </blockquote>
-<h2 id="像这种random-offset的出现，就是为了避免溢出攻击。画这张图要用到nm命令（寻找代码段，bss段和data段的起始地址），gdb的vmmap命令（寻找堆栈的起始和结束地址）。灰色部分表示这些范围在进程虚拟地址空间中不可用，也就是说，没有为这些区域创建页表（page-table）。"><a href="#像这种random-offset的出现，就是为了避免溢出攻击。画这张图要用到nm命令（寻找代码段，bss段和data段的起始地址），gdb的vmmap命令（寻找堆栈的起始和结束地址）。灰色部分表示这些范围在进程虚拟地址空间中不可用，也就是说，没有为这些区域创建页表（page-table）。" class="headerlink" title="&gt;像这种random offset的出现，就是为了避免溢出攻击。画这张图要用到nm命令（寻找代码段，bss段和data段的起始地址），gdb的vmmap命令（寻找堆栈的起始和结束地址）。灰色部分表示这些范围在进程虚拟地址空间中不可用，也就是说，没有为这些区域创建页表（page table）。"></a><img src="/img%5C00004%5C1.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>&gt;像这种random offset的出现，就是为了避免溢出攻击。画这张图要用到<code>nm</code>命令（寻找代码段，bss段和data段的起始地址），gdb的<code>vmmap</code>命令（寻找堆栈的起始和结束地址）。灰色部分表示这些范围在进程虚拟地址空间中不可用，也就是说，没有为这些区域创建页表（page table）。</h2><h2 id="反汇编配合堆栈图分析流程"><a href="#反汇编配合堆栈图分析流程" class="headerlink" title="反汇编配合堆栈图分析流程"></a>反汇编配合堆栈图分析流程</h2><p><strong>友情提醒：请配合附件中的反汇编代码进行分析。</strong><br><img src="/img%5C00004%5C2.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br><img src="/img%5C00004%5C3.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<h2 id="像这种random-offset的出现，就是为了避免溢出攻击。画这张图要用到nm命令（寻找代码段，bss段和data段的起始地址），gdb的vmmap命令（寻找堆栈的起始和结束地址）。灰色部分表示这些范围在进程虚拟地址空间中不可用，也就是说，没有为这些区域创建页表（page-table）。"><a href="#像这种random-offset的出现，就是为了避免溢出攻击。画这张图要用到nm命令（寻找代码段，bss段和data段的起始地址），gdb的vmmap命令（寻找堆栈的起始和结束地址）。灰色部分表示这些范围在进程虚拟地址空间中不可用，也就是说，没有为这些区域创建页表（page-table）。" class="headerlink" title="&gt;像这种random offset的出现，就是为了避免溢出攻击。画这张图要用到nm命令（寻找代码段，bss段和data段的起始地址），gdb的vmmap命令（寻找堆栈的起始和结束地址）。灰色部分表示这些范围在进程虚拟地址空间中不可用，也就是说，没有为这些区域创建页表（page table）。"></a><img src="/img/00004/1.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>&gt;像这种random offset的出现，就是为了避免溢出攻击。画这张图要用到<code>nm</code>命令（寻找代码段，bss段和data段的起始地址），gdb的<code>vmmap</code>命令（寻找堆栈的起始和结束地址）。灰色部分表示这些范围在进程虚拟地址空间中不可用，也就是说，没有为这些区域创建页表（page table）。</h2><h2 id="反汇编配合堆栈图分析流程"><a href="#反汇编配合堆栈图分析流程" class="headerlink" title="反汇编配合堆栈图分析流程"></a>反汇编配合堆栈图分析流程</h2><p><strong>友情提醒：请配合附件中的反汇编代码进行分析。</strong><br><img src="/img/00004/2.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br><img src="/img/00004/3.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <blockquote>
 <p>到达这一步以前发生的事情有：main函数开辟出了0x20字节的空间，将rbp-0x18的地址（临时对象prvalue）给了rdi，然后将0x64给了esi，接着调用了RVO_test(int)函数，还没push rbp。</p>
 </blockquote>
 <hr>
-<p><img src="/img%5C00004%5C4.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
-<p><img src="/img%5C00004%5C5.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p><img src="/img/00004/4.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p><img src="/img/00004/5.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <blockquote>
 <p>到达这一步以前发生的事情有：RVO_test(int)函数开辟了0x30字节的空间，rdi寄存器存着临时对象prvalue的地址，然后将其赋给了rbp-0x8，rbp-0x20，rbp-0x28，又将0x64赋给了rbp-0xc（形参val），最后在临时对象foo的地址上进行了构造。</p>
 </blockquote>
 <hr>
-<p><img src="/img%5C00004%5C6.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
-<p><img src="/img%5C00004%5C7.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p><img src="/img/00004/6.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p><img src="/img/00004/7.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <blockquote>
 <p>到达这一步以前发生的事情有：编译器将rbp-0x18（局部对象foo）的内容移动到了临时对象的里面。此时局部对象的指针数据成员指向空，在RVO_test(int)函数返回时，会析构这个局部对象，而delete一个空指针没任何反应。最后RVO_test(int)函数将rbp-0x28地址上的内容赋给rax作为返回值。</p>
 </blockquote>
 <hr>
-<p><img src="/img%5C00004%5C8.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
-<p><img src="/img%5C00004%5C9.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p><img src="/img/00004/8.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p><img src="/img/00004/9.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <blockquote>
 <p>到达这一步以前发生的事情有：RVO_test(int)函数回收了0x30字节的空间，pop rbp时会将保存的main函数的rbp地址取出来放到rbp栈基址寄存器里面，同时rsp会+8，指向要跳转的代码段。最后一步没执行，不难看出ret是让rip指令寄存器指向rsp的内容，即跳转到&lt;main+29&gt;。</p>
 </blockquote>
 <hr>
-<p><img src="/img%5C00004%5C10.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
-<p><img src="/img%5C00004%5C11.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p><img src="/img/00004/10.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p><img src="/img/00004/11.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <blockquote>
 <p>到达这一步以前发生的事情有：临时对象的内容被移动赋值函数转移到了main函数的局部对象fooRvo。然后临时对象就被析构了，接着main函数将返回值0赋给rbp-0x4所指的空间，最后fooRvo对象也被析构。程序随之结束。</p>
 </blockquote>
 <hr>
 <h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><blockquote>
-<p>无RVO返回优化，编译器会生成一个prvalue或者xvalue的<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/implicit_conversion">临时对象（Temporary materialization）</a>（《深度探索c++对象模型》p267），取决于prvalue是否出现在丢弃值表达式（<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/expressions#Discarded-value_expressions">Discarded-value expressions</a>）里。像这样写<code>Foo fooRvo = RVO_test(100);</code>RVO_test(100)产生的临时对象就是prvalue，这种prvalue被称为”有一个结果对象”（<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/value_category">such prvalue is said to have a result object</a>）。而这样写<code>Foo fooRvo;fooRvo = RVO_test(100);</code>RVO_test(100)产生的临时对象就是xvalue，原因就是prvalue出现在了丢弃值表达式里。这种表达式包括了任何完整表达式语句（<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/expressions#Discarded-value_expressions">Such expressions include the full expression of any expression statement</a>）。然后临时对象的地址会被传入到RVO_test(int)函数中，该函数中的局部对象foo在返回时触发移动构造函数将foo的内存转让给临时对象。为什么会触发移动构造函数呢？归功于return语句，一个拷贝操作发生在return语句时，会被忽略或者被对待成rvalue，目的在于选择一个重载后的构造函数（Note:A copy operation associated with a return statement may be elided or considered as an rvalue for the purpose of overload resolution in selecting a constructor (12.8). —end note,本句子出自<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/compiler_support/11">c++标准手册文档-N2118的6.6.3 - The return statement</a>）。由于右值引用可以接受一个rvalue，这个被return转化后的rvalue选择了移动构造函数。至此临时对象被构造出来，RVO_test(int)函数的局部对象foo被析构。而临时对象prvalue，由于赋值运算符的存在，会去调用移动构造函数，（细心的小伙伴肯定要问为啥不是调用重载后的移动赋值函数，很简单！赋值运算符在定义处表现出来的形式为构造而不是拷贝）。待main函数中的fooRvo对象被构造出来后，临时对象也被析构。最后fooRvo对象被析构。<br>.<br>这是clang编译器下运行完代码的结果:<br><img src="/img%5C00004%5C12.png" srcset="/img/loading.gif" lazyload alt="这是运行完代码的结果"></p>
-<p>注意：MSVC编译有接住这个民间概念，也就说<code>Foo fooRvo = RVO_test(100);</code>这条语句中，RVO_test产生的临时对象会被fooRvo对象接住，从而不执行对临时对象的析构。或者说fooRvo的空间和临时对象的空间合二为一了。我平时写代码都是用的clang编译器，以前刚开始学c++是在MSVC所以这里就稍微提及一下MSVC的不同之处。<br>.<br>这是MSVC编译器下运行完代码的结果：<br><img src="/img%5C00004%5C13.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p>无RVO返回优化，编译器会生成一个prvalue或者xvalue的<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/implicit_conversion">临时对象（Temporary materialization）</a>（《深度探索c++对象模型》p267），取决于prvalue是否出现在丢弃值表达式（<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/expressions#Discarded-value_expressions">Discarded-value expressions</a>）里。像这样写<code>Foo fooRvo = RVO_test(100);</code>RVO_test(100)产生的临时对象就是prvalue，这种prvalue被称为”有一个结果对象”（<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/value_category">such prvalue is said to have a result object</a>）。而这样写<code>Foo fooRvo;fooRvo = RVO_test(100);</code>RVO_test(100)产生的临时对象就是xvalue，原因就是prvalue出现在了丢弃值表达式里。这种表达式包括了任何完整表达式语句（<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/expressions#Discarded-value_expressions">Such expressions include the full expression of any expression statement</a>）。然后临时对象的地址会被传入到RVO_test(int)函数中，该函数中的局部对象foo在返回时触发移动构造函数将foo的内存转让给临时对象。为什么会触发移动构造函数呢？归功于return语句，一个拷贝操作发生在return语句时，会被忽略或者被对待成rvalue，目的在于选择一个重载后的构造函数（Note:A copy operation associated with a return statement may be elided or considered as an rvalue for the purpose of overload resolution in selecting a constructor (12.8). —end note,本句子出自<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/compiler_support/11">c++标准手册文档-N2118的6.6.3 - The return statement</a>）。由于右值引用可以接受一个rvalue，这个被return转化后的rvalue选择了移动构造函数。至此临时对象被构造出来，RVO_test(int)函数的局部对象foo被析构。而临时对象prvalue，由于赋值运算符的存在，会去调用移动构造函数，（细心的小伙伴肯定要问为啥不是调用重载后的移动赋值函数，很简单！赋值运算符在定义处表现出来的形式为构造而不是拷贝）。待main函数中的fooRvo对象被构造出来后，临时对象也被析构。最后fooRvo对象被析构。<br>.<br>这是clang编译器下运行完代码的结果:<br><img src="/img/00004/12.png" srcset="/img/loading.gif" lazyload alt="这是运行完代码的结果"></p>
+<p>注意：MSVC编译有接住这个民间概念，也就说<code>Foo fooRvo = RVO_test(100);</code>这条语句中，RVO_test产生的临时对象会被fooRvo对象接住，从而不执行对临时对象的析构。或者说fooRvo的空间和临时对象的空间合二为一了。我平时写代码都是用的clang编译器，以前刚开始学c++是在MSVC所以这里就稍微提及一下MSVC的不同之处。<br>.<br>这是MSVC编译器下运行完代码的结果：<br><img src="/img/00004/13.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 </blockquote>
 <hr>
 <h1 id="开启RVO优化"><a href="#开启RVO优化" class="headerlink" title="开启RVO优化"></a>开启RVO优化</h1><blockquote>
 <p>代码还是用上面的代码</p>
 </blockquote>
-<p><img src="/img%5C00004%5C14.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br><img src="/img%5C00004%5C15.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p><img src="/img/00004/14.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br><img src="/img/00004/15.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <blockquote>
-<p>上面已经带着大家分析过一遍了，这里就直接跳到最后看结果。<br>对比关闭RVO来说，RVO_test(int)函数的局部对象就是直接构造到fooRvo对象里面去了，中间一个移动构造都没有。通过分析反汇编代码不难发现，它为了优化返回局部对象，直接让fooRvo对象的内存接管了局部对象foo的，可以说是合二为一了。但是有一个问题，局部对象foo一定要执行析构函数呀！别急，它这里妙手回春一手，将一字节的标志位放在了RVO_test(int)函数的栈帧中，然后通过判断标志位跳过对局部对象foo的析构函数执行。这玩意儿有点像加了if的goto :)。<br>.<br>这是clang编译器下运行完代码的结果:<br><img src="/img%5C00004%5C16.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>有关临时对象的认识可以参考《深度探索c++对象模型》p267</p>
+<p>上面已经带着大家分析过一遍了，这里就直接跳到最后看结果。<br>对比关闭RVO来说，RVO_test(int)函数的局部对象就是直接构造到fooRvo对象里面去了，中间一个移动构造都没有。通过分析反汇编代码不难发现，它为了优化返回局部对象，直接让fooRvo对象的内存接管了局部对象foo的，可以说是合二为一了。但是有一个问题，局部对象foo一定要执行析构函数呀！别急，它这里妙手回春一手，将一字节的标志位放在了RVO_test(int)函数的栈帧中，然后通过判断标志位跳过对局部对象foo的析构函数执行。这玩意儿有点像加了if的goto :)。<br>.<br>这是clang编译器下运行完代码的结果:<br><img src="/img/00004/16.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>有关临时对象的认识可以参考《深度探索c++对象模型》p267</p>
 </blockquote>
 <hr>
 <h1 id="xvalue-prvalue和lvalue"><a href="#xvalue-prvalue和lvalue" class="headerlink" title="xvalue,prvalue和lvalue"></a>xvalue,prvalue和lvalue</h1><blockquote>
@@ -428,7 +428,7 @@
 <p>prvalue：一个将要消亡的值（生命周期马上结束），资源不可以被重用（想要被重用必须转化成xvalue）的对象。一部分有空间地址但马上就会被回收（空间地址可以被后面的新数据覆盖），一部分没有空间地址。可以被移动。</p>
 <ul>
 <li>所有 literals：bool literal (例如<code> true</code>)，integer literal (例如 <code>42</code>) 等等（无空间地址）。</li>
-<li>实质上的函数调用：(<strong>return non-reference</strong>)（有空间地址）<br><code>f() </code>function call<br><img src="/img%5C00004%5C17.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></li>
+<li>实质上的函数调用：(<strong>return non-reference</strong>)（有空间地址）<br><code>f() </code>function call<br><img src="/img/00004/17.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></li>
 </ul>
 <p><code>a.f() </code>static or non-static member function<br><code>A()</code> 包括各种构造函数<br><code>str1 + str2</code> 重载 operator 也相当于函数调用<br><code>functor()</code> (对应 operator() 重载)<br><code>[]&#123;&#125;() </code>lambda (对应 operator() 重载)</p>
 <ul>
@@ -458,7 +458,7 @@
 <li>   typid作用于一个prvalue时<br>《c++primer》p732</li>
 <li>sizeof作用于一个prvalue时</li>
 <li>当一个prvalue出现在丢弃值表达式（<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/expressions#Discarded-value_expressions">Discarded-value expressions</a>）<br>上文研究开启RVO时讲过。</li>
-<li>注意：当从相同类型的prvalue初始化一个对象时(通过直接初始化或复制初始化)不会发生临时物化:这样的对象是直接从初始化器初始化的。这确保了“拷贝副本的省略(RVO的工作机制)”。（上文研究开启RVO时讲过，prvalue可以用来初始化一个对象，这种prvalue被称为”有一个结果对象”（<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/value_category">such prvalue is said to have a result object</a>））<br><img src="/img%5C00004%5C18.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></li>
+<li>注意：当从相同类型的prvalue初始化一个对象时(通过直接初始化或复制初始化)不会发生临时物化:这样的对象是直接从初始化器初始化的。这确保了“拷贝副本的省略(RVO的工作机制)”。（上文研究开启RVO时讲过，prvalue可以用来初始化一个对象，这种prvalue被称为”有一个结果对象”（<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/value_category">such prvalue is said to have a result object</a>））<br><img src="/img/00004/18.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></li>
 </ul>
 <p>重要的事情说三遍！<br>从一个任何完整类型T的prvalue转换为相同类型T的xvalue的过程被称为临时物化<br>从一个任何完整类型T的prvalue转换为相同类型T的xvalue的过程被称为临时物化<br>从一个任何完整类型T的prvalue转换为相同类型T的xvalue的过程被称为临时物化</p>
 </blockquote>
@@ -497,7 +497,7 @@
 <li>move的返回类型仍是string&amp;&amp; 。</li>
 <li>move的函数参数t实例化为string&amp; &amp;&amp;，会折叠为string&amp;。</li>
 </ol>
-<p>因此，这个调用实例化<code>move&lt;string&amp;&gt;</code>，即<br><code>string&amp;&amp;  move(string &amp;t)</code><br>这正是我们所寻求的—我们希望将一个右值引用绑定到一个左值。这个实例的函数体返回<code>static_cast&lt;string&amp;&amp;&gt;(t)</code>。在此情况下，<code>t</code>的类型为<code>string&amp;</code>，cast将其转换为<code>string&amp;&amp;</code>(强转伴随临时对象xvalue的产生其空间地址与<code>std::move()</code>函数产生的临时对象xvalue的空间地址相同)。<br><img src="/img%5C00004%5C19.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>将右值引用绑定到一个被强转成xvalue的左值，这一特性被称为截断。（《c++primer》p612）</p>
+<p>因此，这个调用实例化<code>move&lt;string&amp;&gt;</code>，即<br><code>string&amp;&amp;  move(string &amp;t)</code><br>这正是我们所寻求的—我们希望将一个右值引用绑定到一个左值。这个实例的函数体返回<code>static_cast&lt;string&amp;&amp;&gt;(t)</code>。在此情况下，<code>t</code>的类型为<code>string&amp;</code>，cast将其转换为<code>string&amp;&amp;</code>(强转伴随临时对象xvalue的产生其空间地址与<code>std::move()</code>函数产生的临时对象xvalue的空间地址相同)。<br><img src="/img/00004/19.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>将右值引用绑定到一个被强转成xvalue的左值，这一特性被称为截断。（《c++primer》p612）</p>
 <h3 id="std-move-函数总结"><a href="#std-move-函数总结" class="headerlink" title="std::move()函数总结"></a>std::move()函数总结</h3><p>说白了<code>std::move()</code>函数就是将一个prvalue或者lvalue转变成xvalue的过程，这样不管是prvalue还是lvalue都可以被右值引用接受。</p>
 </blockquote>
 <hr>
