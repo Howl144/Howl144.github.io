@@ -1,0 +1,852 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="elv6HP48K6bVVMeBdbFYkmoi4IBF6JVtH0WaCgUXRNY" />
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Deng Ye">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言 本篇文章为笔者的读书笔记，未经允许请勿转载。上两篇文章将c++的核心部件（Value categories）讲清楚了，这篇文章将会带大家分析c++对象模型的底层原理。笔者这里用的编译器是clang version 10.0.0-4ubuntu1，不同编译器对数据布局的处理可能会不同（《深度探索c++对象模型》中已阐述原因，感兴趣的读者可以自行阅读）。友情提示：本文章涉及ATT式和intel式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++对象模型之虚表，虚表指针，thunk，多态，多重继承this指针偏移，多重继承virtual析构函数，多重虚继承下的访问虚基类成员变量时虚表的工作原理">
+<meta property="og:url" content="https://howl144.github.io/2022/02/19/00006.%20c++%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B%E4%B9%8B%E8%99%9A%E8%A1%A8%EF%BC%8C%E8%99%9A%E8%A1%A8%E6%8C%87%E9%92%88%E7%AD%89/index.html">
+<meta property="og:site_name" content="🥰Howl&#39;s Blog">
+<meta property="og:description" content="前言 本篇文章为笔者的读书笔记，未经允许请勿转载。上两篇文章将c++的核心部件（Value categories）讲清楚了，这篇文章将会带大家分析c++对象模型的底层原理。笔者这里用的编译器是clang version 10.0.0-4ubuntu1，不同编译器对数据布局的处理可能会不同（《深度探索c++对象模型》中已阐述原因，感兴趣的读者可以自行阅读）。友情提示：本文章涉及ATT式和intel式">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://howl144.github.io/img%5C00006%5Cindex.png">
+<meta property="article:published_time" content="2022-02-19T02:12:32.000Z">
+<meta property="article:modified_time" content="2023-08-06T09:43:49.556Z">
+<meta property="article:author" content="Deng Ye">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://howl144.github.io/img%5C00006%5Cindex.png">
+  
+  
+  
+  <title>c++对象模型之虚表，虚表指针，thunk，多态，多重继承this指针偏移，多重继承virtual析构函数，多重虚继承下的访问虚基类成员变量时虚表的工作原理 - 🥰Howl&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"howl144.github.io","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"MY3hK2j6KKqPNCHItX2Yargj-gzGzoHsz","app_key":"U0dZRBpPFA46kRmFcsltQFF2","server_url":"https://my3hk2j6.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Howl&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>Home</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/portfolio/">
+                <i class="iconfont icon-pen"></i>
+                <span>Portfolio</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>Category</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>Archive</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>About Me</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.5)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="c++对象模型之虚表，虚表指针，thunk，多态，多重继承this指针偏移，多重继承virtual析构函数，多重虚继承下的访问虚基类成员变量时虚表的工作原理"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-02-19 10:12" pubdate>
+          February 19, 2022 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          28k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          233 mins
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> views
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">c++对象模型之虚表，虚表指针，thunk，多态，多重继承this指针偏移，多重继承virtual析构函数，多重虚继承下的访问虚基类成员变量时虚表的工作原理</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><blockquote>
+<p><strong>本篇文章为笔者的读书笔记，未经允许请勿转载。</strong><br>上两篇文章将c++的核心部件（<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/value_category">Value categories</a>）讲清楚了，这篇文章将会带大家分析c++对象模型的底层原理。笔者这里用的编译器是<code>clang version 10.0.0-4ubuntu1</code>，不同编译器对数据布局的处理可能会不同（《深度探索c++对象模型》中已阐述原因，感兴趣的读者可以自行阅读）。<br>友情提示：本文章涉及<code>ATT式</code>和<code>intel式</code>汇编代码的相关知识。</p>
+</blockquote>
+<hr>
+<h1 id="虚表和虚表指针（vtbl-vptr）"><a href="#虚表和虚表指针（vtbl-vptr）" class="headerlink" title="虚表和虚表指针（vtbl &amp; vptr）"></a>虚表和虚表指针（vtbl &amp; vptr）</h1><blockquote>
+<ul>
+<li>每个class产生出一堆指向virtual function的指针，放在表格之中，这个表格被称为virtual table（vtbl）。</li>
+<li>每一个class object被安插一个指针，指向相关的virtual table。通常这个指针被称为vptr。vptr的设定（setting）和重置（resetting）都由每一个class的constructor、destructor和copy assignment运算符自动完成。每一个class所关联的type_info object（用以支持runtime type identification，RTTI）也经由virtual table被指出来，通常放在表格的第一个slot（clang++不是放在第一个slot，文章后面会讲到）。</li>
+</ul>
+</blockquote>
+<hr>
+<blockquote>
+<p>接下来笔者写两个测试用例来帮大家分析clang++编译器下的vtbl &amp; vptr。</p>
+<h2 id="首先咱们来看下vptr放在对象的什么位置："><a href="#首先咱们来看下vptr放在对象的什么位置：" class="headerlink" title="首先咱们来看下vptr放在对象的什么位置："></a>首先咱们来看下vptr放在对象的什么位置：</h2></blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span> <br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-type">int</span> i;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">testfunc</span><span class="hljs-params">()</span></span>&#123;&#125;<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">//虚函数表指针位置分析</span><br>    <span class="hljs-comment">//类：有虚函数，这个类会产生一个虚函数表。</span><br>    <span class="hljs-comment">//类对象，有一个指针，指针（vptr）会指向这个虚函数表的开始地址。</span><br>    A obj;<br>    <span class="hljs-type">int</span> objLen = <span class="hljs-built_in">sizeof</span>(obj);<br>    std::cout&lt;&lt; objLen &lt;&lt; std::endl; <span class="hljs-comment">//x86-64 16字节</span><br><br>    <span class="hljs-comment">/*p1获取对象首地址，p2获取对象数据成员i的地址，两者都以低层次char *去解释，以便用旁观者角度去比较*/</span><br>    <span class="hljs-type">char</span> *p1 = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">char</span> *&gt;(&amp;obj);<span class="hljs-comment">//reinterpret_cast通常为运算对象的位模式提供较低层次上的重新解释。</span><br>    <span class="hljs-type">char</span> *p2 = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">char</span> *&gt;(&amp;(obj.i));<br>    <span class="hljs-keyword">if</span>(p1 == p2)<span class="hljs-comment">//说明obj.i和obj的位置相同，说明i在对象obj内存布局的上边。虚函数表指针vptr在下边</span><br>    &#123;<br>        std::cout&lt;&lt; <span class="hljs-string">&quot;虚函数表指针位于对象内存的 末尾 &quot;</span> &lt;&lt;std::endl;<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123;<br>        std::cout&lt;&lt; <span class="hljs-string">&quot;虚函数表指针位于对象内存的 开头 &quot;</span> &lt;&lt;std::endl;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>运行结果如下：<br><img src="/img%5C00006%5C1.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"><br>可以看到 <code>obj </code>对象的大小是16字节，<code>vptr</code>位于对象的开头。</p>
+</blockquote>
+<hr>
+<blockquote>
+<h2 id="接下里咱们不走virtual机制，直接从虚表中获取虚函数并且运行对应虚函数。"><a href="#接下里咱们不走virtual机制，直接从虚表中获取虚函数并且运行对应虚函数。" class="headerlink" title="接下里咱们不走virtual机制，直接从虚表中获取虚函数并且运行对应虚函数。"></a>接下里咱们不走virtual机制，直接从虚表中获取虚函数并且运行对应虚函数。</h2></blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">()</span> </span>&#123; std::cout &lt;&lt; <span class="hljs-string">&quot;Base::f()&quot;</span> &lt;&lt; std::endl; &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">g</span><span class="hljs-params">()</span> </span>&#123; std::cout &lt;&lt; <span class="hljs-string">&quot;Base::g()&quot;</span> &lt;&lt; std::endl; &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">h</span><span class="hljs-params">()</span> </span>&#123; std::cout &lt;&lt; <span class="hljs-string">&quot;Base::h()&quot;</span> &lt;&lt; std::endl; &#125;<br>&#125;;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Derive</span> : <span class="hljs-keyword">public</span> Base<br>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">g</span><span class="hljs-params">()</span> </span>&#123; std::cout &lt;&lt; <span class="hljs-string">&quot;Derive::g()&quot;</span> &lt;&lt; std::endl; &#125;<br>&#125;;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    Derive* pd = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Derive</span>();<span class="hljs-comment">//派生类指针。</span><br>    <span class="hljs-type">long</span>* pd_cast = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">long</span>*&gt;(pd);<span class="hljs-comment">//获取较低层次上的重新解释。</span><br>    <span class="hljs-type">long</span>* vptr_pd = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">long</span>*&gt;(*pd_cast);<br>    <span class="hljs-comment">/*解引用派生类指针得到虚表指针，而不是得到派生类，因为做了位模式的低层次转换。</span><br><span class="hljs-comment">    得到虚表指针后，将虚表指针的类型从long重新解释为long*。</span><br><span class="hljs-comment">    使用long过渡，是因为long在32位编译器和64位编译器所占用的空间大小和指针是一样的*/</span><br><br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">3</span>; i++)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;vptr_pd[%d] 的内容为： %p\n&quot;</span>,i,vptr_pd[i]);<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">typedef</span> <span class="hljs-title">void</span><span class="hljs-params">(*Func)</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span></span>;<span class="hljs-comment">//定义一个函数指针类型</span><br>    Func f_pd = (Func)vptr_pd[<span class="hljs-number">0</span>];<br>    Func g_pd = (Func)vptr_pd[<span class="hljs-number">1</span>];<br>    Func h_pd = (Func)vptr_pd[<span class="hljs-number">2</span>];<br><br>    <span class="hljs-built_in">f_pd</span>();<br>    <span class="hljs-built_in">g_pd</span>();<br>    <span class="hljs-built_in">h_pd</span>();<br><br>    Base* pb = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Base</span>();<span class="hljs-comment">//派生类指针。</span><br>    <span class="hljs-type">long</span>* pb_cast = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">long</span>*&gt;(pb);<br>    <span class="hljs-type">long</span>* vptr_pb = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">long</span>*&gt;(*pb_cast);<br><br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">3</span>; i++)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;vptr_pb[%d] 的内容为： %p\n&quot;</span>,i,vptr_pb[i]);<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">typedef</span> <span class="hljs-title">void</span><span class="hljs-params">(*Func)</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span></span>;<span class="hljs-comment">//定义一个函数指针类型</span><br>    Func f_pb = (Func)vptr_pb[<span class="hljs-number">0</span>];<br>    Func g_pb = (Func)vptr_pb[<span class="hljs-number">1</span>];<br>    Func h_pb = (Func)vptr_pb[<span class="hljs-number">2</span>];<br><br>    <span class="hljs-built_in">f_pb</span>();<br>    <span class="hljs-built_in">g_pb</span>();<br>    <span class="hljs-built_in">h_pb</span>();<br><br>    <span class="hljs-keyword">delete</span> pd;<br>    <span class="hljs-keyword">delete</span> pb;<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>运行结果为：<br><img src="/img%5C00006%5C2.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"><br>或者用GDB命令打印出vtbl的样子：<br><code>gef➤  info vtbl pd</code><br><img src="/img%5C00006%5C3.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"><br>和上面代码运行的结果一致！值得关注的一点是，<code>vtbl</code>是存在于只读数据段，而<code>vptr</code>在堆中（<code>vptr</code>也可以在栈中）。<br>下面用一张图来描述上述代码的行为：<br><img src="/img%5C00006%5C4.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"></p>
+</blockquote>
+<hr>
+<blockquote>
+<h2 id="vptr-vtbl的创建时机以及vptr初始化问题"><a href="#vptr-vtbl的创建时机以及vptr初始化问题" class="headerlink" title="vptr &amp; vtbl的创建时机以及vptr初始化问题"></a>vptr &amp; vtbl的创建时机以及vptr初始化问题</h2><p>引用《深度探索C++对象模型》p45中的一段话：<br>下面两个扩张行动会在编译期间发生：</p>
+<ul>
+<li>一个virtual function table会被编译器产生出来，内放class的virtual functions地址</li>
+<li>在每一个class object中，一个额外的pointer member会被编译器合成出来，内含相关的class vtbl的地址</li>
+</ul>
+<p>在c++中，virtual functions可以在编译时期获知。此外，这一组地址是固定不变的，执行期不可能新增或替换它。由于程序执行时，表格的大小和内容都不会改变，所以其构建和存取皆可以由编译器完全掌握，不需要执行期的任何介入。<br>值得注意的是<code>vptr的初始化</code>问题：<br>这里笔者就不带大家画堆栈图，过程如下！<br>相关ATT式反汇编代码如下：</p>
+</blockquote>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs apache">    <span class="hljs-attribute">Derive</span>* pd = new Derive();//派生类指针。<br>  <span class="hljs-attribute">401222</span>:	bf <span class="hljs-number">08</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	mov    $<span class="hljs-number">0</span>x8,%edi<br>  <span class="hljs-attribute">401227</span>:	e8 <span class="hljs-number">64</span> fe ff ff       	callq  <span class="hljs-number">401090</span> &lt;operator new(unsigned long)@plt&gt;<br>  <span class="hljs-attribute">40122c</span>:	<span class="hljs-number">31</span> f6                	xor    %esi,%esi<br>  <span class="hljs-attribute">40122e</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c1             	mov    %rax,%rcx<br>  <span class="hljs-attribute">401231</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> cf             	mov    %rcx,%rdi<br>  <span class="hljs-attribute">401234</span>:	ba <span class="hljs-number">08</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	mov    $<span class="hljs-number">0</span>x8,%edx<br>  <span class="hljs-attribute">401239</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">45</span> <span class="hljs-number">80</span>          	mov    %rax,-<span class="hljs-number">0</span>x80(%rbp)<br>  <span class="hljs-attribute">40123d</span>:	e8 <span class="hljs-number">0</span>e fe ff ff       	callq  <span class="hljs-number">401050</span> &lt;memset@plt&gt;<br>  <span class="hljs-attribute">401242</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">7</span>d <span class="hljs-number">80</span>          	mov    -<span class="hljs-number">0</span>x80(%rbp),%rdi<br>  <span class="hljs-attribute">401246</span>:	e8 <span class="hljs-number">95</span> <span class="hljs-number">01</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	callq  <span class="hljs-number">4013</span>e0 &lt;Derive::Derive()&gt;<br>  <span class="hljs-attribute">40124b</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> <span class="hljs-number">80</span>          	mov    -<span class="hljs-number">0</span>x80(%rbp),%rax<br>  <span class="hljs-attribute">40124f</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">45</span> f0          	mov    %rax,-<span class="hljs-number">0</span>x10(%rbp)<br>  <br>  <span class="hljs-attribute">00000000004013e0</span> &lt;Derive::Derive()&gt;:<br><span class="hljs-attribute">class</span> Derive : public Base<br>  <span class="hljs-attribute">4013e0</span>:	<span class="hljs-number">55</span>                   	push   %rbp<br>  <span class="hljs-attribute">4013e1</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> e5             	mov    %rsp,%rbp<br>  <span class="hljs-attribute">4013e4</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> ec <span class="hljs-number">10</span>          	sub    $<span class="hljs-number">0</span>x10,%rsp<br>  <span class="hljs-attribute">4013e8</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">7</span>d f8          	mov    %rdi,-<span class="hljs-number">0</span>x8(%rbp)<br>  <span class="hljs-attribute">4013ec</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> f8          	mov    -<span class="hljs-number">0</span>x8(%rbp),%rax<br>  <span class="hljs-attribute">4013f0</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c1             	mov    %rax,%rcx<br>  <span class="hljs-attribute">4013f3</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> cf             	mov    %rcx,%rdi<br>  <span class="hljs-attribute">4013f6</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">45</span> f0          	mov    %rax,-<span class="hljs-number">0</span>x10(%rbp)<br>  <span class="hljs-attribute">4013fa</span>:	e8 <span class="hljs-number">21</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	callq  <span class="hljs-number">401420</span> &lt;Base::Base()&gt;<br>  <span class="hljs-attribute">4013ff</span>:	<span class="hljs-number">48</span> b8 <span class="hljs-number">70</span> <span class="hljs-number">20</span> <span class="hljs-number">40</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> 	movabs $<span class="hljs-number">0</span>x402070,%rax<br>  <span class="hljs-attribute">401406</span>:	<span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <br>  <span class="hljs-attribute">401409</span>:	<span class="hljs-number">48</span> <span class="hljs-number">05</span> <span class="hljs-number">10</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>    	add    $<span class="hljs-number">0</span>x10,%rax<br>  <span class="hljs-attribute">40140f</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">4</span>d f0          	mov    -<span class="hljs-number">0</span>x10(%rbp),%rcx<br>  <span class="hljs-attribute">401413</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">01</span>             	mov    %rax,(%rcx)<br>  <span class="hljs-attribute">401416</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> c4 <span class="hljs-number">10</span>          	add    $<span class="hljs-number">0</span>x10,%rsp<br>  <span class="hljs-attribute">40141a</span>:	<span class="hljs-number">5</span>d                   	pop    %rbp<br>  <span class="hljs-attribute">40141b</span>:	c3                   	retq   <br>  <span class="hljs-attribute">40141c</span>:	<span class="hljs-number">0</span>f <span class="hljs-number">1</span>f <span class="hljs-number">40</span> <span class="hljs-number">00</span>          	nopl   <span class="hljs-number">0</span>x0(%rax)<br><br><span class="hljs-attribute">0000000000401420</span> &lt;Base::Base()&gt;:<br><span class="hljs-attribute">class</span> Base<br>  <span class="hljs-attribute">401420</span>:	<span class="hljs-number">55</span>                   	push   %rbp<br>  <span class="hljs-attribute">401421</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> e5             	mov    %rsp,%rbp<br>  <span class="hljs-attribute">401424</span>:	<span class="hljs-number">48</span> b8 d0 <span class="hljs-number">20</span> <span class="hljs-number">40</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> 	movabs $<span class="hljs-number">0</span>x4020d0,%rax<br>  <span class="hljs-attribute">40142b</span>:	<span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <br>  <span class="hljs-attribute">40142e</span>:	<span class="hljs-number">48</span> <span class="hljs-number">05</span> <span class="hljs-number">10</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>    	add    $<span class="hljs-number">0</span>x10,%rax<br>  <span class="hljs-attribute">401434</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">7</span>d f8          	mov    %rdi,-<span class="hljs-number">0</span>x8(%rbp)<br>  <span class="hljs-attribute">401438</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">4</span>d f8          	mov    -<span class="hljs-number">0</span>x8(%rbp),%rcx<br>  <span class="hljs-attribute">40143c</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">01</span>             	mov    %rax,(%rcx)<br>  <span class="hljs-attribute">40143f</span>:	<span class="hljs-number">5</span>d                   	pop    %rbp<br>  <span class="hljs-attribute">401440</span>:	c3                   	retq   <br>  <span class="hljs-attribute">401441</span>:	<span class="hljs-number">66</span> <span class="hljs-number">2</span>e <span class="hljs-number">0</span>f <span class="hljs-number">1</span>f <span class="hljs-number">84</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> 	nopw   %cs:<span class="hljs-number">0</span>x0(%rax,%rax,<span class="hljs-number">1</span>)<br>  <span class="hljs-attribute">401448</span>:	<span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <br>  <span class="hljs-attribute">40144b</span>:	<span class="hljs-number">0</span>f <span class="hljs-number">1</span>f <span class="hljs-number">44</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	nopl   <span class="hljs-number">0</span>x0(%rax,%rax,<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>
+<hr>
+<blockquote>
+<p><img src="/img%5C00006%5C5.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"><br>该图对应<code>mov    %rax,-0x80(%rbp)</code>执行完。已经发生的事情有：new表达式通过<code>operator new(unsigned long)</code>这个动态函数申请了首地址为<code>0x0000000000416eb0</code>的堆内存，并将其赋给了栈空间为<code>rbp-0x80（0x00007fffffffe060）</code>的地址中，下一条反汇编代码将会为首地址为<code>0x0000000000416eb0</code>的堆内存进行内存初始化。<br>（延迟绑定:动态函数比静态函数绑定要晚静态函数在<code>a.out</code>生成的时候地址已经被绑定<br>动态函数需要动态库加载到内存中，然后用动态库里面的函数地址替换掉类似于反汇编出来的<code>@plt</code>，之后得到动态函数的地址进行调用。）</p>
+</blockquote>
+<hr>
+<blockquote>
+<p><img src="/img%5C00006%5C6.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"><br>该图对应<code>0x40143c &lt;Base::Base()+28&gt; mov    QWORD PTR [rcx], rax</code>执行完。已经发生的事情有：调用了<code>Derive合成默认构造函数</code>，并且在其中又调用了<code>Base合成默认构造函数</code>，首地址为<code>0x0000000000416eb0</code>的堆内存指针赋给了第一参数寄存器<code>rdi</code>，<code>0x4020d0立即数</code>（Base虚表地址）赋给了临时寄存器<code>rax</code>，<code>rdi</code>寄存器又将堆内存指针赋给了Base合成默认构造函数的<code>rbp-0x8</code>地址上，最后由<code>rax</code>寄存器将Base虚表地址赋给了堆内存指针所指向的地址中。至此new出来的Derive类对象的<code>vptr</code>已经获取到Base类的虚表地址（注意现在还没有获取到Derive类的虚表地址）。</p>
+</blockquote>
+<hr>
+<blockquote>
+<p><img src="/img%5C00006%5C7.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"><br>该图对应<code>0x401413 &lt;Derive::Derive()+51&gt; mov    QWORD PTR [rcx], rax</code>执行完。已经发生的事情有：<code>Base的合成默认构造函数</code>已<code>return</code>，接着<code>0x402070立即数</code>赋给了<code>rax</code>寄存器，<code>rax</code>将其值加上<code>0x10</code>后就得到了Derive类的虚表地址。然后<code>rax</code>将该地址赋给了堆内存指针所指向的地址中。至此伴随着<code>Derive合成默认构造函数</code>的结束，new出来的Derive类对象的<code>vptr</code>获得了自己的虚表地址。</p>
+</blockquote>
+<hr>
+<h3 id="vptr初始化小结"><a href="#vptr初始化小结" class="headerlink" title="vptr初始化小结"></a>vptr初始化小结</h3><blockquote>
+<p>可以发现，<code>vptr的初始化</code>并不是一开始就获得了自己的虚表地址，而是伴随父类合成默认构造函数的结束，先获得父类虚表地址，然后伴随自身合成默认构造函数的结束，再获得自身虚表地址。</p>
+</blockquote>
+<hr>
+<h2 id="编译器会合成出nontrivial-default-constructor的4种情况（《深度探索c-对象模型》p40）"><a href="#编译器会合成出nontrivial-default-constructor的4种情况（《深度探索c-对象模型》p40）" class="headerlink" title="编译器会合成出nontrivial default constructor的4种情况（《深度探索c++对象模型》p40）"></a>编译器会合成出nontrivial default constructor的4种情况（《深度探索c++对象模型》p40）</h2><blockquote>
+<ul>
+<li>带有default constructor的member class object</li>
+</ul>
+<p>如果一个class没有任何constructor，但它内含一个member object，而后者有default constructor，那么这个class的implicit default constructor就是nontrivial，编译器需要为该class合成出一个default constructor。</p>
+<ul>
+<li>带有default constructor的base class</li>
+</ul>
+<p>如果一个没有任何constructor的class派生自一个带有default constructor的base class，那么这个derived class的default constructor会被视为nontrivial，并因此需要被合成出来。它将调用上一层base classes的default constructor（根据它们的声明顺序）。</p>
+<ul>
+<li>带有一个virtual function的class</li>
+</ul>
+<p>对于那些未声明任何constructor的classes，编译器会为它们合成一个default constructor，以便正确地初始化每一个class object的vptr。</p>
+<ul>
+<li>带有一个virtual base class的class</li>
+</ul>
+<p>Virtual base class 的实现方法在不同编译器之间有极大的差异。然而，每一种实现方法的共同点在于必须使virtual base class在其每一个derived class object中的位置，能够于执行期准备妥当。在未声明任何constructor的derived class object中，编译器必须为它合成一个default constructor，并安插那些“允许每一个virtual base class的执行期存取操作”的代码。</p>
+</blockquote>
+<hr>
+<h1 id="多重继承下的virtual-function，thunk，以及编译期绑定和运行期绑定（动态绑定）"><a href="#多重继承下的virtual-function，thunk，以及编译期绑定和运行期绑定（动态绑定）" class="headerlink" title="多重继承下的virtual function，thunk，以及编译期绑定和运行期绑定（动态绑定）"></a>多重继承下的virtual function，thunk，以及编译期绑定和运行期绑定（动态绑定）</h1><blockquote>
+<p>在多重继承中支持virtual function，其复杂度围绕在第二个以及后继的base classes身上，以及“必须在执行期调整this指针”这一点，以下面的class体系为例：</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base1</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;base1::f()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">g</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;base1::g()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>&#125;;<br><span class="hljs-comment">//基类2</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base2</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">h</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;base2::h()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">i</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;base2::i()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>&#125;;<br><span class="hljs-comment">//子类</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Derived</span>:<span class="hljs-keyword">public</span> Base1,<span class="hljs-keyword">public</span> Base2<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">()</span><span class="hljs-comment">//覆盖父类1的虚函数</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;derived::f()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">i</span><span class="hljs-params">()</span><span class="hljs-comment">//覆盖父类2的虚函数</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;derived::i()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br><br>    <span class="hljs-comment">//我们自己的虚函数</span><br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">myFunc1</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;derived::myFunc1()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-comment">//非虚函数</span><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">myFunc2</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;derived::myFunc2()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br><br>&#125;;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    std::cout &lt;&lt; <span class="hljs-built_in">sizeof</span>(Base1) &lt;&lt; std::endl;<br>    std::cout &lt;&lt; <span class="hljs-built_in">sizeof</span>(Base2) &lt;&lt; std::endl;<br>    std::cout &lt;&lt; <span class="hljs-built_in">sizeof</span>(Derived) &lt;&lt; std::endl;<br><br>    Derived ins;<br>    Base1&amp; b1 = ins;<span class="hljs-comment">//为了支持多态《深度探索c++对象模型p25》</span><br>    Base2&amp; b2 = ins;<br>    Derived&amp; d = ins;<br><br>    <span class="hljs-function"><span class="hljs-keyword">typedef</span> <span class="hljs-title">void</span><span class="hljs-params">(*Func)</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span></span>;<br>    <span class="hljs-comment">/*获得Base1类的第虚表指针*/</span><br>    Base1 temp1;<br>    <span class="hljs-type">long</span>* base1_cast = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">long</span>*&gt;(&amp;temp1);<span class="hljs-comment">//重新解释类对象,获得虚表指针的地址。</span><br>    <span class="hljs-type">long</span>* base1_vptr = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">long</span>*&gt;(*base1_cast);<span class="hljs-comment">//虚表指针的类型从long重新解释为long*。让它体现出指针的性质而不是long数值</span><br>    <span class="hljs-comment">//打印虚函数地址</span><br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">2</span>; i++)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;base1_vptr[%d] 的内容为： %p\n&quot;</span>,i,base1_vptr[i]);<br>        ((Func)base1_vptr[i])();<br>    &#125;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;----------------------------&quot;</span> &lt;&lt; std::endl;<br><br>    <span class="hljs-comment">/*获得Base2类的第虚表指针*/</span><br>    Base2 temp2;<br>    <span class="hljs-type">long</span>* base2_cast = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">long</span>*&gt;(&amp;temp2);<span class="hljs-comment">//重新解释类对象,获得第虚表指针的地址。</span><br>    <span class="hljs-type">long</span>* base2_vptr = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">long</span>*&gt;(*base2_cast);<span class="hljs-comment">//虚表指针的类型从long重新解释为long*。让它体现出指针的性质而不是long数值</span><br>    <span class="hljs-comment">//打印虚函数地址</span><br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">2</span>; i++)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;base2_vptr[%d] 的内容为： %p\n&quot;</span>,i,base2_vptr[i]);<br>        ((Func)base2_vptr[i])();<br>    &#125;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;----------------------------&quot;</span> &lt;&lt; std::endl;<br><br>    <span class="hljs-comment">/*获得derived类的第一个虚表指针*/</span><br>    <span class="hljs-type">long</span>* ins_cast1 = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">long</span>*&gt;(&amp;ins);<span class="hljs-comment">//重新解释类对象,获得第一个虚表指针的地址。</span><br>    <span class="hljs-type">long</span>* vptr1 = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">long</span>*&gt;(*ins_cast1);<span class="hljs-comment">//虚表指针的类型从long重新解释为long*。让它体现出指针的性质而不是long数值</span><br>    <span class="hljs-comment">//打印虚函数地址</span><br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">4</span>; i++)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;vptr1[%d] 的内容为： %p\n&quot;</span>,i,vptr1[i]);<br>        ((Func)vptr1[i])();<br>    &#125;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;----------------------------&quot;</span> &lt;&lt; std::endl;<br><br>    <span class="hljs-comment">/*获得derived类的第二个虚表指针*/</span><br>    <span class="hljs-type">long</span>* ins_cast2 = ins_cast1 + <span class="hljs-number">1</span>;<span class="hljs-comment">//偏移到第二个虚表指针的地址上</span><br>    <span class="hljs-type">long</span>* vptr2 = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">long</span>*&gt;(*ins_cast2);<span class="hljs-comment">//虚表指针的类型从long重新解释为long*。让它体现出指针的性质而不是long数值</span><br>    <span class="hljs-comment">//打印虚函数地址</span><br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">2</span>; i++)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;vptr2[%d] 的内容为： %p\n&quot;</span>,i,vptr2[i]);<br>        ((Func)vptr2[i])();<br>    &#125;<br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;----------------------------&quot;</span> &lt;&lt; std::endl;<br><br>    <span class="hljs-comment">//动态绑定</span><br>    b1.<span class="hljs-built_in">f</span>();<br>    b2.<span class="hljs-built_in">i</span>();<br>    d.<span class="hljs-built_in">f</span>();<br>    d.<span class="hljs-built_in">i</span>();<br>    d.<span class="hljs-built_in">g</span>();<br>    d.<span class="hljs-built_in">myFunc1</span>();<br>    <span class="hljs-comment">//编译期绑定</span><br>    d.<span class="hljs-built_in">myFunc2</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>在这个例子中，我们的子类会有两个虚指针，两张虚表，第一张虚表是重写父类虚函数、自身虚函数以及base1虚函数共享的虚表，第二张则是针对base2的。下面来看下运行结果：<br><img src="/img%5C00006%5C8.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"><br>重写的父类虚函数：<code>f()</code>，<code>i()</code>、自身虚函数：<code>myFunc1()</code>、base1虚函数：<code>g()</code>都在第一张虚表。而第二张虚表中，<code>h()</code>的出现很正常，但是这个被重写的父类虚函数<code>i()</code>，为什么会再次出现呢？，不应该只在表一出现吗？<br>这里表二中被重写的父类虚函数<code>i()</code>，其真名叫<code>nonvirtual thunk</code>函数。<br>咱们用指令来更清晰的观察Derived类对象ins的两张虚表：<br>（注意： 必须在支持多态的情况下观察Derived类对象ins，具体原因请参考《深度探索c++对象模型》p13）<br><img src="/img%5C00006%5C9.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"><br>上文说过“必须在执行期调整this指针”，而thunk函数的真正目的为：</p>
+<ul>
+<li>以适当的offset值调整this指针</li>
+<li>跳到virtual function去</li>
+</ul>
+<p>其实thunk函数就是一段assembly代码，下面我会带大家一起揭开thunk函数的真正面纱！<br>首先要想知道thunk函数干了什么，就要想个办法去调用它，然后跟踪进去。我们上面的示例代码中有一行代码：<code>b2.i();</code>会调用thunk函数。原因是<code>Base2&amp; b2 = ins;</code>中，b2的this指针指向的ins对象的第二个虚表指针，在调用ins对象的被重写父类虚函数<code>i()</code>时，需要调整this指针。<br>具体分析过程如下：</p>
+</blockquote>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs apache">    <span class="hljs-attribute">b2</span>.i();<br>  <span class="hljs-attribute">401553</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> d8          	mov    -<span class="hljs-number">0</span>x28(%rbp),%rax//rbp-<span class="hljs-number">0</span>x28里面存着b2的this指针，指向ins对象的第二个虚表指针<br>  <span class="hljs-attribute">401557</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">08</span>             	mov    (%rax),%rcx//将ins虚表二的第一个虚函数指针赋给了rcx寄存器<br>  <span class="hljs-attribute">40155a</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi//将b2的this指针存到rdi寄存器作为thunk函数的第一参数<br>  <span class="hljs-attribute">40155d</span>:	ff <span class="hljs-number">51</span> <span class="hljs-number">08</span>             	callq  *<span class="hljs-number">0</span>x8(%rcx)//偏移<span class="hljs-number">0</span>x8字节后调用thunk函数，*<span class="hljs-number">0</span>x8(%rcx)的值为<span class="hljs-number">0</span>x4017f0<br><br><span class="hljs-attribute">00000000004017f0</span> &lt;non-virtual thunk to Derived::i()&gt;:<br>  <span class="hljs-attribute">4017f0</span>:	<span class="hljs-number">55</span>                   	push   %rbp<br>  <span class="hljs-attribute">4017f1</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> e5             	mov    %rsp,%rbp<br>  <span class="hljs-attribute">4017f4</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">7</span>d f8          	mov    %rdi,-<span class="hljs-number">0</span>x8(%rbp)//将b2的this指针存放到该thunk函数rbp-<span class="hljs-number">0</span>x8的地址中<br>  <span class="hljs-attribute">4017f8</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> f8          	mov    -<span class="hljs-number">0</span>x8(%rbp),%rax//将b2的this指针存放到rax临时寄存器中<br>  <span class="hljs-attribute">4017fc</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> c0 f8          	add    $<span class="hljs-number">0</span>xfffffffffffffff8,%rax//this指针的值（<span class="hljs-number">0</span>x00007fffffffe120）加上<span class="hljs-number">0</span>xfffffffffffffff8，因为溢出，相当于<span class="hljs-number">0</span>x00007fffffffe120-<span class="hljs-number">0</span>x8，结果为<span class="hljs-number">0</span>x00007fffffffe118即ins对象的首地址<br>  <span class="hljs-attribute">401800</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi//将偏移后的this指针存到rdi第一参数寄存器中，作为&lt;Derived::i()&gt;的参数<br>  <span class="hljs-attribute">401803</span>:	<span class="hljs-number">5</span>d                   	pop    %rbp<br>  <span class="hljs-attribute">401804</span>:	e9 <span class="hljs-number">27</span> ff ff ff       	jmpq   <span class="hljs-number">401730</span> &lt;Derived::i()&gt;<br>  <span class="hljs-attribute">401809</span>:	<span class="hljs-number">0</span>f <span class="hljs-number">1</span>f <span class="hljs-number">80</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> 	nopl   <span class="hljs-number">0</span>x0(%rax)<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>后面就是调用虚函数<code>&lt;Derived::i()&gt;</code>后的过程，不再赘述。经过分析，可以发现thunk函数就做了两件事，以适当的<code>offset</code>值调整this指针，跳到virtual function去。和上面说的两点完全一致。</p>
+</blockquote>
+<hr>
+<h2 id="编译期绑定和运行期绑定（动态绑定）"><a href="#编译期绑定和运行期绑定（动态绑定）" class="headerlink" title="编译期绑定和运行期绑定（动态绑定）"></a>编译期绑定和运行期绑定（动态绑定）</h2><blockquote>
+<p>还是用上面的示例，可以看到子类中有定义一个非虚函数。咱们就来看下什么是运行期绑定和动态绑定的区别是什么。<br>在此之前，先看下绑定的概念：调用代码跟函数地址什么时候关联到一起。</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//编译期绑定</span><br>d.<span class="hljs-built_in">myFunc2</span>();<br></code></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">d</span>.myFunc2();<br><span class="hljs-attribute">401596</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">7</span>d d0          	mov    -<span class="hljs-number">0</span>x30(%rbp),%rdi<br><span class="hljs-attribute">40159a</span>:	e8 d1 <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	callq  <span class="hljs-number">401670</span> &lt;Derived::myFunc2()&gt;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p><code>编译期绑定</code>：调用代码跟函数在编译期就关联到一起。可以看到函数调用是直接调用指定地址的函数，而且机器码会出现E8的字样，表示直接调用，俗称<code>E8CALL</code>。</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//动态绑定</span><br>b1.<span class="hljs-built_in">f</span>();<br>b2.<span class="hljs-built_in">i</span>();<br>d.<span class="hljs-built_in">f</span>();<br>d.<span class="hljs-built_in">i</span>();<br>d.<span class="hljs-built_in">g</span>();<br>d.<span class="hljs-built_in">myFunc1</span>();<br></code></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs apache"> <span class="hljs-attribute">b1</span>.f();<br><span class="hljs-attribute">401540</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">4</span>d e0          	mov    -<span class="hljs-number">0</span>x20(%rbp),%rcx<br><span class="hljs-attribute">401544</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">11</span>             	mov    (%rcx),%rdx<br><span class="hljs-attribute">401547</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> cf             	mov    %rcx,%rdi<br><span class="hljs-attribute">40154a</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">85</span> <span class="hljs-number">20</span> ff ff ff 	mov    %rax,-<span class="hljs-number">0</span>xe0(%rbp)<br><span class="hljs-attribute">401551</span>:	ff <span class="hljs-number">12</span>                	callq  *(%rdx)<br>  <span class="hljs-attribute">b2</span>.i();<br><span class="hljs-attribute">401553</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> d8          	mov    -<span class="hljs-number">0</span>x28(%rbp),%rax<br><span class="hljs-attribute">401557</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">08</span>             	mov    (%rax),%rcx<br><span class="hljs-attribute">40155a</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br><span class="hljs-attribute">40155d</span>:	ff <span class="hljs-number">51</span> <span class="hljs-number">08</span>             	callq  *<span class="hljs-number">0</span>x8(%rcx)<br>  <span class="hljs-attribute">d</span>.f();<br><span class="hljs-attribute">401560</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> d0          	mov    -<span class="hljs-number">0</span>x30(%rbp),%rax<br><span class="hljs-attribute">401564</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">08</span>             	mov    (%rax),%rcx<br><span class="hljs-attribute">401567</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br><span class="hljs-attribute">40156a</span>:	ff <span class="hljs-number">11</span>                	callq  *(%rcx)<br>  <span class="hljs-attribute">d</span>.i();<br><span class="hljs-attribute">40156c</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> d0          	mov    -<span class="hljs-number">0</span>x30(%rbp),%rax<br><span class="hljs-attribute">401570</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">08</span>             	mov    (%rax),%rcx<br><span class="hljs-attribute">401573</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br><span class="hljs-attribute">401576</span>:	ff <span class="hljs-number">51</span> <span class="hljs-number">10</span>             	callq  *<span class="hljs-number">0</span>x10(%rcx)<br>  <span class="hljs-attribute">d</span>.g();<br><span class="hljs-attribute">401579</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> d0          	mov    -<span class="hljs-number">0</span>x30(%rbp),%rax<br><span class="hljs-attribute">40157d</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c1             	mov    %rax,%rcx<br><span class="hljs-attribute">401580</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">00</span>             	mov    (%rax),%rax<br><span class="hljs-attribute">401583</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> cf             	mov    %rcx,%rdi<br><span class="hljs-attribute">401586</span>:	ff <span class="hljs-number">50</span> <span class="hljs-number">08</span>             	callq  *<span class="hljs-number">0</span>x8(%rax)<br>  <span class="hljs-attribute">d</span>.myFunc1();<br><span class="hljs-attribute">401589</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> d0          	mov    -<span class="hljs-number">0</span>x30(%rbp),%rax<br><span class="hljs-attribute">40158d</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">08</span>             	mov    (%rax),%rcx<br><span class="hljs-attribute">401590</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br><span class="hljs-attribute">401593</span>:	ff <span class="hljs-number">51</span> <span class="hljs-number">18</span>             	callq  *<span class="hljs-number">0</span>x18(%rcx)<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p><code>动态绑定</code>：调用代码跟函数在运行期才能关联到一起。通过上面的反汇编代码可以发现，函数的调用地址是基于某个寄存器的偏移值而确定的，无法在编译期确定。而且在函数调用机器码中会出现ff的字样，表示间接调用，俗称<code>FFCALL</code>。动态绑定还有一个别名叫<code>多态</code>，只有虚函数才能是动态绑定。</p>
+</blockquote>
+<hr>
+<h1 id="多重继承下的成员布局以及this指针偏移"><a href="#多重继承下的成员布局以及this指针偏移" class="headerlink" title="多重继承下的成员布局以及this指针偏移"></a>多重继承下的成员布局以及this指针偏移</h1><blockquote>
+<p>经过上文的分析，我们已经熟知多重继承下虚机制是如何工作的。这一小节，我将带大家分析父类含成员变量时多重继承的成员布局。在父类指针支持多态时会发生this指针偏移，delete this指针偏移后的父类指针会导致异常。说的有点繁琐，不要紧，咱们看下文：<br>代码示例：</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//基类1</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base1</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Base1</span>():<span class="hljs-built_in">b1</span>(<span class="hljs-number">1</span>) &#123;&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;base1::f()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-type">int</span> b1;<br>&#125;;<br><span class="hljs-comment">//基类2</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base2</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Base2</span>():<span class="hljs-built_in">b2</span>(<span class="hljs-number">2</span>) &#123;&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">h</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;base2::h()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-type">int</span> b2;<br>&#125;;<br><span class="hljs-comment">//子类</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Derived</span>:<span class="hljs-keyword">public</span> Base1,<span class="hljs-keyword">public</span> Base2<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Derived</span>():<span class="hljs-built_in">m</span>(<span class="hljs-number">3</span>),<span class="hljs-built_in">n</span>(<span class="hljs-number">4</span>) &#123;&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">()</span><span class="hljs-comment">//覆盖父类1的虚函数</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;derived::f()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">h</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;derived::h()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-type">int</span> m;<br>    <span class="hljs-type">int</span> n;<br>&#125;;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Derived类的大小%d\n&quot;</span>,<span class="hljs-built_in">sizeof</span>(Derived));<br>    <span class="hljs-comment">//打印成员变量的偏移值</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Derived::b1 = %d\n&quot;</span>,&amp;Derived::b1);<span class="hljs-comment">//b1是基于Base1的偏移</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Derived::b2 = %d\n&quot;</span>,&amp;Derived::b2);<span class="hljs-comment">//b2是基于Base2的偏移</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Derived::m = %d\n&quot;</span>,&amp;Derived::m);<span class="hljs-comment">//m基于Derived的偏移</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Derived::n = %d\n&quot;</span>,&amp;Derived::n);<span class="hljs-comment">//n基于Derived的偏移</span><br><br>    Derived obj;<br>    Base1 *pbase1 = &amp;obj;<span class="hljs-comment">//this指针没有调整。</span><br>    Base2 *pbase2 = &amp;obj;<span class="hljs-comment">//this指针向下调整0x10字节。</span><br><br>    <span class="hljs-comment">//现在我们知道Base2在支持多态时会调整this指针。如果我们的obj是new出来的，当我们用delete去删除pbase2时会发生什么？</span><br>    Base2 *new_pbase2 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Derived</span>();<br>    <span class="hljs-comment">//delete new_pbase2;异常</span><br>    <span class="hljs-built_in">delete</span> (Derived*)new_pbase2;<span class="hljs-comment">//让编译器重新调整this指针，再delete掉。</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>运行结果如下：<br><img src="/img%5C00006%5C10.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"><br>根据数据成员的偏移值，我们可以得出该类的成员布局：<br><img src="/img%5C00006%5C11.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"><br>用GDB打印出空间布局，以及虚表内的虚函数：<br><img src="/img%5C00006%5C12.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"><br>和上述说明一致！<br>值得关注的一个问题是，Base2在支持多态时会调整this指针。如果我们的obj是new出来的，当我们用delete去删除pbase2时会报异常，其原因在于直接delete调整后的this指针无法将new出来的derived类对象完整删除。除非我们将该this指针继续调整到derived类对象的开头，或者在父类和基类中添加virtual析构函数。<br>下一小节咱们继续深入探讨多重继承下virtual析构函数的工作原理以及虚表对应的变化！</p>
+</blockquote>
+<hr>
+<h1 id="多重继承下virtual析构函数的工作原理以及虚表的变化"><a href="#多重继承下virtual析构函数的工作原理以及虚表的变化" class="headerlink" title="多重继承下virtual析构函数的工作原理以及虚表的变化"></a>多重继承下virtual析构函数的工作原理以及虚表的变化</h1><blockquote>
+<p>继上一小节，我们已经知道多重继承下数据成员的分布，为了更好的解决delete this指针偏移后的父类指针，我们必须在父类和基类中添加virtual析构函数。这样编译器就会为虚表多加几个槽，目的在于帮助this指针偏移后的父类指针回调到derived类对象的开头，进而完成delete。<br>示例代码和上一小节差不多，如下：</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//基类1</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base1</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Base1</span>():<span class="hljs-built_in">b1</span>(<span class="hljs-number">1</span>) &#123;&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;base1::f()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-keyword">virtual</span> ~<span class="hljs-built_in">Base1</span>() &#123;&#125;<br>    <span class="hljs-type">int</span> b1;<br>&#125;;<br><span class="hljs-comment">//基类2</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base2</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Base2</span>():<span class="hljs-built_in">b2</span>(<span class="hljs-number">2</span>) &#123;&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">h</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;base2::h()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-keyword">virtual</span> ~<span class="hljs-built_in">Base2</span>() &#123;&#125;<br>    <span class="hljs-type">int</span> b2;<br>&#125;;<br><span class="hljs-comment">//子类</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Derived</span>:<span class="hljs-keyword">public</span> Base1,<span class="hljs-keyword">public</span> Base2<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Derived</span>():<span class="hljs-built_in">m</span>(<span class="hljs-number">3</span>),<span class="hljs-built_in">n</span>(<span class="hljs-number">4</span>) &#123;&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">()</span><span class="hljs-comment">//覆盖父类1的虚函数</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;derived::f()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">h</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;derived::h()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-keyword">virtual</span> ~<span class="hljs-built_in">Derived</span>() &#123;&#125;<br>    <span class="hljs-type">int</span> m;<br>    <span class="hljs-type">int</span> n;<br>&#125;;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    Derived *new_pderived = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Derived</span>();<br>    <span class="hljs-comment">//打印第一张虚表</span><br>    <span class="hljs-type">long</span>* pderived_cast1 = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">long</span>*&gt;(new_pderived);<span class="hljs-comment">//重新解释类对象,获得虚表指针的地址。</span><br>    <span class="hljs-type">long</span>* pderived_vptr1 = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">long</span>*&gt;(*pderived_cast1);<span class="hljs-comment">//虚表指针的类型从long重新解释为long*。让它体现出指针的性质而不是long数值</span><br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">4</span>; i++)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;pderived_vptr1[%d] 的内容为： %p\n&quot;</span>,i,pderived_vptr1[i]);<br>    &#125;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;----------------------------&quot;</span> &lt;&lt; std::endl;<br>    <span class="hljs-comment">//打印第二张虚表</span><br>    <span class="hljs-type">long</span>* pderived_cast2 = pderived_cast1 + <span class="hljs-number">2</span>;<span class="hljs-comment">//偏移到第二个虚表指针的地址上</span><br>    <span class="hljs-type">long</span>* pderived_vptr2 = <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">long</span>*&gt;(*pderived_cast2);<span class="hljs-comment">//虚表指针的类型从long重新解释为long*。让它体现出指针的性质而不是long数值</span><br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">3</span>; i++)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;pderived_vptr2[%d] 的内容为： %p\n&quot;</span>,i,pderived_vptr2[i]);<br>    &#125;<br>    <span class="hljs-keyword">delete</span> new_pderived;<br><br>    Base2 *new_pbase2 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Derived</span>();<br>    <span class="hljs-keyword">delete</span> new_pbase2;<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>其对应的反汇编代码如下(我将有用的部分贴在下面)：</p>
+</blockquote>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><code class="hljs apache">    <span class="hljs-attribute">Base2</span> *new_pbase2 = new Derived();<br>  <span class="hljs-attribute">40136e</span>:	e8 <span class="hljs-number">0</span>d fd ff ff       	callq  <span class="hljs-number">401080</span> &lt;operator new(unsigned long)@plt&gt;<br>  <span class="hljs-attribute">401373</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c1             	mov    %rax,%rcx<br>  <span class="hljs-attribute">401376</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c2             	mov    %rax,%rdx<br>  <span class="hljs-attribute">401379</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br>  <span class="hljs-attribute">40137c</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">4</span>d <span class="hljs-number">88</span>          	mov    %rcx,-<span class="hljs-number">0</span>x78(%rbp)<br>  <span class="hljs-attribute">401380</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">55</span> <span class="hljs-number">80</span>          	mov    %rdx,-<span class="hljs-number">0</span>x80(%rbp)<br>  <span class="hljs-attribute">401384</span>:	e8 <span class="hljs-number">87</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	callq  <span class="hljs-number">401410</span> &lt;Derived::Derived()&gt;<br>  <span class="hljs-attribute">401389</span>:	e9 <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	jmpq   <span class="hljs-number">40138</span>e &lt;main+<span class="hljs-number">0</span>x16e&gt;<br>  <span class="hljs-attribute">40138e</span>:	<span class="hljs-number">31</span> c0                	xor    %eax,%eax<br>  <span class="hljs-attribute">401390</span>:	<span class="hljs-number">89</span> c1                	mov    %eax,%ecx<br>  <span class="hljs-attribute">401392</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">55</span> <span class="hljs-number">80</span>          	mov    -<span class="hljs-number">0</span>x80(%rbp),%rdx<br>  <span class="hljs-attribute">401396</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> fa <span class="hljs-number">00</span>          	cmp    $<span class="hljs-number">0</span>x0,%rdx<br>  <span class="hljs-attribute">40139a</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">8</span>d <span class="hljs-number">78</span> ff ff ff 	mov    %rcx,-<span class="hljs-number">0</span>x88(%rbp)<br>  <span class="hljs-attribute">4013a1</span>:	<span class="hljs-number">0</span>f <span class="hljs-number">84</span> <span class="hljs-number">11</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>    	je     <span class="hljs-number">4013</span>b8 &lt;main+<span class="hljs-number">0</span>x198&gt;<br>  <span class="hljs-attribute">4013a7</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> <span class="hljs-number">80</span>          	mov    -<span class="hljs-number">0</span>x80(%rbp),%rax<br>  <span class="hljs-attribute">4013ab</span>:	<span class="hljs-number">48</span> <span class="hljs-number">05</span> <span class="hljs-number">10</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>    	add    $<span class="hljs-number">0</span>x10,%rax<br>  <span class="hljs-attribute">4013b1</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">85</span> <span class="hljs-number">78</span> ff ff ff 	mov    %rax,-<span class="hljs-number">0</span>x88(%rbp)<br>  <span class="hljs-attribute">4013b8</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">85</span> <span class="hljs-number">78</span> ff ff ff 	mov    -<span class="hljs-number">0</span>x88(%rbp),%rax<br>  <span class="hljs-attribute">4013bf</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">45</span> a8          	mov    %rax,-<span class="hljs-number">0</span>x58(%rbp)<br>    <span class="hljs-attribute">delete</span> new_pbase2;<br>  <span class="hljs-attribute">4013c3</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> a8          	mov    -<span class="hljs-number">0</span>x58(%rbp),%rax<br>  <span class="hljs-attribute">4013c7</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> f8 <span class="hljs-number">00</span>          	cmp    $<span class="hljs-number">0</span>x0,%rax<br>  <span class="hljs-attribute">4013cb</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">85</span> <span class="hljs-number">70</span> ff ff ff 	mov    %rax,-<span class="hljs-number">0</span>x90(%rbp)<br>  <span class="hljs-attribute">4013d2</span>:	<span class="hljs-number">0</span>f <span class="hljs-number">84</span> <span class="hljs-number">10</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>    	je     <span class="hljs-number">4013</span>e8 &lt;main+<span class="hljs-number">0</span>x1c8&gt;<br>  <span class="hljs-attribute">4013d8</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">85</span> <span class="hljs-number">70</span> ff ff ff 	mov    -<span class="hljs-number">0</span>x90(%rbp),%rax<br>  <span class="hljs-attribute">4013df</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">08</span>             	mov    (%rax),%rcx<br>  <span class="hljs-attribute">4013e2</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br>  <span class="hljs-attribute">4013e5</span>:	ff <span class="hljs-number">51</span> <span class="hljs-number">10</span>             	callq  *<span class="hljs-number">0</span>x10(%rcx)<br>  <span class="hljs-attribute">4013e8</span>:	<span class="hljs-number">8</span>b <span class="hljs-number">45</span> fc             	mov    -<span class="hljs-number">0</span>x4(%rbp),%eax<br>  <span class="hljs-attribute">4013eb</span>:	<span class="hljs-number">48</span> <span class="hljs-number">81</span> c4 <span class="hljs-number">90</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> 	add    $<span class="hljs-number">0</span>x90,%rsp<br>  <span class="hljs-attribute">4013f2</span>:	<span class="hljs-number">5</span>d                   	pop    %rbp<br>  <span class="hljs-attribute">4013f3</span>:	c3                   	retq  <br><br><span class="hljs-attribute">0000000000401540</span> &lt;Derived::~Derived()&gt;:<br>    <span class="hljs-attribute">virtual</span> ~Derived() &#123;&#125;<br>  <span class="hljs-attribute">401540</span>:	<span class="hljs-number">55</span>                   	push   %rbp<br>  <span class="hljs-attribute">401541</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> e5             	mov    %rsp,%rbp<br>  <span class="hljs-attribute">401544</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> ec <span class="hljs-number">10</span>          	sub    $<span class="hljs-number">0</span>x10,%rsp<br>  <span class="hljs-attribute">401548</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">7</span>d f8          	mov    %rdi,-<span class="hljs-number">0</span>x8(%rbp)<br>  <span class="hljs-attribute">40154c</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> f8          	mov    -<span class="hljs-number">0</span>x8(%rbp),%rax<br>  <span class="hljs-attribute">401550</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c1             	mov    %rax,%rcx<br>  <span class="hljs-attribute">401553</span>:	<span class="hljs-number">48</span> <span class="hljs-number">81</span> c1 <span class="hljs-number">10</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> 	add    $<span class="hljs-number">0</span>x10,%rcx<br>  <span class="hljs-attribute">40155a</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> cf             	mov    %rcx,%rdi<br>  <span class="hljs-attribute">40155d</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">45</span> f0          	mov    %rax,-<span class="hljs-number">0</span>x10(%rbp)<br>  <span class="hljs-attribute">401561</span>:	e8 aa <span class="hljs-number">01</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	callq  <span class="hljs-number">401710</span> &lt;Base2::~Base2()&gt;<br>  <span class="hljs-attribute">401566</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> f0          	mov    -<span class="hljs-number">0</span>x10(%rbp),%rax<br>  <span class="hljs-attribute">40156a</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br>  <span class="hljs-attribute">40156d</span>:	e8 <span class="hljs-number">1</span>e <span class="hljs-number">01</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	callq  <span class="hljs-number">401690</span> &lt;Base1::~Base1()&gt;<br>  <span class="hljs-attribute">401572</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> c4 <span class="hljs-number">10</span>          	add    $<span class="hljs-number">0</span>x10,%rsp<br>  <span class="hljs-attribute">401576</span>:	<span class="hljs-number">5</span>d                   	pop    %rbp<br>  <span class="hljs-attribute">401577</span>:	c3                   	retq   <br>  <span class="hljs-attribute">401578</span>:	<span class="hljs-number">0</span>f <span class="hljs-number">1</span>f <span class="hljs-number">84</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> 	nopl   <span class="hljs-number">0</span>x0(%rax,%rax,<span class="hljs-number">1</span>)<br>  <span class="hljs-attribute">40157f</span>:	<span class="hljs-number">00</span> <br><br><span class="hljs-attribute">0000000000401580</span> &lt;Derived::~Derived()&gt;:<br>  <span class="hljs-attribute">401580</span>:	<span class="hljs-number">55</span>                   	push   %rbp<br>  <span class="hljs-attribute">401581</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> e5             	mov    %rsp,%rbp<br>  <span class="hljs-attribute">401584</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> ec <span class="hljs-number">10</span>          	sub    $<span class="hljs-number">0</span>x10,%rsp<br>  <span class="hljs-attribute">401588</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">7</span>d f8          	mov    %rdi,-<span class="hljs-number">0</span>x8(%rbp)<br>  <span class="hljs-attribute">40158c</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> f8          	mov    -<span class="hljs-number">0</span>x8(%rbp),%rax<br>  <span class="hljs-attribute">401590</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br>  <span class="hljs-attribute">401593</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">45</span> f0          	mov    %rax,-<span class="hljs-number">0</span>x10(%rbp)<br>  <span class="hljs-attribute">401597</span>:	e8 a4 ff ff ff       	callq  <span class="hljs-number">401540</span> &lt;Derived::~Derived()&gt;<br>  <span class="hljs-attribute">40159c</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> f0          	mov    -<span class="hljs-number">0</span>x10(%rbp),%rax<br>  <span class="hljs-attribute">4015a0</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br>  <span class="hljs-attribute">4015a3</span>:	e8 b8 fa ff ff       	callq  <span class="hljs-number">401060</span> &lt;operator delete(void*)@plt&gt;<br>  <span class="hljs-attribute">4015a8</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> c4 <span class="hljs-number">10</span>          	add    $<span class="hljs-number">0</span>x10,%rsp<br>  <span class="hljs-attribute">4015ac</span>:	<span class="hljs-number">5</span>d                   	pop    %rbp<br>  <span class="hljs-attribute">4015ad</span>:	c3                   	retq   <br>  <span class="hljs-attribute">4015ae</span>:	<span class="hljs-number">66</span> <span class="hljs-number">90</span>                	xchg   %ax,%ax<br><br><span class="hljs-attribute">0000000000401610</span> &lt;non-virtual thunk to Derived::~Derived()&gt;:<br>  <span class="hljs-attribute">401610</span>:	<span class="hljs-number">55</span>                   	push   %rbp<br>  <span class="hljs-attribute">401611</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> e5             	mov    %rsp,%rbp<br>  <span class="hljs-attribute">401614</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">7</span>d f8          	mov    %rdi,-<span class="hljs-number">0</span>x8(%rbp)<br>  <span class="hljs-attribute">401618</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> f8          	mov    -<span class="hljs-number">0</span>x8(%rbp),%rax<br>  <span class="hljs-attribute">40161c</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> c0 f0          	add    $<span class="hljs-number">0</span>xfffffffffffffff0,%rax<br>  <span class="hljs-attribute">401620</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br>  <span class="hljs-attribute">401623</span>:	<span class="hljs-number">5</span>d                   	pop    %rbp<br>  <span class="hljs-attribute">401624</span>:	e9 <span class="hljs-number">17</span> ff ff ff       	jmpq   <span class="hljs-number">401540</span> &lt;Derived::~Derived()&gt;<br>  <span class="hljs-attribute">401629</span>:	<span class="hljs-number">0</span>f <span class="hljs-number">1</span>f <span class="hljs-number">80</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> 	nopl   <span class="hljs-number">0</span>x0(%rax)<br><br><span class="hljs-attribute">0000000000401630</span> &lt;non-virtual thunk to Derived::~Derived()&gt;:<br>  <span class="hljs-attribute">401630</span>:	<span class="hljs-number">55</span>                   	push   %rbp<br>  <span class="hljs-attribute">401631</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> e5             	mov    %rsp,%rbp<br>  <span class="hljs-attribute">401634</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">7</span>d f8          	mov    %rdi,-<span class="hljs-number">0</span>x8(%rbp)<br>  <span class="hljs-attribute">401638</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> f8          	mov    -<span class="hljs-number">0</span>x8(%rbp),%rax<br>  <span class="hljs-attribute">40163c</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> c0 f0          	add    $<span class="hljs-number">0</span>xfffffffffffffff0,%rax<br>  <span class="hljs-attribute">401640</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br>  <span class="hljs-attribute">401643</span>:	<span class="hljs-number">5</span>d                   	pop    %rbp<br>  <span class="hljs-attribute">401644</span>:	e9 <span class="hljs-number">37</span> ff ff ff       	jmpq   <span class="hljs-number">401580</span> &lt;Derived::~Derived()&gt;<br>  <span class="hljs-attribute">401649</span>:	<span class="hljs-number">0</span>f <span class="hljs-number">1</span>f <span class="hljs-number">80</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> 	nopl   <span class="hljs-number">0</span>x0(%rax)<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>因为virtual析构函数的加入，我将打印的步骤简化了，否则显示会混乱。运行结果如下：<br><img src="/img%5C00006%5C13.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>这种情况下GDB打印出来的虚表内容有错误，或者是它故意隐瞒，其原因不得而知，我将补充后的结果贴在这里：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs stylus">&gt;gef➤  info vtbl *new_pderived<br>&gt;vtable <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;Derived&#x27;</span> @ <span class="hljs-number">0</span>x4020b0 (subobject @ <span class="hljs-number">0</span>x416eb0):<br>&gt;<span class="hljs-selector-attr">[0]</span>: <span class="hljs-number">0</span>x401500 &lt;Derived::<span class="hljs-built_in">f</span>()&gt;<br>&gt;<span class="hljs-selector-attr">[1]</span>: <span class="hljs-number">0</span>x401540 &lt;Derived::~<span class="hljs-built_in">Derived</span>()&gt;<br>&gt;<span class="hljs-selector-attr">[2]</span>: <span class="hljs-number">0</span>x401580 &lt;Derived::~<span class="hljs-built_in">Derived</span>()&gt;<br>&gt;<span class="hljs-selector-attr">[3]</span>: <span class="hljs-number">0</span>x4015b0 &lt;Derived::<span class="hljs-built_in">h</span>()&gt;<br>&gt;vtable <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;Base2&#x27;</span> @ <span class="hljs-number">0</span>x4020e0 (subobject @ <span class="hljs-number">0</span>x416ec0):<br>&gt;<span class="hljs-selector-attr">[0]</span>: <span class="hljs-number">0</span>x4015f0 &lt;non-virtual thunk to Derived::<span class="hljs-built_in">h</span>()&gt;<br>&gt;<span class="hljs-selector-attr">[1]</span>: <span class="hljs-number">0</span>x401610 &lt;non-virtual thunk to Derived::~<span class="hljs-built_in">Derived</span>()&gt;<span class="hljs-comment">//笔者补充上的</span><br>&gt;<span class="hljs-selector-attr">[2]</span>: <span class="hljs-number">0</span>x401630 &lt;non-virtual thunk to Derived::~<span class="hljs-built_in">Derived</span>()&gt;<span class="hljs-comment">//笔者补充上的</span><br></code></pre></td></tr></table></figure>
+<p>我们重点关注最后两行：<code>Base2 *new_pbase2 = new Derived();delete new_pbase2;</code>看编译如何完成this指针的回调：<br><img src="/img%5C00006%5C14.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>反汇编代码运行到<code>0x4013c3 &lt;main+419&gt;       mov    rax, QWORD PTR [rbp-0x58]</code>之前发生的事情有：Derived类对象在<code>0x416eb0</code>堆内存地址上进行构造，<code>0x416eb0+0x10</code>后的堆指针（Base2类对象的this指针）存储在<code>$rbp-0x58</code>（0x7fffffffe0d8）栈内存中。这一过程的结果我用一张图进行表达：<br><img src="/img%5C00006%5C15.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"></p>
+</blockquote>
+<blockquote>
+<p><img src="/img%5C00006%5C16.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>该图在<code>0x4013e5 &lt;main+453&gt;       call   QWORD PTR [rcx+0x10]</code>还未执行时发生的事情有：编译器将Base2类对象的this指针存储在<code>rdi</code>参数寄存器中，作为<code>&lt;non-virtual thunk to Derived::~Derived()&gt;</code>函数（<code>rcx+0x10</code>）的第一参数。该函数指针指向文本段<code>0x401630</code>处。<br><img src="/img%5C00006%5C17.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>反汇编代码运行到<code>0x401644 &lt;non-virtual+0&gt;  jmp    0x401580 &lt;Derived::~Derived()&gt;</code>之前发生的事情有：rdi参数寄存器将其值保存到<code>rax</code>临时寄存器中，<code>rax</code>将该值（<code>0x416ec0</code>）加上<code>0xfffffffffffffff0</code>，由于溢出，相当于<code>-0x10</code>，得到的新值（<code>0x416eb0</code>）存储到<code>rax</code>寄存器中。随后调用带<code>operator delete(void*)</code>的virtual析构函数。<br>至此完成this指针回调，delete可以正常销毁掉new出来Derived类对象。</p>
+</blockquote>
+<hr>
+<h1 id="多重虚继承下的访问虚基类成员变量时虚表的工作原理，以及子类成员布局"><a href="#多重虚继承下的访问虚基类成员变量时虚表的工作原理，以及子类成员布局" class="headerlink" title="多重虚继承下的访问虚基类成员变量时虚表的工作原理，以及子类成员布局"></a>多重虚继承下的访问虚基类成员变量时虚表的工作原理，以及子类成员布局</h1><blockquote>
+<p>在分析之前，咱们先回顾一下《深度探索c++对象模型》p120提出来的一个问题：<br>每一个对象必须针对其每一个virtual base class背负一个额外的指针，然而理想上我们却希望class object有固定的负担，不因为其virtual base classes的个数而有所变化。想想看这该如何解决？</p>
+<ul>
+<li>一般而言有两种解决方法。Microsoft 编译器引入所谓的virtual base class table。每一个class object如果有一个或者多个virtual base classes，就会由编译器安插一个指针，指向virtual base class table。至于真正的virtual base class指针，当然是被放在该表格中。</li>
+<li>第二个解决方法，是在virtual function table 中放置virtual base class 的 offset（而不是第一种办法中说的virtual base class指针）。编译器可以通过virtual function table的正负值来索引该offset。如果是正值，显然索引到的是virtual function；如果是负值，则是索引到virtual base class offsets。</li>
+</ul>
+<p>正如上面第二种方法所述，clang编译器采取的就是基于vtbl的offset来获取虚基类的this指针，进而完成虚基类数据成员的访问。<br>咱们来看具体分析过程，如下：<br>先设计一个菱形继承的Derived类。</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//爷爷类</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">grandpa</span><span class="hljs-comment">//类名首字母忘记大写了，抱歉</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">grandpa</span>():<span class="hljs-built_in">pa</span>(<span class="hljs-number">1</span>) &#123;&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;grandpa::f()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">g</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;grandpa::g()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-keyword">virtual</span> ~<span class="hljs-built_in">grandpa</span>() &#123;&#125;<br>    <span class="hljs-type">int</span> pa;<br>&#125;;<br><span class="hljs-comment">//父类1</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base1</span>:<span class="hljs-keyword">virtual</span> <span class="hljs-keyword">public</span> grandpa<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Base1</span>():<span class="hljs-built_in">b1</span>(<span class="hljs-number">2</span>) &#123;&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">h</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;base1::h()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">i</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;base1::i()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-keyword">virtual</span> ~<span class="hljs-built_in">Base1</span>() &#123;&#125;<br>    <span class="hljs-type">int</span> b1;<br>&#125;;<br><span class="hljs-comment">//父类2</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base2</span>:<span class="hljs-keyword">virtual</span> <span class="hljs-keyword">public</span> grandpa<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Base2</span>():<span class="hljs-built_in">b2</span>(<span class="hljs-number">3</span>) &#123;&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">j</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;base2::j()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">k</span><span class="hljs-params">()</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;base2::k()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-keyword">virtual</span> ~<span class="hljs-built_in">Base2</span>() &#123;&#125;<br>    <span class="hljs-type">int</span> b2;<br>&#125;;<br><span class="hljs-comment">//子类</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Derived</span>:<span class="hljs-keyword">public</span> Base1,<span class="hljs-keyword">public</span> Base2<br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Derived</span>():<span class="hljs-built_in">m</span>(<span class="hljs-number">4</span>),<span class="hljs-built_in">n</span>(<span class="hljs-number">5</span>) &#123;&#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">()</span><span class="hljs-comment">//覆盖爷爷类的虚函数</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;derived::f()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">h</span><span class="hljs-params">()</span><span class="hljs-comment">//覆盖父类1的虚函数</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;derived::h()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">j</span><span class="hljs-params">()</span><span class="hljs-comment">//覆盖父类2的虚函数</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;derived::j()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">l</span><span class="hljs-params">()</span><span class="hljs-comment">//derived类自己的虚函数</span></span><br><span class="hljs-function">    </span>&#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;derived::l()&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-keyword">virtual</span> ~<span class="hljs-built_in">Derived</span>() &#123;&#125;<br>    <span class="hljs-type">int</span> m;<br>    <span class="hljs-type">int</span> n;<br>&#125;;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    Derived *new_pderived = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Derived</span>();<br>    new_pderived-&gt;pa = <span class="hljs-number">11</span>;<br>    <span class="hljs-keyword">delete</span> new_pderived;<br><br>    Base1 *new_pbase1 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Derived</span>();<br>    new_pbase1-&gt;pa = <span class="hljs-number">11</span>;<br>    <span class="hljs-keyword">delete</span> new_pbase1;<br><br>    Base2 *new_pbase2 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Derived</span>();<br>    new_pbase2-&gt;pa = <span class="hljs-number">11</span>;<br>    <span class="hljs-keyword">delete</span> new_pbase2;<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>需要用到的反汇编代码如下：</p>
+</blockquote>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><code class="hljs apache">  <span class="hljs-attribute">Derived</span> *new_pderived = new Derived();<br><span class="hljs-attribute">401227</span>:	e8 <span class="hljs-number">44</span> fe ff ff       	callq  <span class="hljs-number">401070</span> &lt;operator new(unsigned long)@plt&gt;<br><span class="hljs-attribute">40122c</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c1             	mov    %rax,%rcx<br><span class="hljs-attribute">40122f</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c2             	mov    %rax,%rdx<br><span class="hljs-attribute">401232</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br><span class="hljs-attribute">401235</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">4</span>d c8          	mov    %rcx,-<span class="hljs-number">0</span>x38(%rbp)<br><span class="hljs-attribute">401239</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">55</span> c0          	mov    %rdx,-<span class="hljs-number">0</span>x40(%rbp)<br><span class="hljs-attribute">40123d</span>:	e8 <span class="hljs-number">7</span>e <span class="hljs-number">01</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	callq  <span class="hljs-number">4013</span>c0 &lt;Derived::Derived()&gt;<br><span class="hljs-attribute">401242</span>:	e9 <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	jmpq   <span class="hljs-number">401247</span> &lt;main+<span class="hljs-number">0</span>x37&gt;<br><span class="hljs-attribute">401247</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> c0          	mov    -<span class="hljs-number">0</span>x40(%rbp),%rax<br><span class="hljs-attribute">40124b</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">45</span> f0          	mov    %rax,-<span class="hljs-number">0</span>x10(%rbp)<br>  <span class="hljs-attribute">new_pderived</span>-&gt;pa = <span class="hljs-number">11</span>;<br><span class="hljs-attribute">40124f</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">4</span>d f0          	mov    -<span class="hljs-number">0</span>x10(%rbp),%rcx<br><span class="hljs-attribute">401253</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">11</span>             	mov    (%rcx),%rdx<br><span class="hljs-attribute">401256</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">52</span> e8          	mov    -<span class="hljs-number">0</span>x18(%rdx),%rdx<br><span class="hljs-attribute">40125a</span>:	c7 <span class="hljs-number">44</span> <span class="hljs-number">11</span> <span class="hljs-number">08</span> <span class="hljs-number">0</span>b <span class="hljs-number">00</span> <span class="hljs-number">00</span> 	movl   $<span class="hljs-number">0</span>xb,<span class="hljs-number">0</span>x8(%rcx,%rdx,<span class="hljs-number">1</span>)<br><span class="hljs-attribute">401261</span>:	<span class="hljs-number">00</span> <br>  <span class="hljs-attribute">delete</span> new_pderived;<br><span class="hljs-attribute">401262</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">4</span>d f0          	mov    -<span class="hljs-number">0</span>x10(%rbp),%rcx<br><span class="hljs-attribute">401266</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> f9 <span class="hljs-number">00</span>          	cmp    $<span class="hljs-number">0</span>x0,%rcx<br><span class="hljs-attribute">40126a</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">4</span>d b8          	mov    %rcx,-<span class="hljs-number">0</span>x48(%rbp)<br><span class="hljs-attribute">40126e</span>:	<span class="hljs-number">0</span>f <span class="hljs-number">84</span> <span class="hljs-number">0</span>d <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>    	je     <span class="hljs-number">401281</span> &lt;main+<span class="hljs-number">0</span>x71&gt;<br><span class="hljs-attribute">401274</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> b8          	mov    -<span class="hljs-number">0</span>x48(%rbp),%rax<br><span class="hljs-attribute">401278</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">08</span>             	mov    (%rax),%rcx<br><span class="hljs-attribute">40127b</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br><span class="hljs-attribute">40127e</span>:	ff <span class="hljs-number">51</span> <span class="hljs-number">18</span>             	callq  *<span class="hljs-number">0</span>x18(%rcx)<br><span class="hljs-attribute">401281</span>:	bf <span class="hljs-number">38</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	mov    $<span class="hljs-number">0</span>x38,%edi<br><br>  <span class="hljs-attribute">Base1</span> *new_pbase1 = new Derived();<br><span class="hljs-attribute">401286</span>:	e8 e5 fd ff ff       	callq  <span class="hljs-number">401070</span> &lt;operator new(unsigned long)@plt&gt;<br><span class="hljs-attribute">40128b</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c1             	mov    %rax,%rcx<br><span class="hljs-attribute">40128e</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c2             	mov    %rax,%rdx<br><span class="hljs-attribute">401291</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br><span class="hljs-attribute">401294</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">4</span>d b0          	mov    %rcx,-<span class="hljs-number">0</span>x50(%rbp)<br><span class="hljs-attribute">401298</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">55</span> a8          	mov    %rdx,-<span class="hljs-number">0</span>x58(%rbp)<br><span class="hljs-attribute">40129c</span>:	e8 <span class="hljs-number">1</span>f <span class="hljs-number">01</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	callq  <span class="hljs-number">4013</span>c0 &lt;Derived::Derived()&gt;<br><span class="hljs-attribute">4012a1</span>:	e9 <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	jmpq   <span class="hljs-number">4012</span>a6 &lt;main+<span class="hljs-number">0</span>x96&gt;<br><span class="hljs-attribute">4012a6</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> a8          	mov    -<span class="hljs-number">0</span>x58(%rbp),%rax<br><span class="hljs-attribute">4012aa</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">45</span> d8          	mov    %rax,-<span class="hljs-number">0</span>x28(%rbp)<br>  <span class="hljs-attribute">new_pbase1</span>-&gt;pa = <span class="hljs-number">11</span>;<br><span class="hljs-attribute">4012ae</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> d8          	mov    -<span class="hljs-number">0</span>x28(%rbp),%rax<br><span class="hljs-attribute">4012b2</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">08</span>             	mov    (%rax),%rcx<br><span class="hljs-attribute">4012b5</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">49</span> e8          	mov    -<span class="hljs-number">0</span>x18(%rcx),%rcx<br><span class="hljs-attribute">4012b9</span>:	c7 <span class="hljs-number">44</span> <span class="hljs-number">08</span> <span class="hljs-number">08</span> <span class="hljs-number">0</span>b <span class="hljs-number">00</span> <span class="hljs-number">00</span> 	movl   $<span class="hljs-number">0</span>xb,<span class="hljs-number">0</span>x8(%rax,%rcx,<span class="hljs-number">1</span>)<br><span class="hljs-attribute">4012c0</span>:	<span class="hljs-number">00</span> <br>  <span class="hljs-attribute">delete</span> new_pbase1;<br><span class="hljs-attribute">4012c1</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> d8          	mov    -<span class="hljs-number">0</span>x28(%rbp),%rax<br><span class="hljs-attribute">4012c5</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> f8 <span class="hljs-number">00</span>          	cmp    $<span class="hljs-number">0</span>x0,%rax<br><span class="hljs-attribute">4012c9</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">45</span> a0          	mov    %rax,-<span class="hljs-number">0</span>x60(%rbp)<br><span class="hljs-attribute">4012cd</span>:	<span class="hljs-number">0</span>f <span class="hljs-number">84</span> <span class="hljs-number">0</span>d <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>    	je     <span class="hljs-number">4012</span>e0 &lt;main+<span class="hljs-number">0</span>xd0&gt;<br><span class="hljs-attribute">4012d3</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> a0          	mov    -<span class="hljs-number">0</span>x60(%rbp),%rax<br><span class="hljs-attribute">4012d7</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">08</span>             	mov    (%rax),%rcx<br><span class="hljs-attribute">4012da</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br><span class="hljs-attribute">4012dd</span>:	ff <span class="hljs-number">51</span> <span class="hljs-number">18</span>             	callq  *<span class="hljs-number">0</span>x18(%rcx)<br><span class="hljs-attribute">4012e0</span>:	bf <span class="hljs-number">38</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	mov    $<span class="hljs-number">0</span>x38,%edi<br><br>  <span class="hljs-attribute">Base2</span> *new_pbase2 = new Derived();<br><span class="hljs-attribute">4012e5</span>:	e8 <span class="hljs-number">86</span> fd ff ff       	callq  <span class="hljs-number">401070</span> &lt;operator new(unsigned long)@plt&gt;<br><span class="hljs-attribute">4012ea</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c1             	mov    %rax,%rcx<br><span class="hljs-attribute">4012ed</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c2             	mov    %rax,%rdx<br><span class="hljs-attribute">4012f0</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br><span class="hljs-attribute">4012f3</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">4</span>d <span class="hljs-number">98</span>          	mov    %rcx,-<span class="hljs-number">0</span>x68(%rbp)<br><span class="hljs-attribute">4012f7</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">55</span> <span class="hljs-number">90</span>          	mov    %rdx,-<span class="hljs-number">0</span>x70(%rbp)<br><span class="hljs-attribute">4012fb</span>:	e8 c0 <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	callq  <span class="hljs-number">4013</span>c0 &lt;Derived::Derived()&gt;<br><span class="hljs-attribute">401300</span>:	e9 <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>       	jmpq   <span class="hljs-number">401305</span> &lt;main+<span class="hljs-number">0</span>xf5&gt;<br><span class="hljs-attribute">401305</span>:	<span class="hljs-number">31</span> c0                	xor    %eax,%eax<br><span class="hljs-attribute">401307</span>:	<span class="hljs-number">89</span> c1                	mov    %eax,%ecx<br><span class="hljs-attribute">401309</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">55</span> <span class="hljs-number">90</span>          	mov    -<span class="hljs-number">0</span>x70(%rbp),%rdx<br><span class="hljs-attribute">40130d</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> fa <span class="hljs-number">00</span>          	cmp    $<span class="hljs-number">0</span>x0,%rdx<br><span class="hljs-attribute">401311</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">4</span>d <span class="hljs-number">88</span>          	mov    %rcx,-<span class="hljs-number">0</span>x78(%rbp)<br><span class="hljs-attribute">401315</span>:	<span class="hljs-number">0</span>f <span class="hljs-number">84</span> <span class="hljs-number">0</span>e <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>    	je     <span class="hljs-number">401329</span> &lt;main+<span class="hljs-number">0</span>x119&gt;<br><span class="hljs-attribute">40131b</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> <span class="hljs-number">90</span>          	mov    -<span class="hljs-number">0</span>x70(%rbp),%rax<br><span class="hljs-attribute">40131f</span>:	<span class="hljs-number">48</span> <span class="hljs-number">05</span> <span class="hljs-number">10</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>    	add    $<span class="hljs-number">0</span>x10,%rax<br><span class="hljs-attribute">401325</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">45</span> <span class="hljs-number">88</span>          	mov    %rax,-<span class="hljs-number">0</span>x78(%rbp)<br><span class="hljs-attribute">401329</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> <span class="hljs-number">88</span>          	mov    -<span class="hljs-number">0</span>x78(%rbp),%rax<br><span class="hljs-attribute">40132d</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">45</span> d0          	mov    %rax,-<span class="hljs-number">0</span>x30(%rbp)<br>  <span class="hljs-attribute">new_pbase2</span>-&gt;pa = <span class="hljs-number">11</span>;<br><span class="hljs-attribute">401331</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> d0          	mov    -<span class="hljs-number">0</span>x30(%rbp),%rax<br><span class="hljs-attribute">401335</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">08</span>             	mov    (%rax),%rcx<br><span class="hljs-attribute">401338</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">49</span> e8          	mov    -<span class="hljs-number">0</span>x18(%rcx),%rcx<br><span class="hljs-attribute">40133c</span>:	c7 <span class="hljs-number">44</span> <span class="hljs-number">08</span> <span class="hljs-number">08</span> <span class="hljs-number">0</span>b <span class="hljs-number">00</span> <span class="hljs-number">00</span> 	movl   $<span class="hljs-number">0</span>xb,<span class="hljs-number">0</span>x8(%rax,%rcx,<span class="hljs-number">1</span>)<br><span class="hljs-attribute">401343</span>:	<span class="hljs-number">00</span> <br>  <span class="hljs-attribute">delete</span> new_pbase2;<br><span class="hljs-attribute">401344</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> d0          	mov    -<span class="hljs-number">0</span>x30(%rbp),%rax<br><span class="hljs-attribute">401348</span>:	<span class="hljs-number">48</span> <span class="hljs-number">83</span> f8 <span class="hljs-number">00</span>          	cmp    $<span class="hljs-number">0</span>x0,%rax<br><span class="hljs-attribute">40134c</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">45</span> <span class="hljs-number">80</span>          	mov    %rax,-<span class="hljs-number">0</span>x80(%rbp)<br><span class="hljs-attribute">401350</span>:	<span class="hljs-number">0</span>f <span class="hljs-number">84</span> <span class="hljs-number">0</span>d <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>    	je     <span class="hljs-number">401363</span> &lt;main+<span class="hljs-number">0</span>x153&gt;<br><span class="hljs-attribute">401356</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">45</span> <span class="hljs-number">80</span>          	mov    -<span class="hljs-number">0</span>x80(%rbp),%rax<br><span class="hljs-attribute">40135a</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">08</span>             	mov    (%rax),%rcx<br><span class="hljs-attribute">40135d</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> c7             	mov    %rax,%rdi<br><span class="hljs-attribute">401360</span>:	ff <span class="hljs-number">51</span> <span class="hljs-number">18</span>             	callq  *<span class="hljs-number">0</span>x18(%rcx)<br><span class="hljs-attribute">401363</span>:	<span class="hljs-number">8</span>b <span class="hljs-number">45</span> fc             	mov    -<span class="hljs-number">0</span>x4(%rbp),%eax<br><span class="hljs-attribute">401366</span>:	<span class="hljs-number">48</span> <span class="hljs-number">81</span> c4 <span class="hljs-number">80</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> 	add    $<span class="hljs-number">0</span>x80,%rsp<br><span class="hljs-attribute">40136d</span>:	<span class="hljs-number">5</span>d                   	pop    %rbp<br><span class="hljs-attribute">40136e</span>:	c3                   	retq   <br><span class="hljs-attribute">40136f</span>:	<span class="hljs-number">48</span> <span class="hljs-number">89</span> <span class="hljs-number">45</span> e8          	mov    %rax,-<span class="hljs-number">0</span>x18(%rbp)<br><span class="hljs-attribute">401373</span>:	<span class="hljs-number">89</span> <span class="hljs-number">55</span> e4             	mov    %edx,-<span class="hljs-number">0</span>x1c(%rbp)<br><span class="hljs-attribute">401376</span>:	<span class="hljs-number">48</span> <span class="hljs-number">8</span>b <span class="hljs-number">7</span>d c8          	mov    -<span class="hljs-number">0</span>x38(%rbp),%rdi<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>Derived类的vtbl内容如下(编译器没有完全打印出来，笔者将补充后的列在下面)：</p>
+</blockquote>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs stylus">gef➤  info vtbl *new_pderived<br>vtable <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;Derived&#x27;</span> @ <span class="hljs-number">0</span>x402020 (subobject @ <span class="hljs-number">0</span>x416eb0):<br><span class="hljs-selector-attr">[0]</span>: <span class="hljs-number">0</span>x401850 &lt;Derived::<span class="hljs-built_in">h</span>()&gt;<br><span class="hljs-selector-attr">[1]</span>: <span class="hljs-number">0</span>x4015b0 &lt;Base1::<span class="hljs-selector-tag">i</span>()&gt;<br><span class="hljs-selector-attr">[2]</span>: <span class="hljs-number">0</span>x401890 &lt;Derived::~<span class="hljs-built_in">Derived</span>()&gt;<br><span class="hljs-selector-attr">[3]</span>: <span class="hljs-number">0</span>x4018d0 &lt;Derived::~<span class="hljs-built_in">Derived</span>()&gt;<br><span class="hljs-selector-attr">[4]</span>: <span class="hljs-number">0</span>x401900 &lt;Derived::<span class="hljs-built_in">f</span>()&gt;<br><span class="hljs-selector-attr">[5]</span>: <span class="hljs-number">0</span>x401940 &lt;Derived::<span class="hljs-built_in">j</span>()&gt;<br><span class="hljs-selector-attr">[6]</span>: <span class="hljs-number">0</span>x401980 &lt;Derived::<span class="hljs-built_in">l</span>()&gt;<br>vtable <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;Base2&#x27;</span> @ <span class="hljs-number">0</span>x402070 (subobject @ <span class="hljs-number">0</span>x416ec0):<br><span class="hljs-selector-attr">[0]</span>: <span class="hljs-number">0</span>x4019c0 &lt;non-virtual thunk to Derived::<span class="hljs-built_in">j</span>()&gt;<br><span class="hljs-selector-attr">[1]</span>: <span class="hljs-number">0</span>x401760 &lt;Base2::<span class="hljs-built_in">k</span>()&gt;<br><span class="hljs-selector-attr">[2]</span>: <span class="hljs-number">0</span>x4019e0 &lt;non-virtual thunk to Derived::~<span class="hljs-built_in">Derived</span>()&gt;<span class="hljs-comment">//笔者补充的</span><br><span class="hljs-selector-attr">[3]</span>: <span class="hljs-number">0</span>x401a00 &lt;non-virtual thunk to Derived::~<span class="hljs-built_in">Derived</span>()&gt;<span class="hljs-comment">//笔者补充的</span><br>vtable <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;grandpa&#x27;</span> @ <span class="hljs-number">0</span>x4020b8 (subobject @ <span class="hljs-number">0</span>x416ed8):<br><span class="hljs-selector-attr">[0]</span>: <span class="hljs-number">0</span>x401a20 &lt;virtual thunk to Derived::<span class="hljs-built_in">f</span>()&gt;<br><span class="hljs-selector-attr">[1]</span>: <span class="hljs-number">0</span>x4016a0 &lt;grandpa::<span class="hljs-built_in">g</span>()&gt;<br><span class="hljs-selector-attr">[2]</span>: <span class="hljs-number">0</span>x401a40 &lt;virtual thunk to Derived::~<span class="hljs-built_in">Derived</span>()&gt;<span class="hljs-comment">//笔者补充的</span><br><span class="hljs-selector-attr">[3]</span>: <span class="hljs-number">0</span>x401a60 &lt;virtual thunk to Derived::~<span class="hljs-built_in">Derived</span>()&gt;<span class="hljs-comment">//笔者补充的</span><br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>至于为什么Base2类和grandpa类会多出两个thunk函数，上一小节已经分析过。这里补充一点，因为Derived类对象的数据布局最上面是Base1类对象，中间是Base2类对象，virtual grandpa对象永远是在最下面。这样就导致Base2类在支持多态时调用被重写的虚函数以及调用Derived类的virtual析构函数时，需要调整this指针。grandpa类道理一样。<br>咱们用GDB查看Derived类对象的内存布局，并用图画方式直观表达出来：<br><img src="/img%5C00006%5C18.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br><img src="/img%5C00006%5C19.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"><br>上图中，笔者将offset出现的地方明确标明出来了，下面咱们就来看下编译是如何取出这个offsets的！<br><img src="/img%5C00006%5C20.png" srcset="/img/loading.gif" lazyload alt="请添加图片描述"><br>反汇编代码<code>0x401256 &lt;main+70&gt;        mov    rdx, QWORD PTR [rdx-0x18]</code>还未执行时，发生的事情有：Derived类对象在<code>0x416eb0</code>堆内存中进行了构造。new_pderived指针的地址为<code>rbp-0x10</code>，它指向<code>0x416eb0</code>堆内存。编译器将Derived类<code>vptr1</code>指向的虚表地址存储到<code>rdx</code>中。<br>接下来将会发生的事情有：编译器将该虚表地址偏移<code>-0x18</code>字节并获取该地址中的内容（<code>offset</code>），将其值（<code>0x28</code>）存入<code>rdx</code>寄存器中。最后将<code>十进制11</code>存入this指针偏移后的地址中（<code>rcx+rdx*1+0x8</code>：<code>0x416eb0+0x28*1+0x8 = 0x416ee0</code>，即<code>pa</code>的地址）。<br><img src="/img%5C00006%5C21.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>代码段<code>new_pbase1-&gt;pa = 11;</code>和<code>new_pbase2-&gt;pa = 11;</code>同样会出现取<code>offset</code>进行偏移后，然后存取grandpa的成员变量pa的情况。<code>new_pbase1-&gt;pa</code>取到的<code>offset</code>值和<code>new_pderived-&gt;pa</code>一样是<code>0x28</code>。而<code>new_pbase2-&gt;pa</code>取到的值为<code>0x18</code>。<br><img src="/img%5C00006%5C22.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>如果是虚基类grandpa在支持多态时，且<code>new_pgrandpa-&gt;pa</code>进行存取操作，则不用偏移this指针，也就不需要取<code>offset</code>。该虚基类的虚表中也没有存<code>offset</code>。<br><img src="/img%5C00006%5C23.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>可以看到<code>0x4020b8-0x18</code>地址上的值是个牛马值 :)</p>
+</blockquote>
+<hr>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>c++对象模型之虚表，虚表指针，thunk，多态，多重继承this指针偏移，多重继承virtual析构函数，多重虚继承下的访问虚基类成员变量时虚表的工作原理</div>
+      <div>https://howl144.github.io/2022/02/19/00006. c++对象模型之虚表，虚表指针等/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Deng Ye</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>February 19, 2022</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/07/21/00020.%20Games202%20Hw5/" title="Games202 Hw5">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Games202 Hw5</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02/09/00005.%20C++11,14,17%E4%B8%ADauto%E5%92%8Cdecltype%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86%E5%8F%8A%E6%8B%93%E5%B1%95/" title="C++11,14,17中auto和decltype相关知识及拓展">
+                        <span class="hidden-mobile">C++11,14,17中auto和decltype相关知识及拓展</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        Views: 
+        <span id="leancloud-site-pv"></span>
+        
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        Visitors: 
+        <span id="leancloud-site-uv"></span>
+        
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>
