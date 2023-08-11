@@ -17,16 +17,16 @@
   <meta name="author" content="Deng Ye">
   <meta name="keywords" content="">
   
-    <meta name="description" content="最终效果图 为了降低图片存储空间，只能控制一下FPS以及分辨率了，看起来像ppt别介意👀。 Pinkroom-SVGF  Pinkroom-JBF-Atrous  # 作业要求总览  实现单帧降噪。  实现两帧间的投影。  实现两帧间的累积。  Bouns 1：实现A-Trous Wavelet加速单帧降噪。  源码 暂未公开 前言 关于作业的构建以及完整运">
+    <meta name="description" content="最终效果图 为了降低图片存储空间，只能控制一下FPS以及分辨率了，看起来像ppt别介意👀。 Pinkroom-SVGF  Pinkroom-JBF-Atrous  作业要求总览  实现单帧降噪。  实现两帧间的投影。  实现两帧间的累积。  Bouns 1：实现A-Trous Wavelet加速单帧降噪。  源码 暂未公开 前言 关于作业的构建以及完整运行流">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Games202 Hw5 JBF and SVGF">
 <meta property="og:url" content="https://howl144.github.io/2023/07/21/00019.%20Games202%20Hw5/index.html">
 <meta property="og:site_name" content="🥰Howl&#39;s Blog">
-<meta property="og:description" content="最终效果图 为了降低图片存储空间，只能控制一下FPS以及分辨率了，看起来像ppt别介意👀。 Pinkroom-SVGF  Pinkroom-JBF-Atrous  # 作业要求总览  实现单帧降噪。  实现两帧间的投影。  实现两帧间的累积。  Bouns 1：实现A-Trous Wavelet加速单帧降噪。  源码 暂未公开 前言 关于作业的构建以及完整运">
+<meta property="og:description" content="最终效果图 为了降低图片存储空间，只能控制一下FPS以及分辨率了，看起来像ppt别介意👀。 Pinkroom-SVGF  Pinkroom-JBF-Atrous  作业要求总览  实现单帧降噪。  实现两帧间的投影。  实现两帧间的累积。  Bouns 1：实现A-Trous Wavelet加速单帧降噪。  源码 暂未公开 前言 关于作业的构建以及完整运行流">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://howl144.github.io/img/00019/pinkroom-svgf.gif">
 <meta property="article:published_time" content="2023-07-21T00:43:59.000Z">
-<meta property="article:modified_time" content="2023-08-11T14:27:44.404Z">
+<meta property="article:modified_time" content="2023-08-11T14:44:58.922Z">
 <meta property="article:author" content="Deng Ye">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://howl144.github.io/img/00019/pinkroom-svgf.gif">
@@ -317,8 +317,8 @@
 <p>Pinkroom-SVGF<br />
 <img src="/img/00019/pinkroom-svgf.gif" srcset="/img/loading.gif" lazyload alt="1" /><br />
 Pinkroom-JBF-Atrous<br />
-<img src="/img/00019/pinkroom-JBF-atrous.gif" srcset="/img/loading.gif" lazyload alt="2" /><br />
-# 作业要求总览</p>
+<img src="/img/00019/pinkroom-JBF-atrous.gif" srcset="/img/loading.gif" lazyload alt="2" /></p>
+<h1 id="作业要求总览">作业要求总览</h1>
 <ol type="1">
 <li>实现单帧降噪。<br />
 </li>
@@ -582,8 +582,9 @@ w_{n}=max(0,n(p)\cdot n(q))^{\sigma_{n}}
 \]</span> <span
 class="math inline">\(\sigma_{n}\)</span>按经验来说为<code>128</code>效果比较好，用来控制法线的权重。<br />
 代码实现如下：<br />
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">float</span> <span class="hljs-title">Denoiser_SVGF::normalWeight</span><span class="hljs-params">(<span class="hljs-type">const</span> Float3 &amp;center_normal, <span class="hljs-type">const</span> Float3 &amp;normal)</span> </span>&#123;<br>    <span class="hljs-keyword">return</span> std::<span class="hljs-built_in">pow</span>(std::<span class="hljs-built_in">fmax</span>(<span class="hljs-number">0.0</span>, <span class="hljs-built_in">Dot</span>(center_normal, normal)), m_phiNormal);<br>&#125;<br></code></pre></td></tr></table></figure> #### Luminance
-亮度边缘停止函数的一个关键方面是它能够通过其局部标准差重新归一化亮度，来自动适应所有亮度。但是，在低样本数下操作会在我们对方差和标准差的估计中引入不稳定性；这可能会引入走样现象。为了避免这些问题，我们使用<code>3 * 3</code>高斯核对方差图像进行预滤波，这显著提高了重建质量。亮度边缘停止函数变为：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">float</span> <span class="hljs-title">Denoiser_SVGF::normalWeight</span><span class="hljs-params">(<span class="hljs-type">const</span> Float3 &amp;center_normal, <span class="hljs-type">const</span> Float3 &amp;normal)</span> </span>&#123;<br>    <span class="hljs-keyword">return</span> std::<span class="hljs-built_in">pow</span>(std::<span class="hljs-built_in">fmax</span>(<span class="hljs-number">0.0</span>, <span class="hljs-built_in">Dot</span>(center_normal, normal)), m_phiNormal);<br>&#125;<br></code></pre></td></tr></table></figure></p>
+<h4 id="luminance">Luminance</h4>
+<p>亮度边缘停止函数的一个关键方面是它能够通过其局部标准差重新归一化亮度，来自动适应所有亮度。但是，在低样本数下操作会在我们对方差和标准差的估计中引入不稳定性；这可能会引入走样现象。为了避免这些问题，我们使用<code>3 * 3</code>高斯核对方差图像进行预滤波，这显著提高了重建质量。亮度边缘停止函数变为：<br />
 <span class="math display">\[
 w_{l}=exp(-\dfrac{|l_{i}(p)-l_{i}(q)|}{\sigma_{l}\sqrt{g_{3\times3}(Var(l_{i}(p)))}+\epsilon})
 \]</span> 根据经验<span
