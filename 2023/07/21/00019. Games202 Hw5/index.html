@@ -26,7 +26,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://howl144.github.io/img/00019/pinkroom-svgf.gif">
 <meta property="article:published_time" content="2023-07-21T00:43:59.000Z">
-<meta property="article:modified_time" content="2023-08-11T12:49:30.658Z">
+<meta property="article:modified_time" content="2023-08-11T13:13:33.942Z">
 <meta property="article:author" content="Deng Ye">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://howl144.github.io/img/00019/pinkroom-svgf.gif">
@@ -353,8 +353,8 @@ y^2\)</span>可以看做距离平方<br />
 <p>一个<code>3 * 3</code>高斯核的偏移图：<br />
 <span class="math display">\[
 \begin{bmatrix}
--1,1 &amp; 0,1 &amp; 1,1 \\ \\
--1,0 &amp; 0,0 &amp; 1,0 \\ \\
+-1,1 &amp; 0,1 &amp; 1,1 \\\
+-1,0 &amp; 0,0 &amp; 1,0 \\\
 -1,-1 &amp; 0,-1 &amp; 1,-1
 \end{bmatrix}
 \]</span></p>
@@ -362,16 +362,16 @@ y^2\)</span>可以看做距离平方<br />
 0.8\)</span>，根据偏移值和高斯函数可以得到一个<code>3 * 3</code>高斯核：<br />
 <span class="math display">\[
 \begin{bmatrix}
-0.05212 &amp; 0.1138 &amp; 0.05212 \\ \\
-0.1138 &amp; 0.2486 &amp; 0.1138 \\ \\
+0.05212 &amp; 0.1138 &amp; 0.05212 \\\
+0.1138 &amp; 0.2486 &amp; 0.1138 \\\
 0.05212 &amp; 0.1138 &amp; 0.05212
 \end{bmatrix}
 \]</span>
 由于高斯核的大小不能无限大，所以该上面生成的高斯核权重加起来大约只有<code>0.91</code>左右。在次之前需要除以左上角的值使最小值为<code>1</code>，然后取整，最后进行归一化处理，使<code>3 * 3</code>的高斯核总权重为<code>1</code>，得到一个类高斯的滤波核。下面是归一化的高斯核：<br />
 <span class="math display">\[
 \begin{bmatrix}
-\dfrac{1}{16} &amp; \dfrac{1}{8} &amp; \dfrac{1}{16} \\ \\
-\dfrac{1}{8} &amp; \dfrac{1}{4} &amp; \dfrac{1}{8} \\ \\
+\dfrac{1}{16} &amp; \dfrac{1}{8} &amp; \dfrac{1}{16} \\\
+\dfrac{1}{8} &amp; \dfrac{1}{4} &amp; \dfrac{1}{8} \\\
 \dfrac{1}{16} &amp; \dfrac{1}{8} &amp; \dfrac{1}{16}
 \end{bmatrix}
 \]</span></p>
