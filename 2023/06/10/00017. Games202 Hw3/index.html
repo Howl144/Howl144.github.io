@@ -1,0 +1,1028 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="elv6HP48K6bVVMeBdbFYkmoi4IBF6JVtH0WaCgUXRNY" />
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/rose.png">
+  <link rel="icon" href="/img/rose.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Deng Ye">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="效果图 由于测试时我电脑的GPU是办公本的核显（GPU AMD Radeon(TM) 530），帧率很低，我就在比较简单的环境（cube1）下比较它们的纯镜面反射差异。 World Space SSR  Efficient GPU SSR  Hierarchical-Z SSR  可以看到Hierarchical-Z SSR的帧率最高，是World Space SSR帧率的4倍，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Games202 Hw3 Screen Space Ray Tracing">
+<meta property="og:url" content="https://howl144.github.io/2023/06/10/00017.%20Games202%20Hw3/index.html">
+<meta property="og:site_name" content="🥰Howl&#39;s Blog">
+<meta property="og:description" content="效果图 由于测试时我电脑的GPU是办公本的核显（GPU AMD Radeon(TM) 530），帧率很低，我就在比较简单的环境（cube1）下比较它们的纯镜面反射差异。 World Space SSR  Efficient GPU SSR  Hierarchical-Z SSR  可以看到Hierarchical-Z SSR的帧率最高，是World Space SSR帧率的4倍，">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://howl144.github.io/img/00017/image-4.png">
+<meta property="article:published_time" content="2023-06-10T01:14:10.000Z">
+<meta property="article:modified_time" content="2023-09-09T09:41:27.288Z">
+<meta property="article:author" content="Deng Ye">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://howl144.github.io/img/00017/image-4.png">
+  
+  
+  
+  <title>Games202 Hw3 Screen Space Ray Tracing - 🥰Howl&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"howl144.github.io","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"MY3hK2j6KKqPNCHItX2Yargj-gzGzoHsz","app_key":"U0dZRBpPFA46kRmFcsltQFF2","server_url":"https://my3hk2j6.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Howl&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>Home</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Portfolio/">
+                <i class="iconfont icon-pen"></i>
+                <span>Portfolio</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>Category</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>Archive</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>About Me</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.5)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Games202 Hw3 Screen Space Ray Tracing"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-06-10 09:14" pubdate>
+          June 10, 2023 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          21k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          179 mins
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> views
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Games202 Hw3 Screen Space Ray Tracing</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="效果图">效果图</h1>
+<p>由于测试时我电脑的GPU是办公本的核显（GPU AMD Radeon(TM)
+530），帧率很低，我就在比较简单的环境（cube1）下比较它们的纯镜面反射差异。</p>
+<p>World Space SSR<br />
+<img src="/img/00017/world-fps.png" srcset="/img/loading.gif" lazyload alt="1" /><br />
+Efficient GPU SSR<br />
+<img src="/img/00017/texture-fps.png" srcset="/img/loading.gif" lazyload alt="2" /><br />
+Hierarchical-Z SSR<br />
+<img src="/img/00017/hiz-fps.png" srcset="/img/loading.gif" lazyload alt="3" /><br />
+可以看到<code>Hierarchical-Z SSR</code>的帧率最高，是<code>World Space SSR</code>帧率的4倍，其次是<code>Efficient GPU SSR</code>是<code>World Space SSR</code>帧率的2倍。</p>
+<h1 id="作业总览">作业总览</h1>
+<ol type="1">
+<li>实现直接光照。<br />
+</li>
+<li>实现Screen Space Ray Tracing。<br />
+</li>
+<li>实现间接光照。<br />
+</li>
+<li>Bonus 1：实现Mipmap优化的 Screen Space Ray Tracing。</li>
+</ol>
+<p>个人扩展：<code>Efficient GPU Screen-Space Ray Tracing</code></p>
+<h1 id="源码">源码</h1>
+<p>暂未公开。</p>
+<h1 id="前言">前言</h1>
+<p>本文重点放在算法本身，源码中相关地方注释很明确，对于框架的理解不再做过多解释。<br />
+本次SSR算法总共有三种，分别World Space Ray Marching SSR,<a
+target="_blank" rel="noopener" href="https://jcgt.org/published/0003/04/04/paper.pdf">Efficient GPU
+SSR</a>和<a
+target="_blank" rel="noopener" href="https://sugulee.wordpress.com/2021/01/19/screen-space-reflections-implementation-and-optimization-part-2-hi-z-tracing-method/">Hierarchical-Z
+SSR</a>。</p>
+<h1 id="实现">实现</h1>
+<h2 id="world-space-ray-marching-ssr">World Space Ray Marching SSR</h2>
+<p>本次作业的基础部分比较简单，算法本身并不复杂，所以这里就附带将<code>SSR Pass</code>的准备工作一并讲一下，这也为后面的算法做好准备。</p>
+<h3 id="直接光照">直接光照</h3>
+<p>我们先看下渲染方程，这里以<code>SSAO</code>为例讲解一下<code>Visibility</code>怎么处理：<br />
+<img src="/img/00017/image.png" srcset="/img/loading.gif" lazyload alt="4" /><br />
+通过上图所说的<code>The RTR Approximation</code>，我们可以得到<code>Visibility</code>拆出后的方程：<br />
+<span class="math display">\[
+\begin{align}
+&amp;
+L_o(p,w_o)=\int_{\Omega+}L_i(p,w_i)f_r(p,w_i,w_o)V(p,w_i)\cos\theta_i
+dw_i \\
+&amp; \approx \frac{\rho}{\pi}\cdot
+L_i(p)\cdot\pi\cdot\frac{\int_{\Omega+}V(p,w_i)\cos\theta_i dw_i}{\pi}
+\tag{1}
+\end{align}
+\]</span>
+但<code>SSAO</code>考虑的是<code>diffuse</code>物体局部范围内不带颜色的全局光照，其积分域在各个方向上都可能有贡献，所以这里要算积分值。<br />
+而我们要实现的直接光照是来自平行光，平行光和点光源的一个重要特性：<br />
+光源的方向是确定的，也就是说平行光和点光源到着色点只会有一条光线有贡献，其他方向上的贡献为<code>0</code>。那我们也就不用积分了，上述渲染方程直接为：<br />
+<span class="math display">\[
+\begin{align}
+L_o(p,w_o)=L_i(p,w_i)f_r(p,w_i,w_o)V(p,w_i)\cos\theta_i
+\end{align} \tag{2}
+\]</span> 所以代码实现就简单了，如下：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//直接光照</span><br><span class="hljs-comment">//L = V * Le * brdf * cos</span><br>vec3 L_Normal = <span class="hljs-built_in">GetGBufferNormalWorld</span>(screenUV);<br>L = <span class="hljs-built_in">EvalDiffuse</span>(screenUV) * <span class="hljs-built_in">EvalDirectionalLight</span>(screenUV) * <span class="hljs-built_in">max</span>(<span class="hljs-number">0.</span>, <span class="hljs-built_in">dot</span>(L_Normal, wi));<br></code></pre></td></tr></table></figure>
+<code>V</code>项包含在<code>EvalDirectionalLight</code>函数中。</p>
+<p>可以看到<code>Normal</code>等信息是从<code>Gbuffer</code>中获得的，<code>Gbuffer</code>纹理可以理解成是帧缓冲的<code>Color Attachment</code>，我们现在创建一个帧缓冲，并为它提供<code>4</code>个<code>Color Attachment</code>:<br />
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">class</span> <span class="hljs-title class_">FBO</span>&#123;<br>    <span class="hljs-title function_">constructor</span>(<span class="hljs-params">gl, GBufferNum, width, height</span>)&#123;<br>        ...<br>        <span class="hljs-keyword">function</span> <span class="hljs-title function_">CreateAndBindColorTargetTexture</span>(<span class="hljs-params">fbo, attachment, width, height</span>) &#123;<br>            <span class="hljs-comment">//创建纹理对象并设置其尺寸和参数</span><br>            <span class="hljs-keyword">var</span> texture = gl.<span class="hljs-title function_">createTexture</span>();<br>            ...<br>            gl.<span class="hljs-title function_">bindTexture</span>(gl.<span class="hljs-property">TEXTURE_2D</span>, texture);<br>            gl.<span class="hljs-title function_">texImage2D</span>(gl.<span class="hljs-property">TEXTURE_2D</span>, <span class="hljs-number">0</span>, gl.<span class="hljs-property">RGBA32F</span>, width, height, <span class="hljs-number">0</span>, gl.<span class="hljs-property">RGBA</span>, gl.<span class="hljs-property">FLOAT</span>, <span class="hljs-literal">null</span>);<br>            ...<br>            gl.<span class="hljs-title function_">framebufferTexture2D</span>(gl.<span class="hljs-property">FRAMEBUFFER</span>, attachment, gl.<span class="hljs-property">TEXTURE_2D</span>, texture, <span class="hljs-number">0</span>);<br>            <span class="hljs-keyword">return</span> texture;<br>        &#125;;<br>        ...<br>        <span class="hljs-comment">//创建帧缓冲区对象并绑定</span><br>        <span class="hljs-keyword">var</span> framebuffer = gl.<span class="hljs-title function_">createFramebuffer</span>();<br>        gl.<span class="hljs-title function_">bindFramebuffer</span>(gl.<span class="hljs-property">FRAMEBUFFER</span>, framebuffer);<br>        <span class="hljs-comment">//在JavaScript中，对象是动态的，可以随时添加属性和方法</span><br>	    framebuffer.<span class="hljs-property">attachments</span> = [];<br>	    framebuffer.<span class="hljs-property">textures</span> = []<br>        ...<br>	    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-title class_">GBufferNum</span>; i++) &#123;<br>            <span class="hljs-keyword">var</span> attachment = gl.<span class="hljs-property">COLOR_ATTACHMENT0</span> + i;<br>	    	<span class="hljs-comment">// var texture = CreateAndBindColorTargetTexture(framebuffer, attachment);</span><br>            <span class="hljs-keyword">var</span> texture = <span class="hljs-title class_">CreateAndBindColorTargetTexture</span>(framebuffer, attachment, width, height, <span class="hljs-number">0</span>);<br>	    	framebuffer.<span class="hljs-property">attachments</span>.<span class="hljs-title function_">push</span>(attachment);<br>	    	framebuffer.<span class="hljs-property">textures</span>.<span class="hljs-title function_">push</span>(texture);<br><br>            <span class="hljs-keyword">if</span>(gl.<span class="hljs-title function_">checkFramebufferStatus</span>(gl.<span class="hljs-property">FRAMEBUFFER</span>) != gl.<span class="hljs-property">FRAMEBUFFER_COMPLETE</span>)<br>                <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(gl.<span class="hljs-title function_">checkFramebufferStatus</span>(gl.<span class="hljs-property">FRAMEBUFFER</span>));<br>	    &#125;<br>	    <span class="hljs-comment">// * Tell the WEBGL_draw_buffers extension which FBO attachments are</span><br>	    <span class="hljs-comment">//   being used. (This extension allows for Multiple Render Targets.)</span><br>        gl.<span class="hljs-title function_">drawBuffers</span>(framebuffer.<span class="hljs-property">attachments</span>);<br>        ...<br>        <span class="hljs-keyword">return</span> framebuffer;<br>    &#125;<br>&#125;<br>camera.<span class="hljs-property">fbo</span> = <span class="hljs-keyword">new</span> <span class="hljs-title function_">FBO</span>(gl, <span class="hljs-number">4</span>);<br><span class="hljs-keyword">const</span> directionLight = <span class="hljs-keyword">new</span> <span class="hljs-title class_">DirectionalLight</span>(lightRadiance, lightPos, lightDir, lightUp, renderer.<span class="hljs-property">gl</span>);<br></code></pre></td></tr></table></figure>
+其中<code>ShadowBuffer</code>在创建方向光对象时被创建，而<code>Gbuffer</code>附加在相机对象上，<code>Gbuffer</code>包含的<code>4</code>张纹理如下：<br />
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span>(<span class="hljs-params"><span class="hljs-keyword">void</span></span>) &#123;<br>  vec3 kd = <span class="hljs-title function_">texture</span>(uKd, vTextureCoord).<span class="hljs-property">rgb</span>;<br>  <span class="hljs-comment">//albedo </span><br>  <span class="hljs-title class_">Frag0</span> = <span class="hljs-title function_">vec4</span>(kd, <span class="hljs-number">1.0</span>);<br>  <span class="hljs-comment">//depth not linear</span><br>  <span class="hljs-title class_">Frag1</span> = <span class="hljs-title function_">vec4</span>(<span class="hljs-title function_">vec3</span>(gl_FragCoord.<span class="hljs-property">z</span>), <span class="hljs-number">1.0</span>);<br>  <span class="hljs-comment">//world space normal(uNt)</span><br>  <span class="hljs-title class_">Frag2</span> = <span class="hljs-title function_">vec4</span>(<span class="hljs-title class_">ApplyTangentNormalMap</span>(), <span class="hljs-number">1.0</span>);<br>  <span class="hljs-comment">//shadow value 0 or 1</span><br>  <span class="hljs-title class_">Frag3</span> = <span class="hljs-title function_">vec4</span>(<span class="hljs-title function_">vec3</span>(<span class="hljs-title class_">SimpleShadowMap</span>(vPosWorld.<span class="hljs-property">xyz</span>, <span class="hljs-number">1e-4</span>)), <span class="hljs-number">1.0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+<code>Gbuffer</code>准备好以后，我们就可以得到直接光的效果了：<br />
+<img src="/img/00017/image-1.png" srcset="/img/loading.gif" lazyload alt="5" /></p>
+<h3 id="screen-space-ray-tracing">Screen Space Ray Tracing</h3>
+<p><code>SSR</code>就是在屏幕空间上做实时全局光照的一种方法。也就是在屏幕空间做<code>Ray Tracing</code>，而且我们不需要知道三维物体的三角形以及加速结构等，只需要屏幕空间的信息即<code>Gbuffer</code>的内容就可以完成<code>Ray Tracing</code>，也就是得到场景最外的一层壳，然后和这层壳求交。碰到交点后，还要算交点对<code>ShadingPoint</code>的贡献。</p>
+<p>具体实现步骤如下图所示：<br />
+<img src="/img/00017/image-2.png" srcset="/img/loading.gif" lazyload alt="6" /><br />
+根据<code>BRDF</code>的<code>lobe</code>，生成一根或多根光线，我们假设这里是镜面反射，那就只需要考虑一根反射光线，然后以固定步长沿着反射光线进行步进，每次步进都需要检查步进后光线的深度和场景的深度，直到光线深度大于等于场景深度，就获取该交点处的<code>albedo</code>，然后根据渲染方程进行<code>Shading</code>：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">RayMarch</span><span class="hljs-params">(vec3 ori, vec3 dir, out vec3 hitPos)</span> </span>&#123;<br>  <span class="hljs-type">float</span> step = <span class="hljs-number">0.02</span>;<br>  <span class="hljs-type">const</span> <span class="hljs-type">int</span> totalStepTimes = <span class="hljs-number">1000</span>; <br>  <span class="hljs-type">int</span> curStepTimes = <span class="hljs-number">0</span>;<br>  vec3 stepDir = <span class="hljs-built_in">normalize</span>(dir) * step;<br>  vec3 curPos = ori;<br>  <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> curStepTimes = <span class="hljs-number">0</span>; curStepTimes &lt; totalStepTimes; curStepTimes++)<br>  &#123;<br>    <span class="hljs-type">float</span> curDepth = <span class="hljs-built_in">GetDepth</span>(curPos);<br>    vec2 curScreenUV = <span class="hljs-built_in">GetScreenCoordinate</span>(curPos);<br>    <span class="hljs-type">float</span> gBufferDepth = <span class="hljs-built_in">GetGBufferDepth</span>(curScreenUV);<br><br>    <span class="hljs-keyword">if</span>(curDepth - gBufferDepth &gt; <span class="hljs-number">0.0001</span>)&#123;<br>      hitPos = curPos;<br>      <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>    <span class="hljs-comment">//o + t * d</span><br>    curPos += stepDir;<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>&#125;<br><span class="hljs-comment">// test Screen Space Ray Tracing </span><br><span class="hljs-function">vec3 <span class="hljs-title">EvalReflect</span><span class="hljs-params">(vec3 wi, vec3 wo, vec2 uv)</span> </span>&#123;<br>  vec3 worldNormal = <span class="hljs-built_in">GetGBufferNormalWorld</span>(uv);<br>  vec3 relfectDir = <span class="hljs-built_in">normalize</span>(<span class="hljs-built_in">reflect</span>(-wo, worldNormal));<br>  vec3 hitPos;<br>  <span class="hljs-keyword">if</span>(<span class="hljs-built_in">RayMarch</span>(vPosWorld.xyz, relfectDir, hitPos))&#123;<br>      vec2 screenUV = <span class="hljs-built_in">GetScreenCoordinate</span>(hitPos);<br>      <span class="hljs-keyword">return</span> <span class="hljs-built_in">GetGBufferDiffuse</span>(screenUV);<br>  &#125;<br>  <span class="hljs-keyword">else</span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">vec3</span>(<span class="hljs-number">0.0</span>);<br>  &#125;<br>&#125;<br><span class="hljs-comment">//test</span><br>L = <span class="hljs-built_in">EvalReflect</span>(wi,wo,screenUV);<br></code></pre></td></tr></table></figure>
+当然我们这里只是测试<code>SSR</code>是否能正常工作，没有考虑渲染方程，所以这里<code>EvalReflect</code>只是简单的返回交点处的<code>Albedo</code>。一切正常的话就会得到下面的图片：<br />
+<img src="/img/00017/world-space.png" srcset="/img/loading.gif" lazyload alt="7" /></p>
+<h3 id="间接光照">间接光照</h3>
+<p>有了上面的基础，间接光照就是直接算渲染方程的积分值。<br />
+在算积分之前，我们需要知道采样方向以及它的<code>Pdf</code>，然后用蒙特卡洛积分来计算。这里对于兰伯特材质直接使用<code>Cos-weighted</code>采样。其过程如下：<br />
+使用<code>Cos-weighted</code>采样，意味着<code>Pdf</code>和<code>Cos</code>项成正比，即<code>pdf(w)=c*cosθ</code>，则：<br />
+<span class="math display">\[
+\begin{align}
+&amp; \int_{\Omega^+}pdf(w)dw=1 \\
+&amp; \int_{\Omega^+}c\cdot\cos\theta dw=1 \\
+&amp; \int_{0}^{2\pi}\int_{0}^{\pi/2}c\cdot\cos\theta\sin\theta d\theta
+d\phi \\
+&amp; =\int_{0}^{2\pi}\int_{0}^{\pi/2}c\cdot\sin\theta d\sin\theta d\phi
+\\
+&amp; =\int_{0}^{2\pi}c\cdot \frac{\sin^2\theta}{2}\vert_{0}^{\pi/2}
+d\phi \\
+&amp; =c\cdot\pi \tag{3}
+\end{align}
+\]</span>
+则c=1/π，pdf=cosθ/π。采样方向还是用逆变换采样的方式来获取：<br />
+分别求其边缘概率密度函数：<br />
+<span class="math display">\[
+\begin{align}
+&amp; p(\theta)=\int_{0}^{2\pi}\frac{\cos\theta\sin\theta}{\pi}d\phi \\
+&amp; =2\cos\theta\sin\theta \\
+&amp; p(\phi)=\int_{0}^{\pi/2}\frac{\cos\theta\sin\theta}{\pi}d\theta \\
+&amp; =\frac{\sin^2\theta}{2\pi}\vert_{0}^{\pi/2} \\
+&amp; =\frac{1}{2\pi} \tag{4}
+\end{align}
+\]</span> 分别求其累积分布函数：<br />
+<span class="math display">\[
+\begin{align}
+&amp; P(\theta)=\int_{0}^{\theta}2\cos\theta\sin\theta d\theta \\
+&amp; =\sin^2\theta \\
+&amp; =1-\cos^2\theta \\
+&amp; P(\phi)=\int_{0}^{\phi}\frac{1}{2\pi}d\phi \\
+&amp; =\frac{\phi}{2\pi} \tag{5}
+\end{align}
+\]</span> 均匀的从<code>U[0,1]</code>中取出两个随机数<span
+class="math inline">\(X_{1}\)</span>和<span
+class="math inline">\(X_{2}\)</span>,则我们要的采样<code>θ</code>和<code>φ</code>为：<br />
+<span class="math display">\[
+\begin{align}
+\theta=\arccos(\sqrt{1-X_1}) \\
+\phi=2\pi X_2 \tag{6}
+\end{align}
+\]</span> 则采样方向vec(x,y,z)为：<br />
+<span class="math display">\[
+\begin{align}
+&amp; x=\sin\theta\cos\phi=\sqrt{X_1}\cos(2\pi X_2) \\
+&amp; y=\sin\theta\sin\phi=\sqrt{X_1}\sin(2\pi X_2) \\
+&amp; z=\cos\theta=\sqrt{1-X_1} \tag{7}
+\end{align}
+\]</span> 对应代码如下：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">vec3 <span class="hljs-title">SampleHemisphereCos</span><span class="hljs-params">(inout <span class="hljs-type">float</span> s, out <span class="hljs-type">float</span> pdf)</span> </span>&#123;<br>  vec2 uv = <span class="hljs-built_in">Rand2</span>(s);<br>  <span class="hljs-type">float</span> z = <span class="hljs-built_in">sqrt</span>(<span class="hljs-number">1.0</span> - uv.x);<br>  <span class="hljs-type">float</span> phi = uv.y * TWO_PI;<br>  <span class="hljs-type">float</span> sinTheta = <span class="hljs-built_in">sqrt</span>(uv.x);<br>  vec3 dir = <span class="hljs-built_in">vec3</span>(sinTheta * <span class="hljs-built_in">cos</span>(phi), sinTheta * <span class="hljs-built_in">sin</span>(phi), z);<br>  pdf = z * INV_PI;<br>  <span class="hljs-keyword">return</span> dir;<br>&#125;<br></code></pre></td></tr></table></figure>
+获得的采样方向还需要通过TBN矩阵将其从切线空间转换到世界空间，有了采样方向和<code>Pdf</code>，用蒙特卡洛公式计算积分值：<br />
+<span class="math display">\[
+\begin{align}
+L_o(p,w_o)\approx\frac{1}{N}\sum_{k=1}^{N}\frac{L_{i}(p,w_{i})f_{r}(p,w_{i},w_{o})\cos(\theta_{i})}{p(w_{i},w_{o})}
+\tag{8}
+\end{align}
+\]</span> 代码实现如下：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">//直接光照</span><br><span class="hljs-comment">//L = V * Le * brdf * cos</span><br>vec3 L_Normal = <span class="hljs-built_in">GetGBufferNormalWorld</span>(screenUV);<br>L = <span class="hljs-built_in">EvalDiffuse</span>(screenUV) * <span class="hljs-built_in">EvalDirectionalLight</span>(screenUV) * <span class="hljs-built_in">max</span>(<span class="hljs-number">0.</span>, <span class="hljs-built_in">dot</span>(L_Normal, wi));<br><span class="hljs-comment">//间接光</span><br>vec3 L_ind = <span class="hljs-built_in">vec3</span>(<span class="hljs-number">0.0</span>);<br><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; SAMPLE_NUM; i++)&#123;<br>  <span class="hljs-type">float</span> pdf;<br>  vec3 localDir = <span class="hljs-built_in">SampleHemisphereCos</span>(s, pdf);<br>  vec3 L_ind_Normal = <span class="hljs-built_in">GetGBufferNormalWorld</span>(screenUV);<br>  vec3 b1, b2;<br>  <span class="hljs-built_in">LocalBasis</span>(L_ind_Normal, b1, b2);<br>  vec3 dir = <span class="hljs-built_in">normalize</span>(<span class="hljs-built_in">mat3</span>(b1, b2, L_ind_Normal) * localDir);<br>  <span class="hljs-comment">//world space pos</span><br>  vec3 hitPos;<br>  <span class="hljs-keyword">if</span>(<span class="hljs-built_in">RayMarch</span>(worldPos, dir, hitPos))&#123;<br>    vec2 hitScreenUV = <span class="hljs-built_in">GetScreenCoordinate</span>(hitPos);<br>    <span class="hljs-comment">//castRay =  V * Le * brdf * cos.</span><br>    vec3 hitNormal = <span class="hljs-built_in">GetGBufferNormalWorld</span>(hitScreenUV);<br>    vec3 castRay = <span class="hljs-built_in">EvalDiffuse</span>(hitScreenUV) * <span class="hljs-built_in">EvalDirectionalLight</span>(hitScreenUV) * <span class="hljs-built_in">max</span>(<span class="hljs-number">0.</span>, <span class="hljs-built_in">dot</span>(hitNormal, wi));<br>    <span class="hljs-comment">//L_ind += castRay * brdf * cos / pdf</span><br>    L_ind += castRay * <span class="hljs-built_in">EvalDiffuse</span>(screenUV) * <span class="hljs-built_in">max</span>(<span class="hljs-number">0.</span>, <span class="hljs-built_in">dot</span>(L_ind_Normal, dir)) / pdf;<br>  &#125;<br>&#125;<br>L_ind /= <span class="hljs-built_in">float</span>(SAMPLE_NUM);<br>L = L + L_ind;<br></code></pre></td></tr></table></figure>
+如果一切顺利，<code>World Space Ray Marching SSR</code>的效果如下：<br />
+<img src="/img/00017/image-3.png" srcset="/img/loading.gif" lazyload alt="8" /><br />
+要想得到不错的效果需要用实时光追降噪或者提高采样数量，读者可以自己学完实时光追降噪后应用于此，我电脑不行就不折腾了。下面是洞穴的效果：<br />
+<img src="/img/00017/image-4.png" srcset="/img/loading.gif" lazyload alt="9" /></p>
+<h2 id="efficient-gpu-ssr">Efficient GPU SSR</h2>
+<h3 id="digital-differential-analyzer">Digital Differential
+Analyzer</h3>
+<p><code>Efficient GPU SSR</code>的核心思想是<code>DDA</code>(Digital
+Differential Analyzer)，该算法是用数值方法求解微分方程。<br />
+我们简单回顾一下<code>DDA</code>思想：<br />
+给定理想直线的起点坐标为<span
+class="math inline">\(P_0(x_0,y_0)\)</span>终点坐标为<span
+class="math inline">\(P_1(x_1,y_1)\)</span>，用斜截式表示的直线方程为：<br />
+<span class="math display">\[
+\begin{align}
+y=kx+b \tag{9}
+\end{align}
+\]</span> 其中直线的斜率为<span class="math inline">\(k=\frac{\Delta
+y}{\Delta x}\)</span>，<span class="math inline">\(\Delta
+x=x_1-x_0\)</span>为水平方向位移，<span class="math inline">\(\Delta
+y=y_1-y_0\)</span>为垂直方向位移，b为y轴上的截距。<br />
+在DDA算法中，常根据<span class="math inline">\(\Delta x\)</span>和<span
+class="math inline">\(\Delta
+y\)</span>的大小来确定绘图的主位移方向，在主位移方向上执行的是<span
+class="math inline">\(\pm 1\)</span>，选定<span
+class="math inline">\(\Delta\)</span>较大方向为主方向使得斜率k满足<span
+class="math inline">\(0\leq
+k\leq1\)</span>（若δy大于δx则交换它们的值）：<br />
+<img src="/img/00017/image-5.png" srcset="/img/loading.gif" lazyload alt="10" /><br />
+确定主方向后，上面26式的微分表示为： <span class="math display">\[
+\begin{align}
+\frac{\text{d}y}{\text{d}x}=\frac{\Delta y}{\Delta x}=\frac{\delta
+y}{\delta x}=k \tag{10}
+\end{align}
+\]</span> 其有限差分近似解为：<br />
+<span class="math display">\[
+\begin{equation}
+\left\lbrace
+\begin{aligned}
+&amp; x_{i+1}=x_i+\delta x=x_i+1 \\
+&amp; y_{i+1}=y_i+\delta y=y_i+k\delta x=y_i+k
+\end{aligned}
+\right.
+\end{equation}
+\]</span> <span class="math inline">\(\Delta
+x\)</span>每次步进一个像素，根据上一次的点位<span
+class="math inline">\((x_i，y_i)\)</span>就可以确定当前的点<span
+class="math inline">\((x_{i+1},y_{i+1})\)</span>。最后将求得的点位进行<span
+class="math inline">\(\text{int}(y_{i+1}+0.5)\)</span>取整即可得到对应的像素。
+最后得到的效果如图：<br />
+<img src="/img/00017/image-6.png" srcset="/img/loading.gif" lazyload alt="11" /></p>
+<h3 id="an-efficient-gpu-dda-solution">An Efficient GPU DDA
+Solution</h3>
+<p>对于<code>3D</code>空间中大多数反射光线，<code>3D</code>线性采样并不等同于<code>2D</code>线性采样，如下图所示。因此，即使步长已经取的很小，一次步进可能也会跳过屏幕上的多个像素点（这里是误差的主要来源），而且会出现多次步进都是对同一个像素点采样的情况（低效的主要原因）。<br />
+<img src="/img/00017/image-8.png" srcset="/img/loading.gif" lazyload alt="12" /><br />
+右边的效果是我们这一节的主要内容。</p>
+<p>重点是<code>RayMarching</code>函数，该函数的输入是<code>ViewSpace</code>下的反射方向以及它的起点，为了方便这里还是以纯镜面反射为例，全局光照参考<code>World Space Ray Marching SSR</code>可以实现。获取这两个参数的代码如下：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">vec3 <span class="hljs-title">EvalReflect</span><span class="hljs-params">(vec3 wo,vec2 screenUV)</span> </span>&#123;<br>  vec3 normalWS = <span class="hljs-built_in">GetGBufferNormalWorld</span>(screenUV);<br>  vec3 reflectDir = <span class="hljs-built_in">normalize</span>(<span class="hljs-built_in">reflect</span>(-wo,normalWS));<br>  vec3 rayOriginWS = vPosWorld.xyz;<br>  vec3 rayEndWS = rayOriginWS + reflectDir * <span class="hljs-number">1.0</span>;<br>  vec3 rayOriginVS = <span class="hljs-built_in">projectToViewSpace</span>(rayOriginWS);<br>  vec3 rayEndVS    = <span class="hljs-built_in">projectToViewSpace</span>(rayEndWS);<br>  vec3 reflectDirVS = <span class="hljs-built_in">normalize</span>(rayEndVS - rayOriginVS);<br>  Ray ray;<br>  ray.Origin = rayOriginVS;<br>  ray.Direction = reflectDirVS;<br><br>  Result result = <span class="hljs-built_in">RayMarching</span>(ray);<br>  <span class="hljs-keyword">if</span>(result.IsHit)&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">GetGBufferDiffuse</span>(result.UV / <span class="hljs-built_in">vec2</span>(windowWidth,windowHeight)).xyz;<br>	&#125;<br>  <span class="hljs-keyword">else</span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">vec3</span>(<span class="hljs-number">0.0</span>);<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<code>3D</code>线段光栅化与<code>2D</code>线段光栅化非常相似。光栅化可以很容易地沿迭代方向对任何属性进行线性插值。如果属性处于齐次空间，则结果将线性插值<code>3D</code>空间中对应的属性值。具体来说，设点<code>Q</code>为射线上的一个<code>3D</code>点，<code>H = M·(Q,1)</code>为其左乘透视投影矩阵<code>M</code>的齐次透视投影。属性<code>k = 1/(H·(0,0,0,1))</code>和<code>Q·k</code>可以在<code>2D</code>中线性插值。因此，如果把该点和齐次<code>w</code>的倒数看作是沿<code>2D</code>线的函数，那么<code>∂(Q·k) / ∂x</code>，<code>∂k / ∂x</code>，<code>∂(Q·k) / ∂y</code>，和<code>∂k / ∂y</code>在屏幕空间中都是常数。</p>
+<p>其中<code>∂(Q·k) / ∂x</code>，<code>∂k / ∂x</code>，<code>∂(Q·k) / ∂y</code>，和<code>∂k / ∂y</code>是函数<code>Q·k</code>的偏微分表示。<br />
+<code>∂(Q·k) / ∂x</code>表示函数 Q·k 对 x 的偏微分，即改变 x 时 Q·k
+的变化情况。<br />
+<code>∂k / ∂x</code>表示函数 k 对 x 的偏微分，即改变 x 时 k
+的变化情况。<br />
+<code>∂(Q·k) / ∂y</code>表示函数 Q·k 对 y 的偏微分，即改变 y 时 Q·k
+的变化情况。<br />
+<code>∂k / ∂y</code>表示函数 k 对 y 的偏微分，即改变 y 时 k
+的变化情况。</p>
+<p>在任意<code>2D</code>线段上的点<span
+class="math inline">\(Q(x，y)\)</span>，其对应的三维点为<span
+class="math inline">\(Q&#39;\)</span>:<br />
+<span class="math display">\[
+\begin{align}
+&amp; Q&#39;(x,y)=\frac{(Q·k)(x,y)}{k(x,y)} \\
+&amp; Q&#39;(z)=\frac{(Q·k)(z)}{k(z)} \tag{11}
+\end{align}
+\]</span>
+有了3D深度信息后，我们就可以和Gbuffer中的深度信息进行比对了。在此之前我们需要知道<code>∂(Q·k) / ∂x</code>，<code>∂k / ∂x</code>偏微分的数值表示，而Gbuffer中的深度信息读取需要另一个偏微分<code>∂y / ∂x</code>。</p>
+<p>在上面有提到在线性情况下，偏微分的值都是常数，则：<br />
+<span class="math display">\[
+\begin{align}
+&amp; \frac{∂(Q·k)}{∂x}=\frac{\Delta(Q·k)}{\Delta x}=\frac{\delta
+(Q·k)}{\delta x}=dQ \\
+&amp; \frac{∂k}{∂x}=\frac{\Delta k}{\Delta x}=dK \\
+&amp; \frac{∂y}{∂x}=\frac{\Delta y}{\Delta x}=dP \tag{12}
+\end{align}
+\]</span>
+为了方便这里常数分别取名为<code>dQ</code>，<code>dK</code>，<code>dP</code>。有了这些信息后，我们想要的属性就可以通过增量来算得了，假设<code>Q</code>为<code>(Q·k)</code>的别名，则<span
+class="math inline">\(Q_{i+1}.z=Q_i.z+δQ_i.z=Q_i.z+\delta x\cdot
+dQ\)</span>，其中<code>δx==1</code>，相应的<span
+class="math inline">\(k_{i+1}=k_i+dK\)</span>。<br />
+代码实现如下：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Result</span><br>&#123;<br>  <span class="hljs-type">bool</span> IsHit;<br>  vec2 UV;<br>  ...<br>&#125;;<br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">Query</span><span class="hljs-params">(<span class="hljs-type">float</span> depth, vec2 uv)</span></span><br><span class="hljs-function"></span>&#123;<br>  <span class="hljs-type">float</span> depth1 = -<span class="hljs-built_in">LinearizeDepth</span>(<span class="hljs-built_in">texelFetch</span>(uGDepth,<span class="hljs-built_in">ivec2</span>(uv),<span class="hljs-number">0</span>).r);<br>  <span class="hljs-keyword">return</span> depth &lt; depth1;<br>&#125;<br><span class="hljs-comment">//DDA,数值方法求解微分方程的算法</span><br><span class="hljs-function">Result <span class="hljs-title">RayMarching</span><span class="hljs-params">(Ray ray)</span></span><br><span class="hljs-function"></span>&#123;<br>	Result result;<br>  <span class="hljs-comment">//endPos 不能超出近平面，否则反射出的颜色是错误的。超过的话origin沿dir到近平面的距离 = origin到近平面的最短距离 / cosθ，cosθ = dir.z / r;</span><br>  <span class="hljs-type">float</span> rayLength = ((ray.Origin.z + ray.Direction.z * maxDistance) &gt; -uZBufferParams.x) ?<br>  (-uZBufferParams.x - ray.Origin.z) / ray.Direction.z : maxDistance;<br><br>	vec3 V0 = ray.Origin;<br>	vec3 V1 = ray.Origin + ray.Direction * rayLength;<br>  <span class="hljs-comment">//将viewSpace下的origin和endPos转到ClipSpace</span><br>	vec4 H0 = <span class="hljs-built_in">projectToClipSpace</span>(V0);<br>	vec4 H1 = <span class="hljs-built_in">projectToClipSpace</span>(V1);<br><br>	<span class="hljs-type">float</span> k0 = <span class="hljs-number">1.0</span> / H0.w;<br>  <span class="hljs-type">float</span> k1 = <span class="hljs-number">1.0</span> / H1.w;<br>	vec3 Q0 = V0 * k0; <br>  vec3 Q1 = V1 * k1;<br><br>	<span class="hljs-comment">// NDC-space</span><br>  vec2 P0 = H0.xy * k0;<br>  vec2 P1 = H1.xy * k1;<br>	vec2 Size = <span class="hljs-built_in">vec2</span>(windowWidth,windowHeight);<br>	<span class="hljs-comment">//Screen Space</span><br>	P0 = (P0 + <span class="hljs-number">1.0</span>) / <span class="hljs-number">2.0</span> * Size;<br>	P1 = (P1 + <span class="hljs-number">1.0</span>) / <span class="hljs-number">2.0</span> * Size;<br><br>	vec2 Delta = P1 - P0;<br><br>  <span class="hljs-comment">//是否重新排序，我们只处理Delta较大情况</span><br>	<span class="hljs-type">bool</span> Permute = <span class="hljs-literal">false</span>;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-built_in">abs</span>(Delta.x) &lt; <span class="hljs-built_in">abs</span>(Delta.y)) &#123; <br>      Permute = <span class="hljs-literal">true</span>;<br>      Delta = Delta.yx; P0 = P0.yx; P1 = P1.yx; <br>  &#125;<br>	<span class="hljs-type">float</span> StepDir = <span class="hljs-built_in">sign</span>(Delta.x);<br>  <span class="hljs-type">float</span> Invdx = StepDir / Delta.x;<br>	<br>  <span class="hljs-comment">//偏微分的数值表示法</span><br>  vec3  dQ = (Q1 - Q0) * Invdx;<br>  <span class="hljs-type">float</span> dk = (k1 - k0) * Invdx;<br>  vec2  dP = <span class="hljs-built_in">vec2</span>(StepDir, Delta.y * Invdx);<br>	<span class="hljs-type">float</span> stride = <span class="hljs-number">2.0</span>;<span class="hljs-comment">//可调</span><br>  dP *= stride; dQ *= stride; dk *= stride;<br>  <span class="hljs-type">float</span> jitter = <span class="hljs-number">1.0</span>;<span class="hljs-comment">//可调</span><br>  P0 += dP * jitter; Q0 += dQ * jitter; k0 += dk * jitter;<br>	<br>	<span class="hljs-type">float</span> Step = <span class="hljs-number">0.0</span>;<br>	<span class="hljs-type">float</span> MaxStep = <span class="hljs-number">1000.0</span>;<br>	<span class="hljs-type">float</span> EndX = P1.x * StepDir;<br><br>	<span class="hljs-type">float</span> k = k0;<br>	vec3 Q = Q0;<br>  vec2 P = P0;<br>	<span class="hljs-keyword">for</span>(;((P.x * StepDir) &lt;= EndX) &amp;&amp; <br>      Step &lt; MaxStep;<br>      Step+=<span class="hljs-number">1.0</span>,P += dP, Q.z += dQ.z, k += dk)<br>	&#123;<br>		result.UV = Permute ? P.yx : P;<br>		<span class="hljs-type">float</span> depth;<br>    <span class="hljs-comment">//At any 2D point (x,y), the corresponding 3D point is Q‘(x,y)=(Q·k)(x,y) / k(x,y)，Q’(z)=(Q·k)(z) / k(z)</span><br>		depth = Q.z / k;<br>		<span class="hljs-keyword">if</span>(result.UV.x &gt; windowWidth || result.UV.x &lt; <span class="hljs-number">0.0</span> || result.UV.y &gt; windowHeight || result.UV.y &lt; <span class="hljs-number">0.0</span>)<br>			<span class="hljs-keyword">break</span>;<br>		result.IsHit = <span class="hljs-built_in">Query</span>(depth, result.UV);<br>    <span class="hljs-keyword">if</span> (result.IsHit)<br>			<span class="hljs-keyword">break</span>;<br>	&#125;<br>	<span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+其中需要注意的一点是，<code>rayLength</code>光线的长度不能超过近平面，否则会出错，光线长度超出了近平面的范围则用下面等式进行约束:<br />
+<code>origin沿dir到近平面的距离 = origin到近平面的最短距离 / cosθ</code>，<code>cosθ = dir.z / r</code>（cartesian
+to spherical in tangent space）。<br />
+如果一切顺利，将会得到下面效果图：<br />
+<img src="/img/00017/image-7.png" srcset="/img/loading.gif" lazyload alt="13" /></p>
+<h2 id="hierarchical-z-ssr">Hierarchical-Z SSR</h2>
+<p><code>Hi-Z</code>是为了优化线性步进的算法，因为步长是固定的，但是大部分时间都浪费在了没有碰撞的空间中。<br />
+<img src="/img/00017/image-9.png" srcset="/img/loading.gif" lazyload alt="14" /><br />
+而<code>Hi-Z</code>会根据试探步来判断下一次步长的距离，如果试探步没有与场景相交，那下一次步进的距离就更大，这样求得的交点所使用的步进次数更少，在保证准确率的情况下，效率也得到了极大的提升！</p>
+<p><code>Hi-Z</code>方法创建了一个<code>Depth Mipmap</code>加速结构，称为<code>Hi-Z buffer</code>。该结构本质上是场景深度的四叉树，其中每个四叉树层级中的每个单元格都被设置为上一层级中<code>4</code>个单元格的最小值（或最大值，取决于z轴方向）。<br />
+<img src="/img/00017/image-10.png" srcset="/img/loading.gif" lazyload alt="15" /><br />
+值得注意的是，如果行或列不是偶数，采样需要额外多加一列或一行，如果都是奇数，那么还要额外多考虑一个右上角的像素，如图：<br />
+<img src="/img/00017/image-11.png" srcset="/img/loading.gif" lazyload alt="16" /><br />
+这部分代码比较散就不列出来了，理解了这个过程，实现就不难了。<br />
+<code>Depth Mipmap</code>可以用另一个<code>Pass</code>来看每一层效果，效果如下：<br />
+<img src="/img/00017/depth-mipmap.gif" srcset="/img/loading.gif" lazyload alt="17" /><br />
+越黑表示越近，纯白色就是深度为<code>1.0</code>的情况无限远。</p>
+<p>有了<code>Depth Mipmap</code>，我们还需要屏幕空间的起点和方向。获取这些数据的过程和上一节差不多，代码实现如下：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">vec3 <span class="hljs-title">EvalReflect</span><span class="hljs-params">(vec3 wo,vec2 screenUV)</span> </span>&#123;<br>  <span class="hljs-comment">//从世界坐标中恢复Ts中的原点和反射方向</span><br>  vec3 normalWS = <span class="hljs-built_in">GetGBufferNormalWorld</span>(screenUV);<br>  vec3 reflectDir = <span class="hljs-built_in">normalize</span>(<span class="hljs-built_in">reflect</span>(-wo,normalWS));<br>  vec3 rayOriginWS = vPosWorld.xyz;<br>  vec3 rayEndWS = rayOriginWS + reflectDir * <span class="hljs-number">1.0</span>;<br>  vec3 rayOriginVS = <span class="hljs-built_in">projectToViewSpace</span>(rayOriginWS);<br>  vec3 rayEndVS    = <span class="hljs-built_in">projectToViewSpace</span>(rayEndWS);<br>  vec4 rayOriginCS = <span class="hljs-built_in">projectToClipSpace</span>(rayOriginVS);<br>  vec4 rayEndCS    = <span class="hljs-built_in">projectToClipSpace</span>(rayEndVS);<br>  rayOriginCS = rayOriginCS.xyzw / rayOriginCS.w;<br>  rayEndCS    = rayEndCS.xyzw / rayEndCS.w;<br>  vec3 rayOriginTS = (<span class="hljs-built_in">vec3</span>(rayOriginCS) + <span class="hljs-number">1.0</span>) * <span class="hljs-number">0.5</span>;<br>  vec3 rayEndTS = (<span class="hljs-built_in">vec3</span>(rayEndCS) + <span class="hljs-number">1.0</span>) * <span class="hljs-number">0.5</span>;<br>  vec3 reflectDirTS = <span class="hljs-built_in">normalize</span>(rayEndTS - rayOriginTS);<br>  <span class="hljs-type">float</span> outMaxDistance = reflectDirTS.x &gt;= <span class="hljs-number">0.0</span> ? (<span class="hljs-number">1.0</span> - rayOriginTS.x) / reflectDirTS.x  : -rayOriginTS.x / reflectDirTS.x;<br>  outMaxDistance = <span class="hljs-built_in">min</span>(outMaxDistance, reflectDirTS.y &lt; <span class="hljs-number">0.0</span> ? (-rayOriginTS.y / reflectDirTS.y) : ( (<span class="hljs-number">1.0</span>-rayOriginTS.y) / reflectDirTS.y));<br>  outMaxDistance = <span class="hljs-built_in">min</span>(outMaxDistance, reflectDirTS.z &lt; <span class="hljs-number">0.0</span> ? (-rayOriginTS.z / reflectDirTS.z) : ((<span class="hljs-number">1.0</span>-rayOriginTS.z)/reflectDirTS.z));<br>  SSRay ray;<br>  ray.rayPosInTS = rayOriginTS;<br>  ray.rayDirInTS = reflectDirTS;<br>  ray.maxDistance = outMaxDistance;<br><br>  vec3 hitPos;<br>  vec3 reflectedColor = <span class="hljs-built_in">vec3</span>(<span class="hljs-number">0.</span>);<br>  <span class="hljs-keyword">if</span>(<span class="hljs-built_in">FindIntersection_HiZ</span>(ray, hitPos)) &#123;<br>    reflectedColor = <span class="hljs-built_in">GetGBufferDiffuse</span>(hitPos.xy);<br>  &#125;<br>  <span class="hljs-keyword">return</span> reflectedColor;<br>&#125;<br></code></pre></td></tr></table></figure>
+这里<code>outMaxDistance</code>是防止反射终点超出屏幕而浪费性能。</p>
+<p>接下来就是重头戏，<code>FindIntersection_HiZ</code>函数的实现。<br />
+该函数核心地方就是试探步如何确定下次步进的距离，先说下这里试探步是怎么处理的，我先把相关代码贴出来，以便参考和解释。<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">vec3 <span class="hljs-title">intersectDepthPlane</span><span class="hljs-params">(in vec3 o, in vec3 d, <span class="hljs-type">float</span> t)</span></span>&#123;<br>  <span class="hljs-keyword">return</span> o + d * t;<br>&#125;<br>...<br>vec3 start = ss_ray.rayPosInTS;<br>vec3 rayDir = ss_ray.rayDirInTS;<br><span class="hljs-type">float</span> maxTraceDistance = ss_ray.maxDistance;<br>vec3 ray = start;<br><span class="hljs-type">float</span> minZ = ray.z;<br><span class="hljs-type">float</span> maxZ = ray.z + rayDir.z * maxTraceDistance;<br><span class="hljs-type">float</span> deltaZ = (maxZ - minZ);<br>vec3 o = ray;<br>vec3 d = rayDir * maxTraceDistance;<br>...<br><span class="hljs-comment">//步进起点所在单元格的GbufferDepth</span><br><span class="hljs-type">float</span> cell_minZ = <span class="hljs-built_in">getMinimumDepthPlane</span>((oldCellIdx + <span class="hljs-number">0.5</span>) / cellCount, level);    <br><span class="hljs-comment">//试探步：步进起点的深度小于GbufferDepth，则步进到ray.z &gt;= gbufferDepth的地方，这可能会导致新的tmpRay.xy超过1.0，所以这里只是试探步，实际步进是用intersectCellBoundary这个函数完成。</span><br>vec3 tmpRay = (cell_minZ &gt; ray.z) ? <span class="hljs-built_in">intersectDepthPlane</span>(o, d, (cell_minZ - minZ) / deltaZ) : ray;<br></code></pre></td></tr></table></figure>
+以反射起点<code>ray</code>为例，我们假设这里<code>ray</code>已经向<code>rayDir</code>步进了一小段距离以防止自相交。我们先看下<code>intersectDepthPlane</code>这个函数，以公式<code>o+t*d</code>来确定步进后的点，需要注意的是，这里的<code>d</code>指代的是非单位向量，即：<code>光线终点 - 光线起点</code>。而<code>t</code>则是一个归一化的系数在<code>[0,1]</code>之间，有了<code>t</code>这个系数，这样我们就可以精确的得到起点沿光线步进后的点。<br />
+下面用图例的形式进一步解释试探步：<br />
+<img src="/img/00017/image-12.png" srcset="/img/loading.gif" lazyload alt="18" /><br />
+可以看到如果起点<code>A</code>要试探地走一步，这一步有可能会直接跨出屏幕（假设白色线条代表屏幕的位置），或者跨过了多个像素，从而错过中间可能会相交的点。我们从试探步中得到的信息就是，它这一步是否跨过了起点<code>A</code>所在的像素，如果跨过了起点<code>A</code>所在的单元格(像素)，那我们就用另一个函数使得起点<code>A</code>步进到下一个单元格。需要注意的是这里的单元格和<code>Depth Mipmap</code>层级挂钩的，层级越大，一个单元格的步长就越大。</p>
+<p>下面我们解释一下如何让起点<code>A</code>步进到下一个单元格，还是先看下相关代码：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">FindIntersection_HiZ</span><span class="hljs-params">(</span></span><br><span class="hljs-params"><span class="hljs-function">  in SSRay ss_ray,</span></span><br><span class="hljs-params"><span class="hljs-function">  out vec3 intersection</span></span><br><span class="hljs-params"><span class="hljs-function">)</span> </span>&#123;<br>  vec3 start = ss_ray.rayPosInTS;<br>  vec3 rayDir = ss_ray.rayDirInTS;<br>  <span class="hljs-type">float</span> maxTraceDistance = ss_ray.maxDistance;<br><br>  vec2 crossStep = <span class="hljs-built_in">vec2</span>(rayDir.x &gt;= <span class="hljs-number">0.0</span> ? <span class="hljs-number">1.0</span> : <span class="hljs-number">-1.0</span>, rayDir.y &gt;= <span class="hljs-number">0.0</span> ? <span class="hljs-number">1.0</span> : <span class="hljs-number">-1.0</span>);<br>  vec2 crossOffset = crossStep / <span class="hljs-built_in">vec2</span>(windowWidth,windowHeight) / <span class="hljs-number">128.</span>;<br>  <span class="hljs-comment">//假设reflectDir不与屏幕的宽高平行,如果是向前步进一个单元格的距离，boundary = (rayCell + crossStep )/ cell_count + crossOffset,其中crossOffset &gt; 0.</span><br>  <span class="hljs-comment">//如果是向后步进一个单元格的距离，boundary = (rayCell + vec(0,0) )/ cell_count + crossOffset,其中crossOffset &lt; 0.</span><br>  crossStep = <span class="hljs-built_in">saturate</span>(crossStep);<br><br>  vec3 ray = start;<br>  <span class="hljs-type">float</span> minZ = ray.z;<br>  <span class="hljs-type">float</span> maxZ = ray.z + rayDir.z * maxTraceDistance;<br>  <span class="hljs-type">float</span> deltaZ = (maxZ - minZ);<br><br>  vec3 o = ray;<br>  vec3 d = rayDir * maxTraceDistance;<br><br>  <span class="hljs-type">int</span> startLevel = <span class="hljs-number">2</span>;<br>  <span class="hljs-type">int</span> stopLevel = <span class="hljs-number">0</span>;<br><br>  vec2 startCellCount = <span class="hljs-built_in">vec2</span>(<span class="hljs-built_in">getCellCount</span>(startLevel));<br>  <span class="hljs-comment">//步进起点所在的单元格。</span><br>  vec2 rayCell = <span class="hljs-built_in">getCell</span>(ray.xy, startCellCount);<br>  <span class="hljs-comment">//防止自相交。</span><br>  ray = <span class="hljs-built_in">intersectCellBoundary</span>(o, d, rayCell, startCellCount, crossStep, crossOffset * <span class="hljs-number">128.</span> * <span class="hljs-number">2.</span> );<br><br>  <span class="hljs-type">int</span> level = startLevel;<br>  <span class="hljs-type">int</span> iter = <span class="hljs-number">0</span>;<br>  ...<br><br>  <span class="hljs-keyword">while</span>( level &gt;= stopLevel &amp;&amp; ray.z &lt;= maxZ  &amp;&amp; ++iter &lt; <span class="hljs-number">1000</span>)&#123;<br>    <span class="hljs-comment">//获取纹理分辨率</span><br>    vec2 cellCount = <span class="hljs-built_in">vec2</span>(<span class="hljs-built_in">getCellCount</span>(level));<br>    <span class="hljs-comment">//步进起点所在的单元格索引</span><br>    vec2 oldCellIdx = <span class="hljs-built_in">getCell</span>(ray.xy, cellCount);<br>    <span class="hljs-comment">//步进起点所在单元格的GbufferDepth</span><br>    <span class="hljs-type">float</span> cell_minZ = <span class="hljs-built_in">getMinimumDepthPlane</span>((oldCellIdx + <span class="hljs-number">0.5</span>) / cellCount, level);<br>    <span class="hljs-keyword">if</span>(cell_minZ == <span class="hljs-number">1.0</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<span class="hljs-comment">//解决SSR测试的问题</span><br>    <span class="hljs-comment">//试探步：步进起点的深度小于GbufferDepth，则步进到ray.z &gt;= gbufferDepth的地方，这可能会导致新的tmpRay.xy超过1.0，所以这里只是试探步，实际步进是用intersectCellBoundary这个函数完成。</span><br>    vec3 tmpRay = (cell_minZ &gt; ray.z) ? <span class="hljs-built_in">intersectDepthPlane</span>(o, d, (cell_minZ - minZ) / deltaZ) : ray;<br>    <span class="hljs-comment">//此次试探步终点所在单元格的索引</span><br>    vec2 newCellIdx = <span class="hljs-built_in">getCell</span>(tmpRay.xy, cellCount);<br>    <span class="hljs-comment">//如果到了第0层级，那么说明马上快要到交点处了，比较深度差值，如果差值大于某个阈值（0.0017），我们还需要在当前层级步进一个单元格。</span><br>    <span class="hljs-type">float</span> thickness = level == <span class="hljs-number">0</span> ? (ray.z - cell_minZ) : <span class="hljs-number">0.</span>;<br>    <span class="hljs-comment">//步进起点和终点不在同一个单元格为true。</span><br>    <span class="hljs-type">bool</span> crossed  = (thickness &gt; MAX_THICKNESS)|| <span class="hljs-built_in">crossedCellBoundary</span>(oldCellIdx, newCellIdx);<br>    <span class="hljs-comment">//步进：不在同一个单元格 则寻找最近的一个单元格进行步进,在同一个单元格则步进到试探步的地方。</span><br>    ray = crossed ? <span class="hljs-built_in">intersectCellBoundary</span>(o, d, oldCellIdx, cellCount, crossStep, crossOffset) : tmpRay;<br>    <span class="hljs-comment">//不在同一个单元格 则步进距离再次增大，在同一个单元格则距离减小。</span><br>    level = crossed ? <span class="hljs-built_in">min</span>(MAX_MIPMAP_LEVEL, level + <span class="hljs-number">1</span>): level - <span class="hljs-number">1</span>;<br>  &#125;<br>  ...<br>&#125;<br></code></pre></td></tr></table></figure>
+可以看到我们用<code>tmpRay</code>接收了试探步的位置。下面则是通过<code>crossedCellBoundary(oldCellIdx, newCellIdx)</code>来判断<code>tmpRay</code>是否和起点<code>A</code>在相同单元格。如果不在同一个单元格则<code>crossed</code>为<code>true</code>，我们需要用<code>intersectCellBoundary</code>来使起点<code>A</code>步进到下一个单元格。<code>intersectCellBoundary</code>函数的代码实现如下：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">vec3 <span class="hljs-title">intersectCellBoundary</span><span class="hljs-params">(</span></span><br><span class="hljs-params"><span class="hljs-function">  vec3 o, </span></span><br><span class="hljs-params"><span class="hljs-function">  vec3 d, </span></span><br><span class="hljs-params"><span class="hljs-function">  vec2 rayCell, </span></span><br><span class="hljs-params"><span class="hljs-function">  vec2 cell_count, </span></span><br><span class="hljs-params"><span class="hljs-function">  vec2 crossStep, </span></span><br><span class="hljs-params"><span class="hljs-function">  vec2 crossOffset</span></span><br><span class="hljs-params"><span class="hljs-function">)</span></span>&#123;<br>  <span class="hljs-comment">//光线所在单元格的下一个单元格</span><br>  vec2 index = rayCell + crossStep;<br>  <span class="hljs-comment">//下一个单元格的边界，根据当前level的单元格数量决定</span><br>  vec2 boundary = index / cell_count;<br>  <span class="hljs-comment">//边界偏移一点，防止步进时落在边界上。</span><br>  boundary += crossOffset;<br>  <span class="hljs-comment">//步进的距离</span><br>  vec2 delta = boundary - o.xy;<br>  <span class="hljs-comment">//标准化</span><br>  delta /= d.xy;<br>  <span class="hljs-comment">//选择最小被标准化后的步进值，代表朝着 离现在光线所在单元格最近的一个单元格 步进</span><br>  <span class="hljs-type">float</span> t = <span class="hljs-built_in">min</span>(delta.x, delta.y);<br>  <span class="hljs-comment">//步进后的点</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-built_in">intersectDepthPlane</span>(o, d, t);<br>&#125;<br></code></pre></td></tr></table></figure>
+我们看下这个函数相关的参数，<code>o</code>为步进起点的位置,<code>d</code>为非单位向量,<code>rayCell</code>为起点A所在的单元格,<code>cell_count</code>为当前Depth
+Mipmap层级的分辨率,<code>crossStep</code>为该单元格向下一个单元格步进的向量,<code>crossOffset</code>为微小偏移防止步进后的点落在边界上。下面我还是用图例的形式进一步解释这个函数如何工作的，这里我们忽略z值：<br />
+<img src="/img/00017/image-13.png" srcset="/img/loading.gif" lazyload alt="19" /><br />
+这里<code>o(0,0.125)</code>为光线起点，<code>endPos(1,0.5)</code>为光线终点，<code>c(0.45,0.3)</code>为步进起点，我们要求的点为<code>nextc</code>。光线起点<code>c</code>所在的单元格<code>rayCell(1,1)</code>，这里因为<code>d(1,0.375)</code>的两个分量都大于零所以<code>crossStep</code>为<code>(1,1)</code>，<code>cell_count</code>则是当前层级的分辨率为<code>(4,4)</code>。<br />
+<code>rayCell</code>根据<code>crossStep</code>，移动到下一个单元格，即紫色点所在位置（这里忽略了偏移值）。然后除以<code>cell_count</code>得到它们的相对位置即<code>boundary(0.5,0.5)</code>。<br />
+再通过公式<code>(boundary - o.xy) / d.xy</code>来确定归一化的系数<code>t</code>，通过图例和计算我们很容易的观察到，此时<code>x</code>分量的系数<code>t</code>是<code>y</code>分量的<code>0.5</code>倍，即光线<code>d</code>需要走到<code>endPos</code>，<code>nextc</code>的<code>y</code>分量才和<code>boundary</code>的<code>y</code>分量相等，而这并不是我们想要的，所以我们这里选择系数相对较小的来步进，这样通过公式<code>o+t*d</code>就可以准确得到步进到下一个单元格的相对坐标了（这里红色点和蓝色点应该在光线<code>d</code>上面，这里为了取值方便没有画在一起）。<br />
+同理当步进起点向反方向步进时也，将<code>o</code>和<code>endPos</code>反过来，并且<code>crossStep</code>为<code>(0,0)</code>时也可以得到步进后的点，这里就不再解释了。</p>
+<p>还有最后一件事情没做，我们上面讨论的情况只适用于向前追踪，如果向后追踪，即向<code>nearPlane</code>步进，直接用上面的算法会出错。这是因为试探步函数<code>intersectDepthPlane(o, d, (cell_minZ - minZ) / deltaZ)</code>，处理不了向后步进的情况，我们看下这个<code>cell_minZ</code>变量，如果是向后步进，这个变量的值只会一直递减，相应的系数<code>t</code>也会一直递减，从而无法完成试探步
+步进的工作。但是幸运的是，向后追踪的情况比向前追踪简单，我们只需要用一个方向布尔变量来控制算法流程。<br />
+在每次迭代中，我们得到了步进起点所对应的<code>Depth Mipmap</code>场景深度<code>cell_minZ</code>，当场景深度大于步进起点深度时，我们就调用<code>intersectCellBoundary</code>来步进到下一个单元格，而不需要经过试探步来决定。<br />
+整个<code>Hi-z</code>算法代码实现如下：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">FindIntersection_HiZ</span><span class="hljs-params">(</span></span><br><span class="hljs-params"><span class="hljs-function">  in SSRay ss_ray,</span></span><br><span class="hljs-params"><span class="hljs-function">  out vec3 intersection</span></span><br><span class="hljs-params"><span class="hljs-function">)</span> </span>&#123;<br>  vec3 start = ss_ray.rayPosInTS;<br>  vec3 rayDir = ss_ray.rayDirInTS;<br>  <span class="hljs-type">float</span> maxTraceDistance = ss_ray.maxDistance;<br><br>  vec2 crossStep = <span class="hljs-built_in">vec2</span>(rayDir.x &gt;= <span class="hljs-number">0.0</span> ? <span class="hljs-number">1.0</span> : <span class="hljs-number">-1.0</span>, rayDir.y &gt;= <span class="hljs-number">0.0</span> ? <span class="hljs-number">1.0</span> : <span class="hljs-number">-1.0</span>);<br>  vec2 crossOffset = crossStep / <span class="hljs-built_in">vec2</span>(windowWidth,windowHeight) / <span class="hljs-number">128.</span>;<br>  <span class="hljs-comment">//假设reflectDir不与屏幕的宽高平行,如果是向前步进一个单元格的距离，boundary = (rayCell + crossStep )/ cell_count + crossOffset,其中crossOffset &gt; 0.</span><br>  <span class="hljs-comment">//如果是向后步进一个单元格的距离，boundary = (rayCell + vec(0,0) )/ cell_count + crossOffset,其中crossOffset &lt; 0.</span><br>  crossStep = <span class="hljs-built_in">saturate</span>(crossStep);<br><br>  vec3 ray = start;<br>  <span class="hljs-type">float</span> minZ = ray.z;<br>  <span class="hljs-type">float</span> maxZ = ray.z + rayDir.z * maxTraceDistance;<br>  <span class="hljs-type">float</span> deltaZ = (maxZ - minZ);<br><br>  vec3 o = ray;<br>  vec3 d = rayDir * maxTraceDistance;<br><br>  <span class="hljs-type">int</span> startLevel = <span class="hljs-number">2</span>;<br>  <span class="hljs-type">int</span> stopLevel = <span class="hljs-number">0</span>;<br><br>  vec2 startCellCount = <span class="hljs-built_in">vec2</span>(<span class="hljs-built_in">getCellCount</span>(startLevel));<br>  <span class="hljs-comment">//步进起点所在的单元格。</span><br>  vec2 rayCell = <span class="hljs-built_in">getCell</span>(ray.xy, startCellCount);<br>  <span class="hljs-comment">//防止自相交。</span><br>  ray = <span class="hljs-built_in">intersectCellBoundary</span>(o, d, rayCell, startCellCount, crossStep, crossOffset * <span class="hljs-number">128.</span> * <span class="hljs-number">2.</span> );<br><br>  <span class="hljs-type">int</span> level = startLevel;<br>  <span class="hljs-type">int</span> iter = <span class="hljs-number">0</span>;<br>  <span class="hljs-type">bool</span> isBackwardRay = rayDir.z &lt; <span class="hljs-number">0.</span>;<br>  <span class="hljs-type">float</span> Dir = isBackwardRay ? <span class="hljs-number">-1.</span> : <span class="hljs-number">1.</span>;<br>  <span class="hljs-keyword">while</span>( level &gt;= stopLevel &amp;&amp; ray.z * Dir &lt;= maxZ * Dir &amp;&amp; ++iter &lt; <span class="hljs-number">1000</span>)&#123;<br>    <span class="hljs-comment">//获取纹理分辨率</span><br>    vec2 cellCount = <span class="hljs-built_in">vec2</span>(<span class="hljs-built_in">getCellCount</span>(level));<br>    <span class="hljs-comment">//步进起点所在的单元格索引</span><br>    vec2 oldCellIdx = <span class="hljs-built_in">getCell</span>(ray.xy, cellCount);<br>    <span class="hljs-comment">//步进起点所在单元格的GbufferDepth</span><br>    <span class="hljs-type">float</span> cell_minZ = <span class="hljs-built_in">getMinimumDepthPlane</span>((oldCellIdx + <span class="hljs-number">0.5</span>) / cellCount, level);<br>    <span class="hljs-keyword">if</span>(cell_minZ == <span class="hljs-number">1.0</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<span class="hljs-comment">//解决SSR测试的问题</span><br>    <span class="hljs-comment">//试探步：步进起点的深度小于GbufferDepth，则步进到ray.z &gt;= gbufferDepth的地方，这可能会导致新的tmpRay.xy超过1.0，所以这里只是试探步，实际步进是用intersectCellBoundary这个函数完成。</span><br>    vec3 tmpRay = ((cell_minZ &gt; ray.z) &amp;&amp; !isBackwardRay) ? <span class="hljs-built_in">intersectDepthPlane</span>(o, d, (cell_minZ - minZ) / deltaZ) : ray;<br>    <span class="hljs-comment">//此次试探步终点所在单元格的索引</span><br>    vec2 newCellIdx = <span class="hljs-built_in">getCell</span>(tmpRay.xy, cellCount);<br>    <span class="hljs-comment">//如果到了第0层级，那么说明马上快要到交点处了，比较深度差值，如果差值大于某个阈值（0.0017），我们还需要在当前层级步进一个单元格。</span><br>    <span class="hljs-type">float</span> thickness = level == <span class="hljs-number">0</span> ? (ray.z - cell_minZ) : <span class="hljs-number">0.</span>;<br>    <span class="hljs-comment">//步进起点和终点不在同一个单元格为true。</span><br>    <span class="hljs-type">bool</span> crossed  = (isBackwardRay &amp;&amp; (cell_minZ &gt; ray.z))||(thickness &gt; MAX_THICKNESS)|| <span class="hljs-built_in">crossedCellBoundary</span>(oldCellIdx, newCellIdx);<br>    <span class="hljs-comment">//步进：不在同一个单元格 则寻找最近的一个单元格进行步进,在同一个单元格则步进到试探步的地方。</span><br>    <span class="hljs-comment">//前向追踪不适合用在后向追踪，如果是backwardRay，没有试探步。cell_minZ &gt; ray.z为true则步进到下一个单元格level + 1，false则保留当前状态level - 1；</span><br>    ray = crossed ? <span class="hljs-built_in">intersectCellBoundary</span>(o, d, oldCellIdx, cellCount, crossStep, crossOffset) : tmpRay;<br>    <span class="hljs-comment">//不在同一个单元格 则步进距离再次增大，在同一个单元格则距离减小。</span><br>    level = crossed ? <span class="hljs-built_in">min</span>(MAX_MIPMAP_LEVEL, level + <span class="hljs-number">1</span>): level - <span class="hljs-number">1</span>;<br>  &#125;<br>  <span class="hljs-type">bool</span> intersected = (level &lt; stopLevel);<br>  intersection = intersected ? ray : <span class="hljs-built_in">vec3</span>(<span class="hljs-number">0.0</span>);<br>  <span class="hljs-keyword">return</span> intersected;<br>&#125;<br></code></pre></td></tr></table></figure>
+这里<code>thickness</code>是为了让光线穿过物体。不然我们会得到一些错误的结果。</p>
+<p>这节的内容将的有点<code>HighLevel</code>，更多细节可以参考<a
+target="_blank" rel="noopener" href="https://sugulee.wordpress.com/2021/01/19/screen-space-reflections-implementation-and-optimization-part-2-hi-z-tracing-method/">Hierarchical-Z
+SSR</a>。<br />
+如果一切顺利，就会得到下面的效果：<br />
+<img src="/img/00017/image-14.png" srcset="/img/loading.gif" lazyload alt="20" /><br />
+全局光照如何处理在上面<code>World Space Ray Marching SSR</code>已经讲过，这里只需要照着做就行。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Games202/" class="category-chain-item">Games202</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Games202 Hw3 Screen Space Ray Tracing</div>
+      <div>https://howl144.github.io/2023/06/10/00017. Games202 Hw3/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Deng Ye</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>June 10, 2023</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/07/01/00018.%20Games202%20Hw4/" title="Games202 Hw4 IBL and Kulla Conty">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Games202 Hw4 IBL and Kulla Conty</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02/19/00006.%20c++%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B%E4%B9%8B%E8%99%9A%E8%A1%A8%EF%BC%8C%E8%99%9A%E8%A1%A8%E6%8C%87%E9%92%88%E7%AD%89/" title="c++对象模型之虚表，虚表指针，thunk，多态，多重继承this指针偏移，多重继承virtual析构函数，多重虚继承下的访问虚基类成员变量时虚表的工作原理">
+                        <span class="hidden-mobile">c++对象模型之虚表，虚表指针，thunk，多态，多重继承this指针偏移，多重继承virtual析构函数，多重虚继承下的访问虚基类成员变量时虚表的工作原理</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        Views: 
+        <span id="leancloud-site-pv"></span>
+        
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        Visitors: 
+        <span id="leancloud-site-uv"></span>
+        
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>
