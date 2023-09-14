@@ -26,7 +26,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://howl144.github.io/img/00017/image-4.png">
 <meta property="article:published_time" content="2023-06-10T01:14:10.000Z">
-<meta property="article:modified_time" content="2023-09-09T09:41:27.288Z">
+<meta property="article:modified_time" content="2023-09-10T01:44:44.270Z">
 <meta property="article:author" content="Deng Ye">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://howl144.github.io/img/00017/image-4.png">
@@ -473,7 +473,7 @@ class="math inline">\(\Delta\)</span>较大方向为主方向使得斜率k满足
 class="math inline">\(0\leq
 k\leq1\)</span>（若δy大于δx则交换它们的值）：<br />
 <img src="/img/00017/image-5.png" srcset="/img/loading.gif" lazyload alt="10" /><br />
-确定主方向后，上面26式的微分表示为： <span class="math display">\[
+确定主方向后，上面9式的微分表示为： <span class="math display">\[
 \begin{align}
 \frac{\text{d}y}{\text{d}x}=\frac{\Delta y}{\Delta x}=\frac{\delta
 y}{\delta x}=k \tag{10}
@@ -574,7 +574,7 @@ Mipmap层级的分辨率,<code>crossStep</code>为该单元格向下一个单元
 这里<code>o(0,0.125)</code>为光线起点，<code>endPos(1,0.5)</code>为光线终点，<code>c(0.45,0.3)</code>为步进起点，我们要求的点为<code>nextc</code>。光线起点<code>c</code>所在的单元格<code>rayCell(1,1)</code>，这里因为<code>d(1,0.375)</code>的两个分量都大于零所以<code>crossStep</code>为<code>(1,1)</code>，<code>cell_count</code>则是当前层级的分辨率为<code>(4,4)</code>。<br />
 <code>rayCell</code>根据<code>crossStep</code>，移动到下一个单元格，即紫色点所在位置（这里忽略了偏移值）。然后除以<code>cell_count</code>得到它们的相对位置即<code>boundary(0.5,0.5)</code>。<br />
 再通过公式<code>(boundary - o.xy) / d.xy</code>来确定归一化的系数<code>t</code>，通过图例和计算我们很容易的观察到，此时<code>x</code>分量的系数<code>t</code>是<code>y</code>分量的<code>0.5</code>倍，即光线<code>d</code>需要走到<code>endPos</code>，<code>nextc</code>的<code>y</code>分量才和<code>boundary</code>的<code>y</code>分量相等，而这并不是我们想要的，所以我们这里选择系数相对较小的来步进，这样通过公式<code>o+t*d</code>就可以准确得到步进到下一个单元格的相对坐标了（这里红色点和蓝色点应该在光线<code>d</code>上面，这里为了取值方便没有画在一起）。<br />
-同理当步进起点向反方向步进时也，将<code>o</code>和<code>endPos</code>反过来，并且<code>crossStep</code>为<code>(0,0)</code>时也可以得到步进后的点，这里就不再解释了。</p>
+同理当步进起点向反方向步进时，将<code>o</code>和<code>endPos</code>反过来，并且<code>crossStep</code>为<code>(0,0)</code>时也可以得到步进后的点，这里就不再解释了。</p>
 <p>还有最后一件事情没做，我们上面讨论的情况只适用于向前追踪，如果向后追踪，即向<code>nearPlane</code>步进，直接用上面的算法会出错。这是因为试探步函数<code>intersectDepthPlane(o, d, (cell_minZ - minZ) / deltaZ)</code>，处理不了向后步进的情况，我们看下这个<code>cell_minZ</code>变量，如果是向后步进，这个变量的值只会一直递减，相应的系数<code>t</code>也会一直递减，从而无法完成试探步
 步进的工作。但是幸运的是，向后追踪的情况比向前追踪简单，我们只需要用一个方向布尔变量来控制算法流程。<br />
 在每次迭代中，我们得到了步进起点所对应的<code>Depth Mipmap</code>场景深度<code>cell_minZ</code>，当场景深度大于步进起点深度时，我们就调用<code>intersectCellBoundary</code>来步进到下一个单元格，而不需要经过试探步来决定。<br />
@@ -680,8 +680,8 @@ SSR</a>。<br />
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/02/19/00006.%20c++%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B%E4%B9%8B%E8%99%9A%E8%A1%A8%EF%BC%8C%E8%99%9A%E8%A1%A8%E6%8C%87%E9%92%88%E7%AD%89/" title="c++对象模型之虚表，虚表指针，thunk，多态，多重继承this指针偏移，多重继承virtual析构函数，多重虚继承下的访问虚基类成员变量时虚表的工作原理">
-                        <span class="hidden-mobile">c++对象模型之虚表，虚表指针，thunk，多态，多重继承this指针偏移，多重继承virtual析构函数，多重虚继承下的访问虚基类成员变量时虚表的工作原理</span>
+                      <a href="/2023/05/29/00016.%20Games202%20Hw3/" title="Games202 Hw3 Precomputed Radiance Transfer">
+                        <span class="hidden-mobile">Games202 Hw3 Precomputed Radiance Transfer</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
