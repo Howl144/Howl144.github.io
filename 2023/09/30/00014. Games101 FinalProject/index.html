@@ -1,0 +1,1370 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="elv6HP48K6bVVMeBdbFYkmoi4IBF6JVtH0WaCgUXRNY" />
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/rose.png">
+  <link rel="icon" href="/img/rose.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Deng Ye">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="效果图 1024spp： Specular + Glass(0.08 roughness) + Sliver(0.4 roughness)  1024spp： Specular + Glass(0.28 roughness)  1024spp： Diffuse + Glass(0.08 roughness)  不得不说，这镜面和透明材质一但引入，噪声就会变得非常大，本质上还是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Games101 Final Project">
+<meta property="og:url" content="https://howl144.github.io/2023/09/30/00014.%20Games101%20FinalProject/index.html">
+<meta property="og:site_name" content="🥰Howl&#39;s Blog">
+<meta property="og:description" content="效果图 1024spp： Specular + Glass(0.08 roughness) + Sliver(0.4 roughness)  1024spp： Specular + Glass(0.28 roughness)  1024spp： Diffuse + Glass(0.08 roughness)  不得不说，这镜面和透明材质一但引入，噪声就会变得非常大，本质上还是">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://howl144.github.io/img/00014/MIS-1024spp-1.png">
+<meta property="article:published_time" content="2023-09-30T01:23:12.000Z">
+<meta property="article:modified_time" content="2023-09-30T06:01:17.285Z">
+<meta property="article:author" content="Deng Ye">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://howl144.github.io/img/00014/MIS-1024spp-1.png">
+  
+  
+  
+  <title>Games101 Final Project - 🥰Howl&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"howl144.github.io","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"MY3hK2j6KKqPNCHItX2Yargj-gzGzoHsz","app_key":"U0dZRBpPFA46kRmFcsltQFF2","server_url":"https://my3hk2j6.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Howl&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>Home</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Portfolio/">
+                <i class="iconfont icon-pen"></i>
+                <span>Portfolio</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>Category</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>Archive</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>About Me</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.5)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Games101 Final Project"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-30 09:23" pubdate>
+          September 30, 2023 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          25k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          212 mins
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> views
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Games101 Final Project</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="效果图">效果图</h1>
+<p><code>1024spp</code>： <code>Specular</code> +
+<code>Glass</code>(0.08 roughness) + <code>Sliver</code>(0.4
+roughness)<br />
+<img src="/img/00014/MIS-1024spp-1.png" srcset="/img/loading.gif" lazyload alt="0" /><br />
+<code>1024spp</code>： <code>Specular</code> + <code>Glass</code>(0.28
+roughness)<br />
+<img src="/img/00014/MIS-1024spp-2.png" srcset="/img/loading.gif" lazyload alt="1" /><br />
+<code>1024spp</code>： <code>Diffuse</code> + <code>Glass</code>(0.08
+roughness)<br />
+<img src="/img/00014/MIS-1024spp-3.png" srcset="/img/loading.gif" lazyload alt="2" /><br />
+不得不说，这镜面和透明材质一但引入，噪声就会变得非常大，本质上还是因为焦散或反射光的生成效率太低导致的，个人觉得需要用到<code>Photon Mapping</code>技术，以后有需要再来研究吧，没有镜面和透明材质，<code>16ssp</code>感觉还行:<br />
+<code>16ssp</code> <code>Sliver</code>(0.4 roughness) +
+<code>Gold</code>(0.4 roughness)<br />
+<img src="/img/00014/MIS-16spp-2.png" srcset="/img/loading.gif" lazyload /></p>
+<p>下面是多重重要性采样（MIS）的结果:<br />
+<code>16spp</code><br />
+<img src="/img/00014/Multiple-Importance-Sampling.png" srcset="/img/loading.gif" lazyload /></p>
+<h1 id="源码">源码</h1>
+<p>暂未公开。</p>
+<h1 id="前言">前言</h1>
+<p>这篇文章主要讲的是<code>GAMES101</code>的<code>Next Event Estimation Path Tracing</code>，以及<code>BRDF</code>，<code>BSDF</code>材质的编写，最后在此基础上实现了<code>Multiple Importance Sampling</code>，以提高收敛速度。路径追踪部分包含光线与三角形求交与隐式表面求交，加速结构的构建（BVH，SAH），光线与加速结构求交，以及全局光照的实现等。本文不讲的是框架理解，另外需要注意的是，在实现过程中一定一定要注意<code>pdfValue</code>等于<code>0</code>导致的<code>NaN</code>的情况，还有就是渲染方程中的<code>cosθ</code>记得限制在<code>[0,1]</code>之间，不然会得到意想不到的而且非常隐蔽的效果，排查起来很困难。</p>
+<h1 id="whitted-style-ray-tracing">Whitted-Style Ray Tracing</h1>
+<p>在介绍<code>Path Tracing</code>之前，我们先来看下<code>Whitted-Style Ray Tracing</code>:<br />
+<img src="/img/00014/image.png" srcset="/img/loading.gif" lazyload alt="3" /> <img
+src="/img/00014/image-1.png" srcset="/img/loading.gif" lazyload alt="4" /> 1.
+对于屏幕上的每个像素我们都去打一根光线。<br />
+2.
+发射出去的光线需要与场景中的物体进行求交，然后算光源对这个点的贡献（也可以使用Blinn
+Phong算法），如果交点是玻璃材质的则产生反射光线和折射光线进行递归，直到光线打到Diffuse物体上。
+3.
+然后反向沿光线将交点处的颜色累加起来，期间经过了玻璃材质就按<code>Fresnel</code>项，算反射光线和折射光线的权重。<br />
+4. 最后将得到的颜色写入像素。</p>
+<p>通过上面的步骤我们可以发现，如果光线打到是镜面，沿着它反射的方向获得的环境光还算是对的，因为<code>Diffuse</code>物体之间也会发生多次弹射。但是当光线打到<code>Glossy</code>物体上时，<code>Whitted-Style Ray Tracing</code>无法产生光线<code>lobe</code>，也就是说它只能沿着镜面反射采样，这样就无法得到下面右图的效果。
+<img src="/img/00014/image-2.png" srcset="/img/loading.gif" lazyload alt="5" /></p>
+<p>另一个问题是<code>Whitted-Style Ray Tracing</code>打到<code>Diffuse</code>物体就停住了，它不考虑该<code>Diffuse</code>物体受到环境的影响，这样就无法得到下面右图的效果。<br />
+<img src="/img/00014/image-3.png" srcset="/img/loading.gif" lazyload alt="6" /></p>
+<p>还有最后一个问题，<code>Whitted-Style Ray Tracing</code>在计算光照对交点的影响时，以及反向沿光线将交点处的颜色累加起来时，都没有正确的考虑能量的传递过程，而<code>Path Tracing</code>为了解决这个问题，引入了辐射度量学的概念。</p>
+<h1 id="the-rendering-equation">The Rendering Equation</h1>
+<p>对于辐射度量学，我们这里理清楚<code>5</code>个概念就行:</p>
+<ol type="1">
+<li><p><code>power(Radiant flux)</code>，<span
+class="math inline">\(\Phi=\frac{\text{d}Q}{\text{d}t}\)</span><br />
+即单位时间内的能量</p></li>
+<li><p><code>Solid Angle</code>，<span
+class="math inline">\(\Omega=\frac{A}{r^2}\)</span><br />
+即球面上包含的某块面积比上距离平方：<br />
+<img src="/img/00014/image-4.png" srcset="/img/loading.gif" lazyload alt="7" /></p></li>
+<li><p><code>Differential Solid Angles</code>，<span
+class="math inline">\(\text{d}w=\frac{\text{d}A}{r^2}\)</span><br />
+<img src="/img/00014/image-5.png" srcset="/img/loading.gif" lazyload alt="8" /><br />
+图中<code>dA</code>左边和右边的长度用弧长公式求得：rdθ<br />
+<code>dA</code>下面和上面的长度，先求水平面上的半径<code>r sinθ</code>，再利用弧长公式求得：<code>r sinθ dφ</code>，则dw为（如果是单位球，<code>dw</code>就等于<code>dA</code>）：<br />
+<span class="math display">\[
+\begin{align}
+\text{d}w=\frac{\text{d}A}{r^2}=\sin\theta\text{d}\theta\text{d}\phi
+\end{align} \tag{1}
+\]</span></p></li>
+<li><p><code>Irradiance</code>，<span
+class="math inline">\(E(x)=\frac{\text{d}\Phi(x)}{\text{d}A}\)</span><br />
+即单位面积上接收到或辐射出的能量：<br />
+<img src="/img/00014/image-6.png" srcset="/img/loading.gif" lazyload alt="9" /><br />
+如果面积和光源不是正对着，还要乘上一个<code>cosθ</code>。</p></li>
+<li><p><code>Radiance</code>，<span
+class="math inline">\(L(p,w)=\frac{\text{d}^2\Phi(p,w)}{\text{d}w\text{d}A\cos\theta}\)</span><br />
+即单位面积上并且在单位立体角上的能量，可以是接受到的也可以是辐射出的。
+<img src="/img/00014/image-7.png" srcset="/img/loading.gif" lazyload alt="10" /></p></li>
+</ol>
+<p>通过上面两者的准确定义，我们可以得到<code>Irradiance</code>和<code>Radiance</code>的关系：<br />
+<img src="/img/00014/image-8.png" srcset="/img/loading.gif" lazyload alt="11" /><br />
+假设这是<code>Incident Radiance</code>，则<code>Irradiance</code>就是各个方向上接受到的能量总和，积分就是求和，是一样的意思。假设只有一个方向上能接收到光照的能量，则<code>dA</code>对应的<code>Irradiance</code>和<code>dA</code>从这个方向上来的能量(Radiance
+* cosθ * dw)是相等的。</p>
+<p>下面我们来理解一下，反射是什么。可以这样认为，反射是入射方向来的<code>Radiance</code>，转换成<code>Irradiance</code>后，最后再向出射方向辐射出的<code>Radiance</code>:<br />
+<img src="/img/00014/image-9.png" srcset="/img/loading.gif" lazyload alt="12" /><br />
+现在我们知道反射最后得到的是<code>dA</code>对应的<code>Irradiance</code>向反射方向辐射出的<code>Radiance</code>，但是我们不知道的是这个辐射出的<code>Radiance</code>和<code>dA</code>对应的<code>Irradiance</code>之间的关系，如果有一个函数可以描述这种行为那问题就解决了。</p>
+<p>而BRDF(双向反射分布函数)，就可以描述<code>dA</code>对应的<code>Irradiance</code>向某反射方向辐射出<code>Radiance</code>具体是多少：<br />
+<span class="math display">\[
+\begin{align}
+\text{d}L_r(w_r)=f_r(w_i,w_r)\cdot\text{d}E_i(w_i)
+\end{align} \tag{2}
+\]</span> <img src="/img/00014/image-10.png" srcset="/img/loading.gif" lazyload alt="13" /></p>
+<p>最后我们吧<span
+class="math inline">\(\text{d}E_i(w_i)\)</span>换成<code>Radiance</code>的形式得到下面方程：<br />
+<span class="math display">\[
+\begin{align}
+\text{d}L_r(w_r)=f_r(w_i,w_r)\cdot L_i(w_i)\cos\theta\text{d}w_i
+\end{align} \tag{3}
+\]</span>
+现在只是某一个入射方向<code>w_i</code>对出射方向<code>w_r</code>的贡献，然后两边分别积分得到出射方向<code>w_r</code>总共的<code>Radiance</code>：<br />
+<span class="math display">\[
+\begin{align}
+L_r(w_r)=\int_{\Omega+}f_r(w_i,w_r)\cdot L_i(w_i)\cos\theta\text{d}w_i
+\end{align} \tag{4}
+\]</span> <img src="/img/00014/image-11.png" srcset="/img/loading.gif" lazyload alt="14" /><br />
+这就是反射方程的由来。而渲染方程就是在这基础上加上了一个自发光项：<br />
+<img src="/img/00014/image-12.png" srcset="/img/loading.gif" lazyload alt="15" /></p>
+<h1 id="nee-path-tracing">NEE Path Tracing</h1>
+<p>我们看图<code>15</code>，可以发现<code>Le</code>，<code>BRDF</code>，<code>cosθ</code>我们已经知道了，剩下的就是<code>Li</code>。而Li并不是只来自光源，还来自它周围的间接光（其他物体被照亮后也算是一个小型光源）。这样对于我们看到一个物体表面，它的<code>Li</code>，即要考虑直接光对它的影响，又要考虑间接光对它的影响。而间接光又得继续考虑直接光和间接光。从而形成一个递归过程（NEE
+Path Tracing）：<br />
+<img src="/img/00014/image-13.png" srcset="/img/loading.gif" lazyload alt="16" /><br />
+下面是这一递归过程的伪代码：<br />
+<img src="/img/00014/image-14.png" srcset="/img/loading.gif" lazyload alt="17" /><br />
+这里用到了<code>Russian Roulette</code>的概念，因为间接光不能一直递归下去，而我们又想得到的期望值不变，假设期望值为<code>Lo</code>。我们均匀的取一个随机变量<code>P</code>(0
+&lt; P &lt;
+1)，以<code>P</code>概率进行递归，<code>1-P</code>的概率毙掉这根光线，则离散型随机变量的期望为：<br />
+<span class="math display">\[
+\begin{align}
+E(X)=P*L_o+(1-P)*0
+\end{align} \tag{5}
+\]</span>
+为了其期望值最后还是<code>Lo</code>，我们只需要将得到的间接光<code>Lo</code>除以<code>P</code>就行：<br />
+<span class="math display">\[
+\begin{align}
+E(X)=P*(\frac{L_o}{P})+(1-P)*0=L_o
+\end{align} \tag{6}
+\]</span></p>
+<h2 id="monte-carlo-integral">Monte Carlo Integral</h2>
+<p>上面伪代码中，没有说渲染方程(不考虑自发光)在代码中应该怎么实现，对于一个定积分我们可以用蒙特卡洛的方法来近似求解这个积分：<br />
+<img src="/img/00014/image-15.png" srcset="/img/loading.gif" lazyload alt="18" /><br />
+在积分域上，用任意一种概率密度函数（PDF），去采样多个位置<code>Xi</code>，则该定积分的值为：<br />
+<span class="math display">\[
+\begin{align}
+F_N=\frac{1}{N}\sum_{i=1}^{N}\frac{f(X_i)}{p(X_i)}
+\end{align} \tag{7}
+\]</span>
+如果是均匀的采样一个位置，则<code>PDF</code>就是一个常值：<br />
+<img src="/img/00014/image-16.png" srcset="/img/loading.gif" lazyload alt="19" /><br />
+<code>7</code>式可以写成：<br />
+<span class="math display">\[
+\begin{align}
+F_N=\frac{b-a}{N}\sum_{i=1}^{N}f(X_i)
+\end{align} \tag{8}
+\]</span>
+但是我们一般不会去用均匀采样，因为噪声很大。如果有一个<code>PDF</code>，其形状和<code>f(x)</code>大致吻合，那么用这样的<code>PDF</code>去采样一个位置或方向，收敛速度更快，这就是重要性采样（我在<a
+href="https://howl144.github.io/2023/07/01/00018.%20Games202%20Hw4/#splitsum%E5%92%8Cggx%E9%87%8D%E8%A6%81%E6%80%A7%E9%87%87%E6%A0%B7">这篇文章</a>中有详细讲到重要性采样的过程）。</p>
+<p>渲染方程写成蒙特卡洛积分的形式如下：<br />
+<span class="math display">\[
+\begin{align}
+L_o(p,w_o)=\int_{\Omega+}L_i(p,w_i)f_r(p,w_i,w_o)(n\cdot w_i)\text{d}w_i
+\\
+\approx\frac{1}{N}\sum_{i=1}^{N}\frac{L_i(p,w_i)f_r(p,w_i,w_o)(n\cdot
+w_i)}{p(w_i)}
+\end{align} \tag{9}
+\]</span>
+但是如果每个交点都向外发射<code>N</code>条光线，指数爆炸还是吃不消：<br />
+<img src="/img/00014/image-17.png" srcset="/img/loading.gif" lazyload alt="20" /><br />
+我们就让交点每次只产生一条光线向外追踪，然后在一个像素里面多打几条光线，这样就可以避免指数爆炸：<br />
+<img src="/img/00014/image-18.png" srcset="/img/loading.gif" lazyload alt="21" /><br />
+下面是更新后的<code>NEE Path Tracing</code>伪代码：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">function <span class="hljs-title">Li</span><span class="hljs-params">(p,wo,depth)</span></span><br><span class="hljs-function">    <span class="hljs-title">if</span><span class="hljs-params">(depth==<span class="hljs-number">0</span> &amp;&amp; Ray hit light source)</span></span><br><span class="hljs-function">        <span class="hljs-keyword">return</span> LightRadiance</span>;<br><br>	P_RR = <span class="hljs-number">0.8</span>;<br>	Randomly select ksi in a uniform dist. in [<span class="hljs-number">0</span>,<span class="hljs-number">1</span>]<br>	<span class="hljs-keyword">if</span>(ksi &gt; P_RR) <span class="hljs-keyword">return</span> <span class="hljs-number">0.0</span>;<br>	<br>	Randomly select a sampling point on the light source, <span class="hljs-function">p_on_light</span><br><span class="hljs-function">	Trace a shadowRay <span class="hljs-title">sr</span><span class="hljs-params">(p,(p_on_light - p).normalized() )</span></span><br><span class="hljs-function">	<span class="hljs-title">if</span><span class="hljs-params">(ray sr does <span class="hljs-keyword">not</span> hit an object except light source)</span></span><br><span class="hljs-function">		direct </span>= LightRadiance * f_r * cosθ / pdfLight_solidAngle;<br>	<br>	Randomly choose One direction wi ~ <span class="hljs-built_in">pdf</span>(w)<br>	<span class="hljs-function">Trace a ray <span class="hljs-title">r</span><span class="hljs-params">(p,wi)</span></span><br><span class="hljs-function">	<span class="hljs-title">if</span><span class="hljs-params">(ray r hit an object at q &amp;&amp; does <span class="hljs-keyword">not</span> hit light source)</span></span><br><span class="hljs-function">		indirect </span>= <span class="hljs-built_in">Li</span>(q,-wi,depth+<span class="hljs-number">1</span>) * f_r * cosθ / <span class="hljs-built_in">pdf</span>(wi);<br>	<br>	<span class="hljs-keyword">return</span> (direct + indirect) / P_RR;<br></code></pre></td></tr></table></figure>
+可以看到里面多了一个<code>Trace</code>函数，在<code>Trace</code>光线时，我们需要判断光线与场景中物体的求交，而场景中大部分的物体都是由三角形组成的，所以我们需要一个高效的算法来判断光线与三角形求交。</p>
+<h2 id="光线与三角形求交">光线与三角形求交</h2>
+<p>要想求光线是否与三角形相交，我们很自然可以想到一种方法，先判断光线与三角形所在的平面是否相交，然后再判断交点是否在三角形内。<br />
+<img src="/img/00014/image-19.png" srcset="/img/loading.gif" lazyload alt="22" /><br />
+我们定义一个射线方程：<span class="math inline">\(r(t)=o+t*\vec d,0\leq
+t&lt;\inf\)</span>，再定义一个平面方程： <span
+class="math inline">\((p-p&#39;)\cdot\vec
+N=0\)</span>，然后假设<code>p</code>等于<code>r(t)</code>则我们可以求出<code>t</code>这个系数：
+<span class="math display">\[
+\begin{align}
+&amp; (p-p&#39;)\cdot\vec N=(o+t*\vec d-p&#39;)=0 \\
+&amp; t=\frac{(p&#39;-o)\cdot\vec N}{\vec d\cdot N}
+\end{align} \tag{10}
+\]</span>
+判断点在三角形内，直接将交点<code>p</code>与三角形各个顶点按顺序相连，假设是逆时针，连到第一个顶点得到的向量与第一个顶点和第二顶点的向量做叉乘，转一圈，然后判断叉乘出的方向是否同向，同向在三角形里面，不同向则不在。</p>
+<p>这种方法可以用来判断求交，但是效率不高，有一个效率更高的算法<code>Moller Trumbore</code>，它是一种可以快速求解直线与三角形求交的算法，通过三阶方阵行列式的混合积可以快速得出交点与重心坐标，然后判断重心坐标是否大于零，且<code>1-u-v</code>也要大于零。要推导它还比较麻烦，需要用到<a
+target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-cn/%E4%B8%89%E9%87%8D%E7%A7%AF">混合积</a>和<a
+target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-cn/%E5%85%8B%E8%90%8A%E5%A7%86%E6%B3%95%E5%89%87">克莱姆法则</a>。<br />
+<code>先介绍一下混合积的快速记忆法</code>：<br />
+<img src="/img/00014/image-20.png" srcset="/img/loading.gif" lazyload alt="23" /><br />
+对于一个三阶方阵的行列式：<br />
+<span class="math display">\[
+\begin{align}
+\left | \begin{matrix}
+A_1 &amp; B_1 &amp; C_1 \\
+A_2 &amp; B_2 &amp; C_2 \\
+A_3 &amp; B_3 &amp; C_3
+\end{matrix} \right |
+\end{align} \tag{11}
+\]</span> 其混合积可以写成以下形式：<br />
+<span class="math display">\[
+\begin{align}
+(\vec A\times\vec B)\cdot\vec C=(\vec B\times\vec C)\cdot\vec A=(\vec
+C\times\vec A)\cdot\vec B
+\end{align} \tag{12}
+\]</span> <code>克莱姆法则</code>:<br />
+对于线性方程组 <span class="math inline">\(A\vec x = \vec c\)</span>,
+其中<code>A</code>是可逆方阵，<span class="math inline">\(\vec x,\vec
+c\)</span>都是列向量，那么方程有解，且<span class="math inline">\(\vec
+x\)</span>的每一个解为：<br />
+<span class="math display">\[
+\begin{align}
+x_i=\frac{\text{det}A_i}{\text{det}A}
+\end{align} \tag{13}
+\]</span> 其中<code>A_i</code>是被列向量<span class="math inline">\(\vec
+c\)</span>取代了第<code>i</code>列的矩阵。</p>
+<p>下面是<code>MT</code>算法的推理，如下：<br />
+三角形中的某一点可以写成重心坐标的形式，该点也可以由射线方程得到，则可以得到下面等式：<br />
+<span class="math display">\[
+\begin{align}
+O+t*\vec D=(1-u-v)*\vec V_0+u*\vec V_1+v*\vec V_2 \\
+O-\vec V_0=(\vec V_1-\vec V_0)*u+(\vec V_2-\vec V_0)*v-t*\vec D
+\end{align} \tag{14}
+\]</span> 设：<br />
+<span class="math display">\[
+\begin{align}
+&amp; \vec S=O-\vec V_0 \\
+&amp; \vec E_1=\vec V_1-\vec V_0 \\
+&amp; \vec E_2=\vec V_2-\vec V_0 \\
+&amp; \vec S=\vec E_1*u+\vec E_2v-t*\vec D
+\end{align} \tag{15}
+\]</span> 这是一个线性方程组，我们可以写成如下形式：<br />
+<span class="math display">\[
+\begin{align}
+[-\vec D,\vec E_1,\vec E_2]\cdot
+\left[\begin{matrix}
+t\\
+u\\
+v
+\end{matrix} \right]
+=\vec S
+\end{align} \tag{16}
+\]</span> 由克莱姆法则得到它们的解为：<br />
+<span class="math display">\[
+\begin{align}
+t=\frac{\text{det}(\vec S,\vec E_1,\vec E_2)}{\text{det}(-\vec D,\vec
+E_1,\vec E_2)} \\
+u=\frac{\text{det}(-\vec D,\vec S,\vec E_2)}{\text{det}(-\vec D,\vec
+E_1,\vec E_2)} \\
+v=\frac{\text{det}(-\vec D,\vec E_1,\vec S)}{\text{det}(-\vec D,\vec
+E_1,\vec E_2)}
+\end{align} \tag{17}
+\]</span> 再由混合积可得到分母和分子行列式的值：<br />
+<span class="math display">\[
+\begin{align}
+&amp; \text{det}(-\vec D,\vec E_1,\vec E_2)=-\vec D\cdot (\vec
+E_1\times\vec E_2)=\vec E_1\cdot(\vec E_2\times-\vec D)=\vec
+E_1\cdot(\vec D\times\vec E_2)=\vec E_1\cdot\vec S_1 \\
+&amp; \text{det}(\vec S,\vec E_1,\vec E_2)=\vec S\cdot (\vec
+E_1\times\vec E_2)=\vec E_2\cdot(\vec S\times\vec E_1)=\vec E_2\cdot\vec
+S_2 \\
+&amp; \text{det}(-\vec D,\vec S,\vec E_2)=-\vec D\cdot (\vec S\times\vec
+E_2)=\vec S\cdot(\vec D\times\vec E_2)=\vec S\cdot\vec S_1 \\
+&amp; \text{det}(-\vec D,\vec E_1,\vec S)=-\vec D\cdot (\vec
+E_1\times\vec S)=\vec D\cdot(\vec S\times\vec E_1)=\vec D\cdot\vec S_2
+\end{align} \tag{18}
+\]</span> 则：<br />
+<span class="math display">\[
+\begin{align}
+t=\frac{\vec E_2\cdot\vec S_2}{\vec E_1\cdot\vec S_1} \\
+u=\frac{\vec S\cdot\vec S_1}{\vec E_1\cdot\vec S_1} \\
+v=\frac{\vec D\cdot\vec S_2}{\vec E_1\cdot\vec S_1}
+\end{align} \tag{19}
+\]</span> 这就是课堂上看到的公式：<br />
+<img src="/img/00014/image-21.png" srcset="/img/loading.gif" lazyload alt="24" /></p>
+<h2 id="光线与隐式表面求交">光线与隐式表面求交</h2>
+<p>这里举一个最简单的例子，光线与球面求交，其过程和上面光线与平面求交类似：<br />
+<img src="/img/00014/image-22.png" srcset="/img/loading.gif" lazyload alt="25" /><br />
+还是一样用射线方程代替球面上一点<code>P</code>，然后直接求二次函数的根。</p>
+<h2 id="加速结构bounding-volume-hierarchy">加速结构Bounding Volume
+Hierarchy</h2>
+<p>有了<code>MT</code>算法，我们可以很快判断光线是否与三角形相交，而隐式表面的求交也很快。但复杂场景中的三角形面数非常多，如果每次光线弹射一次都要与场景中所有三角形求交，计算量还是太大了，不过我们可以构建一个加速结构<code>BVH</code>，来解决这个问题，在此之前先介绍一下
+<code>Bounding Volume</code>是什么东西：<br />
+<img src="/img/00014/image-23.png" srcset="/img/loading.gif" lazyload alt="26" /><br />
+我们可以用一个简单的包围盒包住一个复杂的物体，先对包围盒求交再对复杂物体求交，这样当光线没有与包围盒相交时，就可以避免与复杂物体求交，这可以节省大量时间。</p>
+<p>在三维场景中，包围盒通常是横平竖直的轴对齐包围盒（AABB）：<br />
+<img src="/img/00014/image-24.png" srcset="/img/loading.gif" lazyload alt="27" /><br />
+这种包围盒有个特点，它的平面都是<code>xy</code> <code>yz</code>
+<code>zx</code>平面，没有任何旋转，分别和<code>z</code> <code>x</code>
+<code>y</code>轴垂直，这样我们就可以降维处理每一对平面，然后利用下面公式计算光线进入和出去这对平面的时间，这里假设是<code>yz</code>平面：<br />
+<span class="math display">\[
+\begin{align}
+&amp; t_{min}=\frac{X_0-O}{\vec {d}.x} \\
+&amp; t_{max}=\frac{X_1-O}{\vec {d}.x}
+\end{align} \tag{20}
+\]</span> 其他对平面的处理方式相同：<br />
+<img src="/img/00014/image-25.png" srcset="/img/loading.gif" lazyload alt="28" /><br />
+从图中可以看出来，<code>t_min</code>要的是三对平面中最大的一个，而<code>t_max</code>则要的是三对平面中最小的一个，所以我们用下面公式来求得光线进入<code>t_enter</code>包围盒以及出去<code>t_exit</code>包围盒的时间：<br />
+<span class="math display">\[
+\begin{align}
+&amp; t_{enter}=\text{max}(t_{min})\\
+&amp; t_{exit}=\text{min}(t_{max})
+\end{align} \tag{21}
+\]</span> 最后我们判断一下什么情况下，光线会与包围盒相交：<br />
+1.
+<code>t_enter &lt; t_exit</code>，这种情况说明光线在包围盒中停留了一段时间，所以是相交。
+2.
+<code>t_enter &lt; 0 &amp;&amp; t_exit &gt;=0</code>，这说明光线就在包围盒内部，那肯定是相交。</p>
+<p>综合这两种情况得光线与包围盒相交的条件<code>t_enter &lt; t_exit &amp;&amp; t_exit &gt;=0</code>。</p>
+<p>现在有了包围盒，但是光线和包围盒相交后，如果物体很复杂，那还是要和物体上每个三角形求交，只用一个包围盒还是达不到我们预期，我们需要构建一个加速结构，然后将复杂物体的三角形不断划分到子包围盒中，这里介绍两种划分方法：</p>
+<p>第一种是空间划分法，以<code>KD-Tree</code>为例:<br />
+对空间进行二分（一般是取中间进行划分），每个父节点都有两个子节点，为了保证场景划分的均匀，每次都会沿着<code>xyz</code>轴划分，上次是沿<code>x</code>轴则下次就是y轴，再下次就是<code>z</code>轴，如此循环，直到叶子节点包含的三角形数量比较少时停止划分，其中非叶子节点不存储三角形：<br />
+<img src="/img/00014/image-26.png" srcset="/img/loading.gif" lazyload alt="29" /><br />
+有了这个加速结构，我们再<code>Trace</code>一个物体时，就能有效避免和整个物体的三角形求交，时间复杂度由<span
+class="math inline">\(O(n)\)</span>降为<span
+class="math inline">\(O(\log_{2}n)\)</span>：<br />
+<img src="/img/00014/image-27.png" srcset="/img/loading.gif" lazyload alt="30" /><br />
+图中蓝色块和<code>A</code>的子节点一样处理，只不过这里隐藏了。<br />
+但是空间划分有个严重的问题，三角形会和包围盒相交，我们得知道包围盒和哪些三角形有交集，才能将这些三角形存储到叶子节点中，这样问题又变得比较复杂了，所以我们一般不用<code>KD-Tree</code>来划分空间，而是用<code>BVH</code>来划分物体，从而避免判断三角形和包围盒求交的问题。</p>
+<p>第二种方法则是物体划分法，以<code>BVH</code>为例，现在基本上只要是跟光线追踪有关的加速结构，都是用的类似<code>BVH</code>来解决的，可见其重要性。<br />
+<code>BVH</code>的划分思路和<code>KD-Tree</code>是类似的，即对物体的三角形进行二分（后面说具体的划分法），然后分别求子节点的包围盒，非叶子节点也是一样不存储三角形只用于判断是否相交，叶子节点在包围盒内三角形比较少时停止划分：<br />
+<img src="/img/00014/image-28.png" srcset="/img/loading.gif" lazyload alt="31" /><br />
+用<code>BVH</code>划分也会有点小问题，那就是包围盒重叠，重叠部分越多需要访问的节点数量就越多，求交的效率就越低，我们需要一个好的方法去尽量避免重叠，一个还算不错且比较通用的手段是对物体先进行排序，然后取中间物体作为分割线，在此之前还要向<code>KD-Tree</code>学习，我们找到当前节点下能包围所有三角形的包围盒中心位置，然后判断该位置的<code>xyz</code>分量，取最大分量的轴为排序轴：<br />
+<img src="/img/00014/image-29.png" srcset="/img/loading.gif" lazyload alt="32" /><br />
+需要注意的是我上面说的<code>分别求子节点的包围盒</code>这过程是在回溯过程中完成的，递归完成的是排序和划分，为了限制文章长度，就不贴代码了。</p>
+<p>相比于<code>BVH</code>，还有一个更加高效的方法<code>Surface Area Heuristic</code>：<br />
+我们先来看下这个例子：<br />
+<img src="/img/00014/image-30.png" srcset="/img/loading.gif" lazyload alt="33" /><br />
+假设我们已经对图<code>b</code>和图<code>c</code>在某轴上排序好了他们的包围盒，按照<code>BVH</code>的划分思路，它划分好的样子是图<code>b</code>，但是很明显图<code>c</code>是个更好的选择，而<code>SAH</code>就可以做这样的一件事情。<br />
+正如它的名字所说，这个算法考虑了包围盒的表面积，不再是中间一刀切。具体来说，它将包围盒分成了若干个桶，就下图而言，有<code>6</code>个桶：<br />
+<img src="/img/00014/image-31.png" srcset="/img/loading.gif" lazyload alt="34" /><br />
+然后记录每个桶中三角形的数量，并依次按桶的边界对包围盒进行二分，然后记录每次分割后的开销，用下面这个公式计算：<br />
+<span class="math display">\[
+\begin{align}
+\text{cost}(A,B)=t_{trav}+p_A\sum_{i=1}^{N_A}t_{isect}(a_i)+p_B\sum_{i=1}^{N_B}t_{isect}(b_i)
+\end{align} \tag{22}
+\]</span> 其中<code>A</code>，<code>B</code>是分割后的两个包围盒。<br />
+<code>t_trav</code>代表访问该节点的开销，不是求交，就是单纯的获取数据读取数据，我们一般把它设为<code>0.125</code>。<br />
+<code>t_isect(a_i)</code>代表对包围盒<code>A</code>内的某个三角形求交的开销，我们一般将其设为<code>1</code>，<code>t_isect(b_i)</code>同理。<br />
+对于<code>p_A</code>和<code>p_B</code>，看下面图例：<br />
+<img src="/img/00014/image-32.png" srcset="/img/loading.gif" lazyload alt="35" /><br />
+光线穿过包围盒<code>C</code>的前提下穿过包围盒<code>A</code>的概率为<span
+class="math inline">\(p_A=\frac{S(A)}{S(C)}\)</span>，同理<span
+class="math inline">\(p_B=\frac{S(B)}{S(C)}\)</span>，其中<code>S(x)</code>函数的作用为获取包围盒的表面积。<br />
+这样上面<code>22</code>式就可以简化为：<br />
+<span class="math display">\[
+\begin{align}
+\text{cost}(A,B)=0.125+\frac{S(A)}{S(C)}*N_A+\frac{S(B)}{S(C)}*N_B
+\end{align} \tag{23}
+\]</span>
+最后选择开销最小的分割线对物体进行分割，递归下去，直到包围盒内三角形数量较少时停止。这部分的代码实现如下：
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">double</span> <span class="hljs-title">BVHAccel::computeObjSurArea</span><span class="hljs-params">(<span class="hljs-type">const</span> std::vector&lt;Object *&gt;&amp; objects)</span></span>&#123;<br>    <span class="hljs-type">double</span> area = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">const</span> <span class="hljs-keyword">auto</span>&amp; obj:objects)&#123;<br>        area += obj-&gt;<span class="hljs-built_in">getBounds</span>().<span class="hljs-built_in">SurfaceArea</span>();<br>    &#125;<br>    <span class="hljs-keyword">return</span> area;<br>&#125;<br><span class="hljs-function">BVHBuildNode * <span class="hljs-title">BVHAccel::recursiveBuildSAH</span><span class="hljs-params">(std::vector&lt;Object *&gt; objects)</span></span>&#123;<br>    BVHBuildNode* node = <span class="hljs-keyword">new</span> <span class="hljs-built_in">BVHBuildNode</span>();<br><br>    <span class="hljs-comment">// Compute bounds of all primitives in BVH node</span><br>    <span class="hljs-keyword">if</span> (objects.<span class="hljs-built_in">size</span>() == <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-comment">// Create leaf _BVHBuildNode_</span><br>        node-&gt;bounds = objects[<span class="hljs-number">0</span>]-&gt;<span class="hljs-built_in">getBounds</span>();<br>        node-&gt;object = objects[<span class="hljs-number">0</span>];<br>        node-&gt;left = <span class="hljs-literal">nullptr</span>;<br>        node-&gt;right = <span class="hljs-literal">nullptr</span>;<br>        node-&gt;area = objects[<span class="hljs-number">0</span>]-&gt;<span class="hljs-built_in">getArea</span>();<br>        <span class="hljs-keyword">return</span> node;<br>    &#125;<br>    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (objects.<span class="hljs-built_in">size</span>() == <span class="hljs-number">2</span>) &#123;<br>        node-&gt;left = <span class="hljs-built_in">recursiveBuildSAH</span>(&#123;objects[<span class="hljs-number">0</span>]&#125;);<br>        node-&gt;right = <span class="hljs-built_in">recursiveBuildSAH</span>(&#123;objects[<span class="hljs-number">1</span>]&#125;);<br><br>        node-&gt;bounds = <span class="hljs-built_in">Union</span>(node-&gt;left-&gt;bounds, node-&gt;right-&gt;bounds);<br>        node-&gt;area = node-&gt;left-&gt;area + node-&gt;right-&gt;area;<br>        <span class="hljs-keyword">return</span> node;<br>    &#125;<br>    <span class="hljs-keyword">else</span> &#123;<br>        Bounds3 bounds;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; objects.<span class="hljs-built_in">size</span>(); ++i)<br>            bounds = <span class="hljs-built_in">Union</span>(bounds, objects[i]-&gt;<span class="hljs-built_in">getBounds</span>());<br>        <span class="hljs-type">double</span> boundsSurfaceAreaInv = <span class="hljs-number">1.0f</span> / bounds.<span class="hljs-built_in">SurfaceArea</span>();<br><br>        <span class="hljs-keyword">auto</span> beginning=objects.<span class="hljs-built_in">begin</span>();<br>        <span class="hljs-keyword">auto</span> ending=objects.<span class="hljs-built_in">end</span>();<br>        <span class="hljs-keyword">if</span>(objects.<span class="hljs-built_in">size</span>() &lt; <span class="hljs-number">4</span>)&#123;<br>            <span class="hljs-keyword">auto</span> middling = objects.<span class="hljs-built_in">begin</span>() +objects.<span class="hljs-built_in">size</span>()/<span class="hljs-number">2</span>;<br>            <span class="hljs-keyword">auto</span> leftshapes = std::<span class="hljs-built_in">vector</span>&lt;Object*&gt;(beginning, middling);<br>            <span class="hljs-keyword">auto</span> rightshapes = std::<span class="hljs-built_in">vector</span>&lt;Object*&gt;(middling, ending);<br>            node-&gt;left = <span class="hljs-built_in">recursiveBuildSAH</span>(std::<span class="hljs-built_in">move</span>(leftshapes));<br>            node-&gt;right = <span class="hljs-built_in">recursiveBuildSAH</span>(std::<span class="hljs-built_in">move</span>(rightshapes));<br>            node-&gt;bounds = <span class="hljs-built_in">Union</span>(node-&gt;left-&gt;bounds, node-&gt;right-&gt;bounds);<br>            node-&gt;area = node-&gt;left-&gt;area + node-&gt;right-&gt;area;<br>        &#125;<br>		<span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-type">int</span> bestChoice=<span class="hljs-number">0</span>;<br>            <span class="hljs-type">double</span> minCost=std::numeric_limits&lt;<span class="hljs-type">double</span> &gt;::<span class="hljs-built_in">max</span>();<br>            <span class="hljs-type">double</span> objSize =(<span class="hljs-type">double</span>)objects.<span class="hljs-built_in">size</span>();<br>            <span class="hljs-type">double</span> nums[]=&#123;<span class="hljs-number">1.0</span>/<span class="hljs-number">12</span>,<span class="hljs-number">2.0</span>/<span class="hljs-number">12</span>,<span class="hljs-number">3.0</span>/<span class="hljs-number">12</span>,<span class="hljs-number">4.0</span>/<span class="hljs-number">12</span>,<span class="hljs-number">5.0</span>/<span class="hljs-number">12</span>,<span class="hljs-number">6.0</span>/<span class="hljs-number">12</span>,<span class="hljs-number">7.0</span>/<span class="hljs-number">12</span>,<span class="hljs-number">8.0</span>/<span class="hljs-number">12</span>,<span class="hljs-number">9.0</span>/<span class="hljs-number">12</span>,<span class="hljs-number">10.0</span>/<span class="hljs-number">12</span>,<span class="hljs-number">11.0</span>/<span class="hljs-number">12</span>&#125;;<br>            <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>;i &lt; <span class="hljs-number">11</span>;i++)<br>                nums[i]*= objSize;<br>            <span class="hljs-type">int</span> dim = bounds.<span class="hljs-built_in">maxExtent</span>();<br>            <span class="hljs-keyword">switch</span> (dim)&#123;<br>                <span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:<span class="hljs-comment">//x</span><br>                    std::<span class="hljs-built_in">sort</span>(objects.<span class="hljs-built_in">begin</span>(), objects.<span class="hljs-built_in">end</span>(), [](<span class="hljs-keyword">auto</span> f1, <span class="hljs-keyword">auto</span> f2)<br>                            &#123; <span class="hljs-keyword">return</span> f1-&gt;<span class="hljs-built_in">getBounds</span>().<span class="hljs-built_in">Centroid</span>().x &lt;<br>                                    f2-&gt;<span class="hljs-built_in">getBounds</span>().<span class="hljs-built_in">Centroid</span>().x; &#125;);<br>                    <span class="hljs-keyword">break</span>;<br>				...<span class="hljs-comment">//y z</span><br>            &#125;<br>            <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>;i &lt; <span class="hljs-number">11</span>;i++)&#123;<br>                <span class="hljs-keyword">auto</span> middling = objects.<span class="hljs-built_in">begin</span>() + (<span class="hljs-type">int</span>)nums[i];<br>                <span class="hljs-keyword">auto</span> leftshapes = std::<span class="hljs-built_in">vector</span>&lt;Object*&gt;(beginning, middling);<br>                <span class="hljs-keyword">auto</span> rightshapes = std::<span class="hljs-built_in">vector</span>&lt;Object*&gt;(middling, ending);<br>                <span class="hljs-type">double</span> leftBoxArea = <span class="hljs-built_in">computeObjSurArea</span>(leftshapes);<br>                <span class="hljs-type">double</span> rightBoxArea = <span class="hljs-built_in">computeObjSurArea</span>(rightshapes);<br>                <span class="hljs-type">double</span> cost = <span class="hljs-number">0.125f</span>+<br>                ( leftBoxArea * leftshapes.<span class="hljs-built_in">size</span>() + rightBoxArea * rightshapes.<span class="hljs-built_in">size</span>() )<br>                 * boundsSurfaceAreaInv;<br>                <span class="hljs-keyword">if</span>(cost &lt; minCost)&#123;   <br>                    minCost = cost;<br>                    bestChoice=(<span class="hljs-type">int</span>)nums[i];<br>                &#125;<br>            &#125;<br>            <span class="hljs-keyword">auto</span> middling = objects.<span class="hljs-built_in">begin</span>() + bestChoice;<br>            <span class="hljs-keyword">auto</span> leftshapes = std::<span class="hljs-built_in">vector</span>&lt;Object*&gt;(beginning, middling);<br>            <span class="hljs-keyword">auto</span> rightshapes = std::<span class="hljs-built_in">vector</span>&lt;Object*&gt;(middling, ending);<br>            node-&gt;left = <span class="hljs-built_in">recursiveBuildSAH</span>(std::<span class="hljs-built_in">move</span>(leftshapes));<br>            node-&gt;right = <span class="hljs-built_in">recursiveBuildSAH</span>(std::<span class="hljs-built_in">move</span>(rightshapes));<br>            node-&gt;bounds = <span class="hljs-built_in">Union</span>(node-&gt;left-&gt;bounds, node-&gt;right-&gt;bounds);<br>            node-&gt;area = node-&gt;left-&gt;area + node-&gt;right-&gt;area;<br>        &#125;<br>        <span class="hljs-keyword">return</span> node;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure> 和<code>BVH</code>的对比效果图如下：<br />
+<img src="/img/00014/BVH-SAH.png" srcset="/img/loading.gif" lazyload alt="36" /><br />
+<img src="/img/00014/image-33.png" srcset="/img/loading.gif" lazyload alt="37" /><br />
+快了一点点，不多，可能在更复杂的场景下差距会拉开。<br />
+上面部分图片来源于<a
+target="_blank" rel="noopener" href="https://pbr-book.org/3ed-2018/Primitives_and_Intersection_Acceleration/Bounding_Volume_Hierarchies">pbrt-SAH</a>。</p>
+<h2 id="直接光采样">直接光采样</h2>
+<p>回到<code>NEE Path Tracing</code>：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">function <span class="hljs-title">Li</span><span class="hljs-params">(p,wo,depth)</span></span><br><span class="hljs-function">    ...</span><br><span class="hljs-function">	Randomly select a sampling point on the light source, p_on_light</span><br><span class="hljs-function">	Trace a shadowRay <span class="hljs-title">sr</span><span class="hljs-params">(p,(p_on_light - p).normalized() )</span></span><br><span class="hljs-function">	<span class="hljs-title">if</span><span class="hljs-params">(ray sr does <span class="hljs-keyword">not</span> hit an object except light source)</span></span><br><span class="hljs-function">		direct </span>= LightRadiance * f_r * cosθ / pdfLight_solidAngle;<br>	...<br></code></pre></td></tr></table></figure>
+这个<code>pdfLight_solidAngle</code>我们还不知道怎么算。但是我们知道<code>BRDF</code>采样，用一种概率密度函数（PDF），去采样一个方向<code>wi</code>，并且获得该方向的<code>pdf</code>是多少，下面是<code>cos weight PDF</code>得到的<code>16spp</code>直接光采样效果：<br />
+<img src="/img/00014/image-34.png" srcset="/img/loading.gif" lazyload alt="38" /><br />
+这效果太差了，因为<code>BRDF</code>采样对于<code>Diffuse</code>物体而言，它很难生成一根打中光源的光线，我们要改进这一点，让物体直接对光源采样：<br />
+对光源的采样主要是获得采样方向<code>wi</code>以及它的<code>pdf</code>，我们可以在面光源上随机选择一个采样点，对于物体上的一点<code>x</code>与它连线，形成<code>ShadowRay</code>，因为是在光源上随机选择一个采样点，所以采样光源的<code>pdf</code>为<code>1/A</code>，<code>A</code>为光源的面积，再将渲染方程对<code>dw</code>的积分换成<code>dA</code>的积分即可：<br />
+<img src="/img/00014/image-35.png" srcset="/img/loading.gif" lazyload alt="39" /><br />
+但是我不这样做，因为后面多重重要性采样需要<code>pdf</code>在同一个角度考虑，要么是在立体角上要么是在面积上，而我选择的是立体角上，即将光源的面积投影到立体角上，然后获得光源在立体角上的<code>pdf</code>，其过程和上面<code>dw</code>转换为<code>dA</code>类似：<br />
+<span class="math display">\[
+\begin{align}
+pdfLight\text{-}SolidAngle=\frac{A\cos\theta&#39;}{||x-x&#39;||^2}
+\end{align} \tag{24}
+\]</span> 代码中渲染方程还是写成下面这种形式：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp">Le += L_dir_Inter.emit * f_r * std::<span class="hljs-built_in">fmax</span>(<span class="hljs-built_in">dotProduct</span>(w_Li, intersection.normal),<span class="hljs-number">0.0</span>) / light_solidAngle_pdf;<br></code></pre></td></tr></table></figure> 下面是<code>1spp</code>直接光采样的效果：<br />
+<img src="/img/00014/image-36.png" srcset="/img/loading.gif" lazyload alt="40" /><br />
+可以看到这比<code>16sppBRDF</code>采样的效果好太多！而间接光如何处理在上面伪代码中已经写出来，这部分没有什么特别的，我们看<code>16spp</code>全局光照的效果：<br />
+<img src="/img/00014/MIS-16spp-1.png" srcset="/img/loading.gif" lazyload alt="41" /><br />
+还是挺不错的😆！代码就不贴了，可以看下我的源码，有详细注释！</p>
+<h1 id="brdf-and-bsdf">BRDF and BSDF</h1>
+<h2 id="brdf">BRDF</h2>
+<p><code>BRDF</code>这个<code>R</code>指的是反射，而<code>BSDF</code>的<code>S</code>指的是散射，它由<code>BRDF</code>和<code>BTDF</code>组成的，先来看下<code>BRDF</code>，我们一般用的是<code>Cook-Torrance</code>反射方程:<br />
+<span class="math display">\[
+\begin{align}
+L_{o}(p,w_{o})=\int_{\Omega}^{}(kd\frac{c}{\pi}+ks\frac{DFG}{4(w_{o}\cdot
+n)(w_{i}\cdot n)})L_{i}(p,w_{i})n\cdot w_{i}dw_{i}
+\end{align} \tag{25}
+\]</span></p>
+<p>因为这里<code>ks</code>和<code>Fresnel</code>项指代的是同一个东西，我们可以去掉<code>ks</code>,其中<code>o</code>代表出射方向也就是我们看到的方向，<code>i</code>是入射方向即光照方向。<br />
+这个方程的推导就不细说了，其实我也没推过😑，能用就行哈哈，不过它的作用我在上文中已经详细讲过了，可以去看下。说下这里每项具体都是些什么东西：</p>
+<p><code>kd</code>表示折射或漫反射部分所占的比例，而<code>ks</code>则是反射比例。在<code>BRDF</code>中<code>kd</code>就是漫反射部分<code>kd=1.0-ks</code>。因为金属不会折射光线，因此不会有漫反射，如果表面是金属的，我们会把系数<code>kd</code>变为<code>0</code>，即<code>kd=(1.0-ks)*(1.0-metallic)</code>。</p>
+<p><code>c/π</code>是兰伯特项，也称作<code>Diffuse</code>项，<code>c</code>是<code>albedo</code>，除以<code>π</code>是为了能量守恒，上面我有提到<code>BRDF</code>的定义是入射光的<code>Irradiance</code>向反射方向<code>wo</code>辐射出的<code>Radiance</code>是多少，也就是它们的比率，假设漫反射辐射出的能量是<code>c</code>，入射光的<code>Radiance</code>为<code>1</code>，因为漫反射的<code>BRDF</code>是常值则有下面等式：<br />
+<span class="math display">\[
+\begin{align}
+&amp; c=f_r\int_{\Omega+}\cos\theta\text{d}w_i \\
+&amp; c=f_r*2\pi*\int_{0}^{\frac{\pi}{2}}\sin\theta\text{d}\sin\theta \\
+&amp; c=f_r*2\pi*\frac{\sin^2\theta}{2}|_{0}^{\frac{\pi}{2}}\\
+&amp; c=f_r*\pi\\
+&amp; f_r=\frac{c}{\pi}
+\end{align} \tag{26}
+\]</span></p>
+<p><span class="math inline">\(\frac{DFG}{4(w_{o}\cdot n)(w_{i}\cdot
+n)}\)</span>这坨东西是<code>Specular</code>反射项。它是基于微平面理论推导出来的，微平面理论假设物体是由很多微平面组成，每个微平面都是绝对光滑的，但是都非常小，没办法一个一个观察到，只能看到统计后的宏观结果。它下面<span
+class="math inline">\(4(w_{o}\cdot n)(w_{i}\cdot
+n)\)</span>是一个校正因子，用来校正从微平面的局部空间转到整体表面时的数量差异。</p>
+<h3 id="normal-distribution-function">Normal Distribution Function</h3>
+<p><code>D</code>项为<code>GGX</code>法线分布函数，<code>Glossy</code>物体采样某方向的<code>PDF</code>函数就是由该函数乘上<code>cos</code>在半球积分所得：<br />
+<span class="math display">\[
+\begin{align}
+\int_{\Omega+}D(h)(n\cdot h)\text{d}w_h=1
+\end{align} \tag{27}
+\]</span> <img src="/img/00014/image-37.png" srcset="/img/loading.gif" lazyload alt="42" /><br />
+乘上<code>cos</code>项是为了将微平面投影到立体角上，<code>n</code>是表面的法线，<code>h</code>是半程向量。关于这里<code>cos</code>的来源更多内容看<a
+target="_blank" rel="noopener" href="https://www.reedbeta.com/blog/hows-the-ndf-really-defined/">这篇文章</a>。有了概率密度函数，根据逆变换采样就可以得到具体的方向了，我在<a
+href="https://howl144.github.io/2023/07/01/00018.%20Games202%20Hw4/#splitsum%E5%92%8Cggx%E9%87%8D%E8%A6%81%E6%80%A7%E9%87%87%E6%A0%B7">这篇文章</a>有详细讲到逆变换采样和重要性采样怎么算。<br />
+看下<code>D</code>项具体的作用以及函数式：<br />
+<span class="math display">\[
+\begin{align}
+NDF_{GGX}(n,h,\alpha)=\frac{\alpha^2}{\pi((n\cdot h)^2(\alpha^2-1)+1)^2}
+\end{align} \tag{28}
+\]</span>
+其中<code>α</code>是粗糙度，<code>n</code>是宏观表面法线，<code>h</code>是半程向量。该函数<code>D(h)</code>描述了半程向量<code>h</code>和微平面法线的分布关系，其取值范围如下：<br />
+<span class="math display">\[
+\begin{align}
+0\leq D(h)\leq \infty
+\end{align} \tag{29}
+\]</span>
+该函数是用来控制<code>Specular</code>高光的大小，亮度和形状，<code>α</code>越大粗糙度越大，半程向量<code>h</code>和微表面法线一致的范围变大，但是光斑强度会减弱：<br />
+<img src="/img/00014/image-38.png" srcset="/img/loading.gif" lazyload alt="43" /></p>
+<h3 id="shadowing-masking-function">Shadowing Masking Function</h3>
+<p><code>G</code>是几何项，而<code>G</code>项包含了<code>Shadowing</code>和<code>Masking</code>两项，为了简化操作，我们通常用<span
+class="math inline">\(G_{Schlick\text{-}GGX}\)</span>来计算这两项的值：<br />
+<span class="math display">\[
+\begin{align}
+G(n,v,l,k)=G_{Schlick\text{-}GGX}(n,v,k)G_{Schlick\text{-}GGX}(n,l,k)
+\end{align} \tag{30}
+\]</span>
+<code>Schlick-GGX</code>几何函数是<code>GGX</code>与<code>Schlick-Beckmann</code>近似的结合体：<br />
+<span class="math display">\[
+\begin{align}
+G_{Schlick\text{-}GGX}(n,v,k)=\frac{n\cdot v}{(n\cdot v)(1-k)+k}
+\end{align} \tag{31}
+\]</span>
+其中<code>n</code>是宏观表面法线，<code>v</code>是入射方向或者出射方向，而<code>k</code>是粗糙度<code>α</code>的重映射形式，<code>k</code>的计算取决于我们针对直接光照还是<code>IBL</code>光照：<br />
+<span class="math display">\[
+\begin{align}
+k_{direct}=\frac{(\alpha+1)^2}{8} \\
+k_{IBL}=\frac{\alpha^2}{2}
+\end{align} \tag{32}
+\]</span>
+该函数是用来描述由于微表面自遮挡产生的变暗现象。因为微表面的自遮挡现象，以至于得到的结果不如我们计算出来结果那么亮。<br />
+<code>Shadowing</code>是光打到微表面时，由于微表面的自遮挡现象而导致一部分微表面未能接受到光照。<br />
+<code>Masking</code>则是光打到微表面后，由于微表面的自遮挡现象一部分光照无法反射到我们眼睛里。
+<img src="/img/00014/image-39.png" srcset="/img/loading.gif" lazyload alt="44" /><br />
+这个函数的取值范围如下：<br />
+<span class="math display">\[
+\begin{align}
+0\leq G(n,v,l,k)\leq 1
+\end{align} \tag{33}
+\]</span> 我在代码中使用的是<a
+target="_blank" rel="noopener" href="https://pbr-book.org/3ed-2018/Reflection_Models/Microfacet_Models">PBRT</a>上提供的<code>G</code>项，不过我更推荐用<span
+class="math inline">\(G_{Schlick\text{-}GGX}\)</span>来计算<code>G</code>项的值，计算量小。</p>
+<h3 id="fresnel-term">Fresnel Term</h3>
+<p>菲涅尔函数会根据我们看向的角度不同，以及物体的折射率，得出总共反射的能量占比多大：<br />
+<img src="/img/00014/image-40.png" srcset="/img/loading.gif" lazyload alt="45" /><br />
+对于<code>电介质</code>，我们以垂直表面的方向去看，反射的能量并不是很多，而越是以掠射角去看向表面，反射的能量占比就越大：<br />
+<img src="/img/00014/image-41.png" srcset="/img/loading.gif" lazyload alt="46" /><br />
+对于<code>导体</code>来说，因为其基础反射率很大，就算是以垂直表面的方向去看它，反射的能量占比也很大：<br />
+<img src="/img/00014/image-42.png" srcset="/img/loading.gif" lazyload alt="47" /><br />
+菲涅尔公式本身也比较复杂，它利用了<code>光传输介质</code>的折射率计算出<code>平行偏振光</code>和<code>垂直偏振光</code>，然后取各自平方的<code>1/2</code>加起来得出<code>Fresnel</code>值，这种方式计算出的<code>Fresnel</code>值很正确，但是计算量有点大：<br />
+<img src="/img/00014/image-43.png" srcset="/img/loading.gif" lazyload alt="48" /><br />
+我在代码中有实现这样算<code>Fresnel</code>项的函数，但是考虑到计算量的问题，我还是换了一个更加通用且计算量更小的计算方法：<br />
+<img src="/img/00014/image-44.png" srcset="/img/loading.gif" lazyload alt="49" /><br />
+其中<code>R_0</code>是物质的基础反射率，电介质会很小，基本上取它们平均值<code>0.04</code>就行，而金属导体会很大，差异也很大，需要准确定义，还可以通过<code>光传输介质</code>来计算<code>R_0</code>。<code>cosθ</code>的两个参数是<code>我们看向的方向</code>和<code>半程向量</code>。<br />
+其取值范围如下：<br />
+<span class="math display">\[
+\begin{align}
+0\leq F(v,h,ior,F_0)\leq 1
+\end{align} \tag{34}
+\]</span></p>
+<h3 id="brdf效果图">BRDF效果图</h3>
+<p>在计算采样方向的<code>pdf</code>时需要注意，我们需要综合考虑漫反射和镜面反射的<code>pdf</code>值，然后加起来，这是用<code>Fresnel</code>项来控制的：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-type">double</span> D = <span class="hljs-built_in">NDF</span>(roughness, H, N);<br>Vector3f F = <span class="hljs-built_in">Fresnel_Schlick</span>(H, wo, ior);<br>pdf.pdfValue = (F.x * D * <span class="hljs-built_in">dotProduct</span>(H,N) / (<span class="hljs-number">4.0</span> * <span class="hljs-built_in">dotProduct</span>(H, pdf.reflectDir))) + (<span class="hljs-number">1</span> - F.x) * <span class="hljs-built_in">dotProduct</span>(pdf.reflectDir, N) / M_PI;<br></code></pre></td></tr></table></figure>
+<code>4.0 * dotProduct(H, pdf.reflectDir)</code>这个分母怎么来的可以看我<a
+href="https://howl144.github.io/2023/07/01/00018.%20Games202%20Hw4/#%E9%95%9C%E9%9D%A2%E5%8F%8D%E5%B0%84%E5%85%89%E7%85%A7%E7%9A%84%E9%A2%84%E8%AE%A1%E7%AE%97">这篇文章</a>。<br />
+但是这里按理来说，应该要考虑以漫反射<code>cos weight PDF</code>生成采样方向<code>wi</code>的情况，但是我没写这部分，不过感觉效果好像也挺不错的哈哈：<br />
+<img src="/img/00014/image-45.png" srcset="/img/loading.gif" lazyload alt="50" /><br />
+这只兔子就是<code>BRDF</code>材质渲染出来的结果，代码就不贴了，这篇文章实在太长了。</p>
+<h2 id="bsdf">BSDF</h2>
+<p>前面说了<code>BSDF</code>是有<code>BRDF</code>和<code>BTDF</code>组合而成：<br />
+<img src="/img/00014/image-46.png" srcset="/img/loading.gif" lazyload alt="51" /><br />
+<span class="math display">\[
+\begin{align}
+f_r(i,o,n)=\frac{F(i,h_r)G(i,o,h_r)D(h_r)}{4|i\cdot n||o\cdot n|}
+\end{align} \tag{35}
+\]</span> <span class="math display">\[
+\begin{align}
+f_t(i,o,n)=\frac{|i\cdot h_t||o\cdot h_t|}{|i\cdot n||o\cdot n|}
+\frac{\eta_{o}^{2}(1-F(i,h_t))G(i,o,h_t)D(h_t)}{(\eta_i(i\cdot
+h_t)+\eta_o(o\cdot h_t))^2}
+\end{align} \tag{36}
+\]</span>
+<code>BRDF</code>跟上面<code>SpecularBRDF</code>差不多，这里的校正因子需要取绝对值。我们现在主要看下<code>BTDF</code>，这里的<code>T</code>是透射的意思。<br />
+<code>i</code>为视角方向，<code>o</code>为采样方向，这和上面<code>BRDF</code>是反着来的，需要注意一下，因为图例是来自<a
+target="_blank" rel="noopener" href="https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf">论文</a>，我没有做修改：<br />
+<img src="/img/00014/image-47.png" srcset="/img/loading.gif" lazyload alt="52" /><br />
+向量<code>i</code>,<code>o</code>,<code>h_t</code>都是归一化的向量，<code>h_t</code>是视角方向和透射采样方向的半程向量，<code>h_r</code>则是视角方向和反射采样方向的半程向量：<br />
+<span class="math display">\[
+\begin{align}
+&amp; h_r=\text{normalize}(i+o) \\
+&amp; h_t=\text{normalize}(-\eta_ii-\eta_oo)
+\end{align} \tag{37}
+\]</span> <span
+class="math inline">\(\eta_i\)</span>是图例中上方光传输介质的折射率，假设为空气，则<span
+class="math inline">\(\eta_i\)</span>为<code>1.0</code>。<br />
+<span
+class="math inline">\(\eta_o\)</span>是图例中下方光传输介质的折射率，假设为玻璃，则<span
+class="math inline">\(\eta_o\)</span>为<code>1.5</code>。<br />
+如果光线是从玻璃内部逃逸出来，则这个过程是相反的。</p>
+<p>接着看这个<span
+class="math inline">\(\eta_o^2\text{d}w_o\)</span>怎么来的：<br />
+假设<span class="math inline">\(-\eta_oo\)</span>对应的立体角为<span
+class="math inline">\(c*\text{d}w_o\)</span>，则有以下等式：<br />
+<span class="math display">\[
+\begin{align}
+&amp; \frac{c*\text{d}w_o}{||-\eta_o*o||^2}=\text{d}w_o \\
+&amp; c=\eta_o^2
+\end{align} \tag{38}
+\]</span> <code>pdf_h</code>转换到<code>pdf_o</code>的等式为：<br />
+<span class="math display">\[
+\begin{align}
+p_{o}(\theta,\phi)=p_{h}(\theta,\phi)\cdot\lVert\frac{\partial
+w_{h}}{\partial w_{o}}\rVert \\
+\end{align} \tag{39}
+\]</span> 后面那个是雅克比行列式，另外论文说这个<span
+class="math inline">\(\vec
+{h_t}\)</span>的定义变得模糊了，直接给出了这个行列式的公式，这里就不再推导了，我也是直接用的这个公式：<br />
+<span class="math display">\[
+\begin{align}
+\lVert\frac{\partial w_{h}}{\partial w_{o}}\rVert=
+\frac{\eta_o^2|o\cdot h_t|}{||\vec {h_t}||^2}=
+\frac{\eta_o^2|o\cdot h_t|}{(\eta_i(i\cdot h_t)+\eta_o(o\cdot h_t))^2}
+\end{align} \tag{40}
+\]</span>
+最后需要注意一点的是，<code>Fresnel_Schlick</code>处理不了光线由玻璃向空气<code>Trace</code>的情况，我们这里还是得通过折射率计算出<code>平行偏振光</code>和<code>垂直偏振光</code>，然后得出准确的<code>Fresnel</code>项，这部分代码实现如下：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-type">double</span> G, D;<br>Vector3f F;<br>Vector3f h = pdf.halfVec;<br><span class="hljs-type">double</span> etai = <span class="hljs-number">1</span>, etao = ior;<span class="hljs-comment">//空气默认为1</span><br><span class="hljs-keyword">if</span> (isOutside == <span class="hljs-literal">false</span>)<br>    std::<span class="hljs-built_in">swap</span>(etai, etao);<br>F = <span class="hljs-built_in">Fresnel</span>(-wo, h, isOutside);<br><span class="hljs-comment">//Trowbridge–Reitz GGx的几何项 </span><br>G = <span class="hljs-built_in">G1G2</span>(roughness, wo, wi, h);<br><span class="hljs-comment">//Trowbridge–Reitz GGx的法线分布项</span><br>D = <span class="hljs-built_in">NDF</span>(roughness, h, N);<br><span class="hljs-keyword">if</span> (pdf.isReflect == <span class="hljs-literal">true</span>) &#123;<br>    <span class="hljs-comment">// brdf</span><br>    <span class="hljs-type">double</span> divisor = <span class="hljs-number">4</span> * std::<span class="hljs-built_in">abs</span>(<span class="hljs-built_in">dotProduct</span>(N, wo)) * std::<span class="hljs-built_in">abs</span>(<span class="hljs-built_in">dotProduct</span>(N, wi));<br>    <span class="hljs-keyword">if</span> (divisor &lt; EPSILON) <span class="hljs-keyword">return</span> &#123;&#125;;<br>    <span class="hljs-keyword">return</span> F * G * D / divisor;<br>&#125;<br><span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-comment">// btdf</span><br>    <span class="hljs-type">double</span> prefixEntry = std::<span class="hljs-built_in">abs</span>(<span class="hljs-built_in">dotProduct</span>(wo, h)) * std::<span class="hljs-built_in">abs</span>(<span class="hljs-built_in">dotProduct</span>(wi, h)) / (std::<span class="hljs-built_in">abs</span>(<span class="hljs-built_in">dotProduct</span>(wo, N)) * std::<span class="hljs-built_in">abs</span>(<span class="hljs-built_in">dotProduct</span>(wi, N)));<br>    <span class="hljs-type">double</span> divisor1 = etai * <span class="hljs-built_in">dotProduct</span>(wo, h) + etao * <span class="hljs-built_in">dotProduct</span>(wi, h);<br>    <span class="hljs-type">double</span> divisor2 = divisor1 * divisor1;<br>    <span class="hljs-keyword">if</span> (divisor2 &lt; EPSILON) <span class="hljs-keyword">return</span> &#123;&#125;;<br>    <span class="hljs-keyword">return</span> (prefixEntry * etao * etao * (<span class="hljs-built_in">Vector3f</span>(<span class="hljs-number">1.0f</span>) - F) * G * D) / divisor2;<br>&#125;<br><span class="hljs-keyword">return</span> &#123;&#125;;<br></code></pre></td></tr></table></figure>
+我之前有试过返回<code>brdf+btdf</code>，<code>pdf</code>也是一样，但是结果并不正确，模型最外圈会出现白色的圈，经过<code>debug</code>发现白圈是因为在掠射角下<code>btdf</code>的<code>pdf</code>小，而<code>btdf</code>过大导致的。所以我认为这里公式上虽然写的是<code>brdf</code>+<code>btdf</code>，但是实际处理还是得分开。反射的半程向量其实和透射的半程向量是一致的，所以我们只需要计算一次即可。</p>
+<h3 id="bsdf效果图">BSDF效果图</h3>
+<p><img src="/img/00014/image-48.png" srcset="/img/loading.gif" lazyload alt="53" /><br />
+两边是<code>Roughness</code>为<code>0.08</code>的情况，中间是<code>0.28</code>。</p>
+<h1 id="multiple-importance-sampling">Multiple Importance Sampling</h1>
+<p>多重重要性采样的目的是用来降低噪声的，我们知道渲染方程由<code>Li</code>，<code>BRDF</code>组成，而当我们进行采样时，我们可以选择其中一种<code>pdf</code>，并用蒙特卡洛积分求出积分值。但是现在有一个问题是，有时候我们需要<code>BRDF</code>进行采样而有时候又需要直接光采样，这就有问题了，看下面例子(这个多重重要性的场景是我自己搭建的)：<br />
+<code>16spp</code> <code>BRDF</code>采样：<br />
+<img src="/img/00014/brdf-sampling.png" srcset="/img/loading.gif" lazyload alt="54" /><br />
+<code>16spp</code> 直接光采样：<br />
+<img src="./MIS-finalProject/directLight-sampling.png" srcset="/img/loading.gif" lazyload alt="55" /><br />
+可以看到只用直接光采样，或者只用<code>BRDF</code>采样，其效果都不行，但是它们却又能互补。在完全镜面的地方，直接光对大面积光源的采样效果非常差，而在比较粗糙的地方<code>BRDF</code>对小面积光源的采样效果也不好。而结合它们就可以取长补短，<code>MIS</code>正是解决这样的问题，它可以使用多种采样策略，然后根据一定权重将它组合起来：<br />
+假设这里有一个积分形如<span class="math inline">\(\int
+f(x)g(x)\text{d}x\)</span>我们可以用下面公式算得该积分的值：<br />
+<span class="math display">\[
+\begin{align}
+\int
+f(x)g(x)\text{d}x\approx\frac{1}{n_f}\sum_{i=1}^{n_f}\frac{f(X_i)g(X_i)w_f(X_i)}{p_f(X_i)}+
+\frac{1}{n_g}\sum_{j=1}^{n_g}\frac{f(Y_j)g(Y_j)w_g(Y_j)}{p_g(Y_j)}
+\end{align} \tag{41}
+\]</span>
+其中<code>w_f</code>和<code>w_g</code>就是权重函数，由<code>Power Heuristic</code>公式所得：<br />
+<span class="math display">\[
+\begin{align}
+w_s(x)=\frac{(n_sp_s(x))^\beta}{\sum_{i}(n_ip_i(x))^\beta}
+\end{align} \tag{42}
+\]</span>
+其中<code>n_s</code>为<code>p_s</code>采样策略的采样次数，<code>n_i</code>为<code>p_i</code>采样策略的采样次数，我们在代码使用的蒙特卡洛积分都是采样一次，所以它们都是<code>1</code>。而<code>p(x)</code>为各自采样策略的概率密度函数。<code>β</code>硬编码为<code>2</code>即可（更多内容请参考<a
+target="_blank" rel="noopener" href="https://pbr-book.org/3ed-2018/Monte_Carlo_Integration/Importance_Sampling">pbrt</a>）。代码如下：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">double</span> <span class="hljs-title">PowerHeuristic</span><span class="hljs-params">(<span class="hljs-type">double</span> nf, <span class="hljs-type">double</span> fPdf, <span class="hljs-type">double</span> ng, <span class="hljs-type">double</span> gPdf)</span> <span class="hljs-type">const</span> </span>&#123;<br>    <span class="hljs-type">double</span> f = nf * fPdf, g = ng * gPdf;<br>    <span class="hljs-keyword">return</span> (f * f) / (f * f + g * g);<br>&#125;<br><span class="hljs-function">Vector3f <span class="hljs-title">Scene::mis_directLight</span><span class="hljs-params">(Intersection intersection,Vector3f wo,Intersection L_dir_Inter,<span class="hljs-type">double</span> pdf_light, <span class="hljs-type">int</span> depth)</span> <span class="hljs-type">const</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-function">Vector3f <span class="hljs-title">Le</span><span class="hljs-params">(<span class="hljs-number">0.0</span>)</span></span>;<br>    MaterialType interType = intersection.m-&gt;<span class="hljs-built_in">getType</span>();<br><br>    <span class="hljs-comment">//1. 直接对光源采样</span><br>    <span class="hljs-comment">//起始点</span><br>    Vector3f p = intersection.coords;<br>    <span class="hljs-comment">//光源位置点</span><br>    Vector3f x = L_dir_Inter.coords;<br>    <span class="hljs-comment">//光源方向，直接光的入射方向</span><br>    Vector3f w_Li = (x - p).<span class="hljs-built_in">normalized</span>();<br>    <span class="hljs-function">Ray <span class="hljs-title">p_2_light_ray</span><span class="hljs-params">(p, w_Li)</span></span>;<br>    ...<br>    Intersection p_2_light_inter = <span class="hljs-built_in">intersect</span>(p_2_light_ray);<br>    <span class="hljs-comment">//击中的是光源 且 起始点的材质不是镜面或者透明。</span><br>    <span class="hljs-keyword">if</span> (p_2_light_inter.happened &amp;&amp; p_2_light_inter.m-&gt;<span class="hljs-built_in">hasEmission</span>() &amp;&amp; interType != MIRROR &amp;&amp; interType != TRANSPARENT)<br>    &#123;<br>        Pdf pdf;<br>        pdf.halfVec = <span class="hljs-built_in">normalize</span>(wo + w_Li);<br>        <span class="hljs-type">double</span> light_solidAngle_pdf = pdf_light;<br>        intersection.m-&gt;<span class="hljs-built_in">mis_getpdf</span>(interType, intersection.normal,wo, w_Li,pdf);<br>        <span class="hljs-type">double</span> brdf_solidAngle_pdf = pdf.pdfValue;<br>        Vector3f f_r = intersection.m-&gt;<span class="hljs-built_in">eval</span>(wo, w_Li, intersection.normal, intersection.isOutside, pdf);<br>        <span class="hljs-type">double</span> weight = <span class="hljs-built_in">PowerHeuristic</span>(<span class="hljs-number">1.0</span>, light_solidAngle_pdf, <span class="hljs-number">1.0</span>, brdf_solidAngle_pdf);<br>        ...<br>        Le = L_dir_Inter.emit * f_r * std::<span class="hljs-built_in">fmax</span>(<span class="hljs-built_in">dotProduct</span>(w_Li, intersection.normal),<span class="hljs-number">0.0</span>) / light_solidAngle_pdf * weight;<br>    &#125;<br>    <span class="hljs-comment">//2.brdf对光源采样</span><br>    Pdf pdf;<br>    Vector3f wi = (intersection.m-&gt;<span class="hljs-built_in">sample</span>(wo, intersection.normal, intersection.isOutside, pdf)).<span class="hljs-built_in">normalized</span>();<br>    ...<br>    Vector3f bxdf = intersection.m-&gt;<span class="hljs-built_in">eval</span>(wo, wi, intersection.normal, intersection.isOutside, pdf);<br>    Ray L_brdf_Ray = <span class="hljs-built_in">Ray</span>(p, wi);<br>    ...<br>    Intersection L_brdf_Inter = <span class="hljs-built_in">intersect</span>(L_brdf_Ray);<br>    <span class="hljs-comment">//击中的是光源 且 起始点的材质不是镜面或者透明。</span><br>    <span class="hljs-keyword">if</span> (L_brdf_Inter.happened &amp;&amp; L_brdf_Inter.m-&gt;<span class="hljs-built_in">hasEmission</span>() &amp;&amp; interType != MIRROR &amp;&amp; interType != TRANSPARENT)<br>    &#123;<br>        <span class="hljs-comment">//起始点</span><br>        Vector3f newP = intersection.coords;<br>        <span class="hljs-comment">//光源位置点</span><br>        Vector3f newX = L_brdf_Inter.coords;<br>        <span class="hljs-type">double</span> lightDistance = (newX - newP).<span class="hljs-built_in">norm</span>();<br>        <span class="hljs-type">double</span> lightDistance2 = lightDistance * lightDistance;<br>        <span class="hljs-type">double</span> newPdf_light = <span class="hljs-number">0.0</span>;<br>        <span class="hljs-comment">//面光源</span><br>        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">dynamic_cast</span>&lt;Sphere*&gt;(L_brdf_Inter.obj) == <span class="hljs-literal">nullptr</span>) &#123;<br>            <span class="hljs-comment">//面光源是两个三角形组成 * 2</span><br>            newPdf_light = lightDistance2 / L_brdf_Inter.obj-&gt;<span class="hljs-built_in">getArea</span>() * <span class="hljs-number">2</span> * std::<span class="hljs-built_in">fmax</span>(<span class="hljs-built_in">dotProduct</span>(-wi, L_brdf_Inter.normal), <span class="hljs-number">0.0</span>);<br>        &#125;<br>        <span class="hljs-comment">//球光源</span><br>        <span class="hljs-keyword">else</span> &#123;<br>            Intersection tmp;<br>            tmp.tcoords = intersection.coords;<br>            <span class="hljs-comment">//只用拿到pdf就行</span><br>            L_brdf_Inter.obj-&gt;<span class="hljs-built_in">Sample</span>(tmp, newPdf_light);<br>        &#125;<br>        <span class="hljs-type">double</span> light_solidAngle_pdf = newPdf_light;<br>        <span class="hljs-type">double</span> brdf_solidAngle_pdf = pdf.pdfValue;<br>        <br>        <span class="hljs-type">double</span> weight = <span class="hljs-built_in">PowerHeuristic</span>(<span class="hljs-number">1.0</span>, brdf_solidAngle_pdf, <span class="hljs-number">1.0</span>, light_solidAngle_pdf);<br>        Le += L_brdf_Inter.m-&gt;<span class="hljs-built_in">getEmission</span>() * bxdf * std::<span class="hljs-built_in">fmax</span>(<span class="hljs-built_in">dotProduct</span>(wi, intersection.normal), <span class="hljs-number">0.0</span>) / brdf_solidAngle_pdf * weight;<br>    &#125;<br>    <span class="hljs-comment">//镜面和透明物质单独处理，这是直接光。</span><br>    ...<br>    <span class="hljs-keyword">return</span> Le;<br>&#125;<br></code></pre></td></tr></table></figure> MIS-16spp效果如下：<br />
+<img src="/img/00014/Multiple-Importance-Sampling.png" srcset="/img/loading.gif" lazyload alt="56" /><br />
+## Sampling a Sphere Object
+另外因为光源是个球，我们需要对球进行采样，其过程如下（下面部分内容来源于<a
+target="_blank" rel="noopener" href="https://raytracing.github.io/books/RayTracingTheRestOfYourLife.html#samplingasphereobject">RayTracingTheRestOfYourLife</a>）：<br />
+<img src="/img/00014/image-49.png" srcset="/img/loading.gif" lazyload alt="57" /><br />
+对于一个着色点<code>P</code>，我们要在正对着它的球光源上均匀的取一个采样点，所以我们有以下等式：<br />
+<span class="math display">\[
+\begin{align}
+1=\int_{0}^{2\pi}\int_{0}^{\theta_{max}}f(\theta)\sin\theta\text{d}\theta\text{d}\phi
+\end{align} \tag{43}
+\]</span>
+因为是均匀采样，这里<code>f(θ)</code>其实是一个常数，我们尚且将其设为<code>C</code>，然后分别求其边缘概率密度函数：<br />
+<span class="math display">\[
+\begin{align}
+&amp; p(\theta)=\int_{0}^{2\pi}C\sin\theta\text{d}\phi \\
+&amp; p(\theta)=C2\pi\sin\theta \\
+&amp; p(\phi)=\int_{0}^{\theta_{max}}C\sin\theta\text{d}\theta \\
+&amp; p(\phi)=C(1-\cos\theta_{max})
+\end{align} \tag{44}
+\]</span> 再分别求其累积分布函数：<br />
+<span class="math display">\[
+\begin{align}
+&amp; P(\theta)=\int_{0}^{\theta}C2\pi\sin\theta\text{d}\theta \\
+&amp; P(\theta)=C2\pi(1-\cos\theta) \\
+&amp; P(\phi)=\int_{0}^{\phi}C(1-\cos\theta_{max})\text{d}\phi \\
+&amp; P(\phi)=\phi*C(1-\cos\theta_{max})
+\end{align} \tag{45}
+\]</span>
+根据<code>CDF</code>的性质，在<code>θ</code>等于<code>θ_max</code>时，有以下等式：<br />
+<span class="math display">\[
+\begin{align}
+&amp; 1=\int_{0}^{\theta_{max}}C2\pi\sin\theta\text{d}\theta \\
+&amp; 1=C2\pi(1-\cos\theta_{max}) \\
+&amp; C=\frac{1}{2\pi(1-\cos\theta_{max})}
+\end{align} \tag{46}
+\]</span> 由图<code>57</code>可知，<span
+class="math inline">\(\sin(\theta_{max})\)</span>为：<br />
+<span class="math display">\[
+\begin{align}
+&amp; \sin(\theta_{max})=\frac{R}{\text{length}(c-p)} \\
+&amp; \cos(\theta_{max})=\sqrt{1-\frac{R^2}{\text{length}^2(c-p)}}
+\end{align} \tag{47}
+\]</span> 则：<br />
+<span class="math display">\[
+\begin{align}
+&amp;
+P(\theta)=\frac{1-cos\theta}{1-\sqrt{1-\frac{R^2}{\text{length}^2(c-p)}}}
+\\
+&amp; P(\phi)=\frac{\phi}{2\pi}
+\end{align} \tag{48}
+\]</span>
+我们均匀的从<code>U[0,1]</code>中取出两个随机数<code>X_1</code>，<code>X_2</code>则我们要的采样方向<code>θ</code>和<code>φ</code>为：<br />
+<span class="math display">\[
+\begin{align}
+&amp; \cos\theta=1+X_1(\cos(\theta_{max})-1) \\
+&amp; \phi=2\pi X_2 \\
+&amp; z=\cos\theta=1+X_1(\cos(\theta_{max})-1) \\
+&amp; x=\cos\phi\sin\theta=\cos(2\pi*X_2)*\sqrt{1-\cos^2\theta} \\
+&amp; y=\sin\phi\sin\theta=sin(2\pi*X_2)*\sqrt{1-\cos^2\theta}
+\end{align} \tag{49}
+\]</span> 我们现在来求球光源投影到着色点<code>P</code>的立体角：<br />
+<span class="math display">\[
+\begin{align}
+&amp;
+\text{solid-angle}=\int_{0}^{2\pi}\int_{0}^{\theta_{max}}\sin\theta\text{d}\theta\text{d}\phi
+\\
+&amp; \text{solid-angle}=2\pi*(1-\cos(\theta_{max}))
+\end{align} \tag{50}
+\]</span> 则<code>pdf</code>为<span
+class="math inline">\(\frac{1}{solid-angle}\)</span>，代码实现如下：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Sample</span><span class="hljs-params">(Intersection &amp;pos, <span class="hljs-type">double</span> &amp;pdf)</span></span>&#123;<br>    <span class="hljs-comment">//对球进行采样</span><br>    <span class="hljs-type">double</span> cos_theta_max = <span class="hljs-built_in">sqrt</span>(<span class="hljs-number">1</span>- radius2/(center - pos.tcoords).<span class="hljs-built_in">norm</span>());<br><br>    <span class="hljs-type">double</span> phi = <span class="hljs-number">2.0</span> * M_PI * <span class="hljs-built_in">get_random_double</span>();<br><br>    <span class="hljs-type">double</span> z = <span class="hljs-number">1</span> + <span class="hljs-built_in">get_random_double</span>() * (cos_theta_max - <span class="hljs-number">1</span>);<br><br>    <span class="hljs-function">Vector3f <span class="hljs-title">dir</span><span class="hljs-params">(sqrt(<span class="hljs-number">1</span> - z * z) * std::cos(phi), sqrt(<span class="hljs-number">1</span> - z * z) * std::sin(phi), z)</span></span>;<br>    dir = <span class="hljs-built_in">toWorld</span>(dir, <span class="hljs-built_in">normalize</span>(pos.tcoords - center));<br>    pos.coords = center + radius * dir;<br>    pos.normal = dir;<br>    pos.emit = m-&gt;<span class="hljs-built_in">getEmission</span>();<br><br>    <span class="hljs-type">double</span> solid_angle = <span class="hljs-number">2</span> * M_PI * (<span class="hljs-number">1</span> - cos_theta_max);<br>    pdf = <span class="hljs-number">1.0</span> / solid_angle;<br>&#125;<br></code></pre></td></tr></table></figure></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Games101/" class="category-chain-item">Games101</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Games101 Final Project</div>
+      <div>https://howl144.github.io/2023/09/30/00014. Games101 FinalProject/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Deng Ye</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>September 30, 2023</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/21/00019.%20Games202%20Hw5/" title="Games202 Hw5 JBF and SVGF">
+                        <span class="hidden-mobile">Games202 Hw5 JBF and SVGF</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        Views: 
+        <span id="leancloud-site-pv"></span>
+        
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        Visitors: 
+        <span id="leancloud-site-uv"></span>
+        
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

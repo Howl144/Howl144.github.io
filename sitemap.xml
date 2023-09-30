@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://howl144.github.io/2023/09/30/00014.%20Games101%20FinalProject/</loc>
+    
+    <lastmod>2023-09-30</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://howl144.github.io/2023/07/01/00018.%20Games202%20Hw4/</loc>
     
     <lastmod>2023-09-18</lastmod>
@@ -121,7 +130,7 @@
 
   <url>
     <loc>https://howl144.github.io/</loc>
-    <lastmod>2023-09-18</lastmod>
+    <lastmod>2023-09-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -131,21 +140,28 @@
   
   <url>
     <loc>https://howl144.github.io/categories/C/</loc>
-    <lastmod>2023-09-18</lastmod>
+    <lastmod>2023-09-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://howl144.github.io/categories/Network/</loc>
-    <lastmod>2023-09-18</lastmod>
+    <lastmod>2023-09-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://howl144.github.io/categories/Games202/</loc>
-    <lastmod>2023-09-18</lastmod>
+    <lastmod>2023-09-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://howl144.github.io/categories/Games101/</loc>
+    <lastmod>2023-09-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
