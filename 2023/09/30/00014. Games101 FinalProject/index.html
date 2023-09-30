@@ -26,7 +26,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://howl144.github.io/img/00014/MIS-1024spp-1.png">
 <meta property="article:published_time" content="2023-09-30T01:23:12.000Z">
-<meta property="article:modified_time" content="2023-09-30T07:12:25.903Z">
+<meta property="article:modified_time" content="2023-09-30T10:34:21.937Z">
 <meta property="article:author" content="Deng Ye">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://howl144.github.io/img/00014/MIS-1024spp-1.png">
@@ -845,7 +845,7 @@ class="math inline">\(\vec
 <code>16spp</code> <code>BRDF</code>采样：<br />
 <img src="/img/00014/brdf-sampling.png" srcset="/img/loading.gif" lazyload alt="54" /><br />
 <code>16spp</code> 直接光采样：<br />
-<img src="./MIS-finalProject/directLight-sampling.png" srcset="/img/loading.gif" lazyload alt="55" /><br />
+<img src="/img/00014/directLight-sampling.png" srcset="/img/loading.gif" lazyload alt="55" /><br />
 可以看到只用直接光采样，或者只用<code>BRDF</code>采样，其效果都不行，但是它们却又能互补。在完全镜面的地方，直接光对大面积光源的采样效果非常差，而在比较粗糙的地方<code>BRDF</code>对小面积光源的采样效果也不好。而结合它们就可以取长补短，<code>MIS</code>正是解决这样的问题，它可以使用多种采样策略，然后根据一定权重将它组合起来：<br />
 假设这里有一个积分形如<span class="math inline">\(\int
 f(x)g(x)\text{d}x\)</span>我们可以用下面公式算得该积分的值：<br />
