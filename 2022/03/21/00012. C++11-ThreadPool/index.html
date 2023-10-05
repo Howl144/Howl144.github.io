@@ -1,0 +1,759 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="elv6HP48K6bVVMeBdbFYkmoi4IBF6JVtH0WaCgUXRNY" />
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/rose.png">
+  <link rel="icon" href="/img/rose.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Deng Ye">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="c++11实现线程池 包含了以下技术：std::mutex，std::condition_variable，std::function，std::bind，可变参模板，std::packaged_task，std::future，lambda表达式，std::shared_ptr，decltype，auto等。 原理全在注释中。 实现 123456789101112131415161718">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++11-ThreadPool">
+<meta property="og:url" content="https://howl144.github.io/2022/03/21/00012.%20C++11-ThreadPool/index.html">
+<meta property="og:site_name" content="🥰Howl&#39;s Blog">
+<meta property="og:description" content="c++11实现线程池 包含了以下技术：std::mutex，std::condition_variable，std::function，std::bind，可变参模板，std::packaged_task，std::future，lambda表达式，std::shared_ptr，decltype，auto等。 原理全在注释中。 实现 123456789101112131415161718">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://howl144.github.io/img/00012/core.png">
+<meta property="article:published_time" content="2022-03-21T00:50:22.000Z">
+<meta property="article:modified_time" content="2023-10-05T13:32:36.503Z">
+<meta property="article:author" content="Deng Ye">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://howl144.github.io/img/00012/core.png">
+  
+  
+  
+  <title>C++11-ThreadPool - 🥰Howl&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"howl144.github.io","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"MY3hK2j6KKqPNCHItX2Yargj-gzGzoHsz","app_key":"U0dZRBpPFA46kRmFcsltQFF2","server_url":"https://my3hk2j6.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Howl&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>Home</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Portfolio/">
+                <i class="iconfont icon-pen"></i>
+                <span>Portfolio</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>Category</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>Archive</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>About Me</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.5)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="C++11-ThreadPool"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-03-21 08:50" pubdate>
+          March 21, 2022 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.4k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          45 mins
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> views
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">C++11-ThreadPool</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="c11实现线程池">c++11实现线程池</h1>
+<p>包含了以下技术：<code>std::mutex</code>，<code>std::condition_variable</code>，<code>std::function</code>，<code>std::bind</code>，<code>可变参模板</code>，<code>std::packaged_task</code>，<code>std::future</code>，<code>lambda表达式</code>，<code>std::shared_ptr</code>，<code>decltype</code>，<code>auto</code>等。<br />
+原理全在注释中。</p>
+<h1 id="实现">实现</h1>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mutex&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;queue&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;functional&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;future&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;thread&gt;</span></span><br><span class="hljs-comment">//#include &lt;utility&gt;</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;random&gt;</span></span><br><br><span class="hljs-comment">//Thread safe implementation of a Queue using a std::queue</span><br><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">SafeQueue</span>&#123;<br><span class="hljs-keyword">private</span>:<br>	std::queue&lt;T&gt; m_queue;<br>	std::mutex m_mutex;<br><span class="hljs-keyword">public</span>:<br>	<span class="hljs-function"><span class="hljs-keyword">constexpr</span> <span class="hljs-title">SafeQueue</span><span class="hljs-params">()</span> <span class="hljs-keyword">noexcept</span> </span>&#123;&#125;<br>	<span class="hljs-built_in">SafeQueue</span>(<span class="hljs-type">const</span> SafeQueue&lt;T&gt;&amp;) = <span class="hljs-keyword">delete</span>;<br>	<span class="hljs-built_in">SafeQueue</span>(SafeQueue&lt;T&gt;&amp;&amp;) = <span class="hljs-keyword">delete</span>;<br>	SafeQueue&lt;T&gt;&amp; <span class="hljs-keyword">operator</span>=(<span class="hljs-type">const</span> SafeQueue&lt;T&gt;&amp;) = <span class="hljs-keyword">delete</span>;<br>	SafeQueue&lt;T&gt;&amp; <span class="hljs-keyword">operator</span>=(SafeQueue&lt;T&gt;&amp;&amp;) = <span class="hljs-keyword">delete</span>;<br>	~<span class="hljs-built_in">SafeQueue</span>() &#123;&#125;<br>	<span class="hljs-comment">//向队列添加元素</span><br>	<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">push</span><span class="hljs-params">(T&amp;&amp; element)</span> </span>&#123;<br>		<span class="hljs-function">std::unique_lock&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(m_mutex)</span></span>;<br>		m_queue.<span class="hljs-built_in">emplace</span>(std::<span class="hljs-built_in">move</span>(element));<br>	&#125;<br>	<span class="hljs-comment">//取出元素</span><br>	<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">pop</span><span class="hljs-params">(T&amp; element)</span> </span>&#123;<br>		<span class="hljs-function">std::unique_lock&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(m_mutex)</span></span>;<br>		element = std::<span class="hljs-built_in">move</span>(m_queue.<span class="hljs-built_in">front</span>());<br>		m_queue.<span class="hljs-built_in">pop</span>();<br>	&#125;<br>	<span class="hljs-comment">//返回队列是否为空</span><br>	<span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">empty</span><span class="hljs-params">()</span> </span>&#123;<br>		<span class="hljs-function">std::unique_lock&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(m_mutex)</span></span>;<br>		<span class="hljs-keyword">return</span> m_queue.<span class="hljs-built_in">empty</span>();<br>	&#125;<br>	<span class="hljs-comment">//返回队列中元素长度</span><br>	<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">size</span><span class="hljs-params">()</span> </span>&#123;<br>		std::<span class="hljs-built_in">unique_lock</span>&lt;std::mutex&gt;(m_mutex);<br>		<span class="hljs-keyword">return</span> m_queue.<span class="hljs-built_in">size</span>();<br>	&#125;<br>&#125;;<br><br><span class="hljs-comment">//工作线程类</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ThreadPool</span>;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ThreadWorker</span> &#123;<br><span class="hljs-keyword">private</span>:<br>	<span class="hljs-comment">//工作id</span><br>	<span class="hljs-type">int</span> m_id;<br>	<span class="hljs-comment">//所属线程池</span><br>	ThreadPool* m_pool;<br><span class="hljs-keyword">public</span>:<br>	<span class="hljs-function"><span class="hljs-keyword">constexpr</span> <span class="hljs-title">ThreadWorker</span><span class="hljs-params">(ThreadPool* pool, <span class="hljs-type">const</span> <span class="hljs-type">int</span> id)</span><span class="hljs-keyword">noexcept</span></span><br><span class="hljs-function">		:m_pool(pool), m_id(id) &#123;</span>&#125;<br>	<span class="hljs-comment">//重载()操作符</span><br>	<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">operator</span><span class="hljs-params">()</span><span class="hljs-params">()</span></span>;<br>&#125;;<br><span class="hljs-comment">//线程池</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ThreadPool</span> &#123;<br>	<span class="hljs-keyword">friend</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ThreadWorker</span>;<br><span class="hljs-keyword">public</span>:<br>	<span class="hljs-comment">//线程池的构造函数</span><br>	<span class="hljs-built_in">ThreadPool</span>(<span class="hljs-type">const</span> <span class="hljs-type">int</span> num = <span class="hljs-number">4</span>)<br>		: <span class="hljs-built_in">m_threads</span>(std::<span class="hljs-built_in">vector</span>&lt;std::thread&gt;(num)), <span class="hljs-built_in">m_shutdown</span>(<span class="hljs-literal">false</span>) &#123;&#125;<br>	<span class="hljs-built_in">ThreadPool</span>(<span class="hljs-type">const</span> ThreadPool&amp;) = <span class="hljs-keyword">delete</span>;<br>	<span class="hljs-built_in">ThreadPool</span>(ThreadPool&amp;&amp;) = <span class="hljs-keyword">delete</span>;<br>	ThreadPool&amp; <span class="hljs-keyword">operator</span>=(<span class="hljs-type">const</span> ThreadPool&amp;) = <span class="hljs-keyword">delete</span>;<br>	ThreadPool&amp; <span class="hljs-keyword">operator</span>=(ThreadPool&amp;&amp;) = <span class="hljs-keyword">delete</span>;<br>	~<span class="hljs-built_in">ThreadPool</span>() &#123;<br>		<span class="hljs-comment">//唤醒所有工作线程</span><br>		m_shutdown = <span class="hljs-literal">true</span>;<br>		<span class="hljs-comment">//使他们正常退出</span><br>		m_condition_variable.<span class="hljs-built_in">notify_all</span>();<br>		<span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>, size = m_threads.<span class="hljs-built_in">size</span>(); i &lt; size; ++i) &#123;<br>			<span class="hljs-comment">//在一个线程对象被析构之前，必须调用 join 或 detach，否则会在运行时引发错误。</span><br>			<span class="hljs-keyword">if</span> (m_threads[i].<span class="hljs-built_in">joinable</span>()) &#123;<br>				m_threads[i].<span class="hljs-built_in">join</span>();<br>			&#125;<br>		&#125;<br>	&#125;<br>	<span class="hljs-comment">//初始化线程池</span><br>	<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">init</span><span class="hljs-params">()</span> </span>&#123;<br>		<span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>, size = m_threads.<span class="hljs-built_in">size</span>(); i &lt; size; ++i) &#123;<br>			<span class="hljs-comment">//分配工作线程</span><br>			m_threads[i] = std::<span class="hljs-built_in">thread</span>(<span class="hljs-built_in">ThreadWorker</span>(<span class="hljs-keyword">this</span>, i));<br>		&#125;<br>		<br>	&#125;<br>	<br>	<span class="hljs-comment">/*-----------------------------核心函数-------------------------------*/</span><br>	<span class="hljs-comment">//向线程池提交一个函数去异步执行。</span><br>	<span class="hljs-function"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> F,<span class="hljs-keyword">typename</span>... Args&gt;</span><br><span class="hljs-function">	<span class="hljs-keyword">auto</span> <span class="hljs-title">submit</span><span class="hljs-params">(F&amp;&amp; f, Args&amp;&amp;... args)</span> -&gt; std::future&lt;<span class="hljs-title">decltype</span><span class="hljs-params">(f(args...))</span>&gt; </span>&#123;<br>		<span class="hljs-comment">//用bind创建一个可调用对象</span><br>		std::function&lt;<span class="hljs-keyword">decltype</span>(f(args...))()&gt; func = std::<span class="hljs-built_in">bind</span>(std::forward&lt;F&gt;(f), std::forward&lt;Args&gt;(args)...);<br>		<span class="hljs-comment">//使用shared_ptr来封装packaged_task，从而用于实现异步的调用</span><br>		<span class="hljs-keyword">auto</span> task_ptr = std::make_shared&lt;std::packaged_task&lt;<span class="hljs-keyword">decltype</span>(<span class="hljs-built_in">f</span>(args...))()&gt;&gt;(func);<br>		<span class="hljs-comment">//将task封装到void function用于加入任务队列中</span><br>		std::function&lt;<span class="hljs-type">void</span>()&gt; warpper_func = [task_ptr]() &#123;<br>			(*task_ptr)();<br>		&#125;;<br>		<span class="hljs-comment">//添加到任务队列</span><br>		m_queue.<span class="hljs-built_in">push</span>(std::<span class="hljs-built_in">move</span>(warpper_func));<br>		<span class="hljs-comment">//唤醒一个等待中的线程</span><br>		m_condition_variable.<span class="hljs-built_in">notify_one</span>();<br>		<span class="hljs-comment">//返回task_ptr的结果，该结果是一个future对象，可以异步的获取函数返回值。</span><br>		<span class="hljs-keyword">return</span> task_ptr-&gt;<span class="hljs-built_in">get_future</span>();<br>	&#125;<br><br><span class="hljs-keyword">private</span>:<br>	<span class="hljs-comment">//线程池是否关闭</span><br>	<span class="hljs-type">bool</span> m_shutdown;<br>	<span class="hljs-comment">//任务队列</span><br>	SafeQueue&lt;std::function&lt;<span class="hljs-type">void</span>()&gt;&gt; m_queue;<br>	<span class="hljs-comment">//工作线程队列</span><br>	std::vector&lt;std::thread&gt; m_threads;<br>	<span class="hljs-comment">//条件变量，可以让线程处于休眠或者唤醒状态</span><br>	std::condition_variable m_condition_variable;<br>	std::mutex m_condition_mutex;<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">ThreadWorker::operator</span><span class="hljs-params">()</span><span class="hljs-params">()</span> </span>&#123;<br>	<span class="hljs-comment">//定义基础函数func</span><br>	std::function&lt;<span class="hljs-type">void</span>()&gt; func;<br><br>	<span class="hljs-keyword">while</span> (!m_pool-&gt;m_shutdown) &#123;<br>		&#123;<br>			<span class="hljs-function">std::unique_lock&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(m_pool-&gt;m_condition_mutex)</span></span>;<br>			<span class="hljs-comment">//如果任务队列为空，阻塞当前线程</span><br>			<span class="hljs-keyword">while</span> (m_pool-&gt;m_queue.<span class="hljs-built_in">empty</span>()) &#123;<br>				m_pool-&gt;m_condition_variable.<span class="hljs-built_in">wait</span>(lock);<br>				<span class="hljs-keyword">if</span> (m_pool-&gt;m_shutdown) <span class="hljs-keyword">return</span>;<br>			&#125;<br>			<span class="hljs-comment">//取出任务队列中的元素</span><br>			m_pool-&gt;m_queue.<span class="hljs-built_in">pop</span>(func);<br>		&#125;<br>		<span class="hljs-built_in">func</span>();<br>	&#125;<br>&#125;<br><br><span class="hljs-comment">//----------------------------------test-------------------------------------</span><br><span class="hljs-type">static</span> std::random_device rd;<br><span class="hljs-function"><span class="hljs-type">static</span> std::mt19937 <span class="hljs-title">mt</span><span class="hljs-params">(rd())</span></span>;<br><span class="hljs-comment">//对[-1000,1000]进行均匀采样</span><br><span class="hljs-function">std::uniform_int_distribution&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">dist</span><span class="hljs-params">(<span class="hljs-number">-1000</span>,<span class="hljs-number">1000</span>)</span></span>;<br><span class="hljs-keyword">auto</span> rnd = std::<span class="hljs-built_in">bind</span>(dist, mt);<br><br><span class="hljs-comment">//模拟处理时间</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">simulate_computation</span><span class="hljs-params">()</span> </span>&#123;<br>	std::this_thread::<span class="hljs-built_in">sleep_for</span>(std::chrono::<span class="hljs-built_in">milliseconds</span>(<span class="hljs-number">1000</span>+<span class="hljs-built_in">rnd</span>()));<br>&#125;<br>std::mutex print_mutex;<br><span class="hljs-comment">//两个数字相乘的简单函数，并打印结果</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">multiply</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">int</span> a, <span class="hljs-type">const</span> <span class="hljs-type">int</span> b)</span> </span>&#123;<br>	<span class="hljs-built_in">simulate_computation</span>();<br>	<span class="hljs-type">const</span> <span class="hljs-type">int</span> res = a * b;<br>	<span class="hljs-function">std::unique_lock&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(print_mutex)</span></span>;<br>	std::cout &lt;&lt; a &lt;&lt; <span class="hljs-string">&quot;*&quot;</span> &lt;&lt; b &lt;&lt; <span class="hljs-string">&quot;=&quot;</span> &lt;&lt; res &lt;&lt; std::endl;<br>&#125;<br><span class="hljs-comment">//带传入传出参数，并且有返回值</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">multiply_return</span><span class="hljs-params">(<span class="hljs-type">int</span>&amp; out,<span class="hljs-type">const</span> <span class="hljs-type">int</span> a, <span class="hljs-type">const</span> <span class="hljs-type">int</span> b)</span> </span>&#123;<br>	<span class="hljs-built_in">simulate_computation</span>();<br>	out = a * b;<br>	std::cout &lt;&lt; a &lt;&lt; <span class="hljs-string">&quot;*&quot;</span> &lt;&lt; b &lt;&lt; <span class="hljs-string">&quot;=&quot;</span> &lt;&lt; out &lt;&lt; std::endl;<br>	<span class="hljs-keyword">return</span> a + b;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">example</span><span class="hljs-params">()</span> </span>&#123;<br>	<span class="hljs-comment">//创建9个线程的线程池</span><br>	<span class="hljs-function">ThreadPool <span class="hljs-title">pool</span><span class="hljs-params">(<span class="hljs-number">9</span>)</span></span>;<br>	<span class="hljs-comment">//初始化线程池</span><br>	pool.<span class="hljs-built_in">init</span>();<br>	<span class="hljs-comment">//提交乘法操作，总共20个</span><br>	<span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt;= <span class="hljs-number">2</span>; ++i) &#123;<br>		<span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">1</span>; j &lt;= <span class="hljs-number">10</span>; ++j) &#123;<br>			pool.<span class="hljs-built_in">submit</span>(multiply,i,j);<br>		&#125;<br>	&#125;<br>	<span class="hljs-type">int</span> output_ref;<br>	<span class="hljs-keyword">auto</span> future = pool.<span class="hljs-built_in">submit</span>(multiply_return, std::<span class="hljs-built_in">ref</span>(output_ref), <span class="hljs-number">3</span>, <span class="hljs-number">5</span>);<br>	<span class="hljs-comment">//future.get()会等待函数执行完成，后得到结果继续运行。</span><br>	std::cout &lt;&lt; future.<span class="hljs-built_in">get</span>() &lt;&lt; std::endl;<br>&#125;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-built_in">example</span>();<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><img src="/img/00012/result.png" srcset="/img/loading.gif" lazyload /></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>C++11-ThreadPool</div>
+      <div>https://howl144.github.io/2022/03/21/00012. C++11-ThreadPool/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Deng Ye</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>March 21, 2022</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/05/15/00015.%20Games202%20Hw1/" title="Games202 Hw1 Percentage Closer Soft Shadow">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Games202 Hw1 Percentage Closer Soft Shadow</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03/20/00013.%20C++%E7%AE%80%E6%98%93%E7%89%88shared_ptr/" title="C++简易版shared_ptr">
+                        <span class="hidden-mobile">C++简易版shared_ptr</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        Views: 
+        <span id="leancloud-site-pv"></span>
+        
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        Visitors: 
+        <span id="leancloud-site-uv"></span>
+        
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>
