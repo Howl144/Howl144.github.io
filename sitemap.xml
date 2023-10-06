@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://howl144.github.io/2022/03/22/00011.%20C++11%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/</loc>
+    
+    <lastmod>2023-10-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://howl144.github.io/2022/03/21/00012.%20C++11-ThreadPool/</loc>
     
     <lastmod>2023-10-05</lastmod>
@@ -148,7 +157,7 @@
 
   <url>
     <loc>https://howl144.github.io/</loc>
-    <lastmod>2023-10-05</lastmod>
+    <lastmod>2023-10-06</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -158,28 +167,28 @@
   
   <url>
     <loc>https://howl144.github.io/categories/C/</loc>
-    <lastmod>2023-10-05</lastmod>
+    <lastmod>2023-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://howl144.github.io/categories/Network/</loc>
-    <lastmod>2023-10-05</lastmod>
+    <lastmod>2023-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://howl144.github.io/categories/Games202/</loc>
-    <lastmod>2023-10-05</lastmod>
+    <lastmod>2023-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://howl144.github.io/categories/Games101/</loc>
-    <lastmod>2023-10-05</lastmod>
+    <lastmod>2023-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
