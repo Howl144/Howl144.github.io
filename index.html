@@ -612,6 +612,66 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2022/03/23/00010.%20C++11%E9%80%9A%E7%94%A8%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" target="_self">
+          <img src="/img/00010/title.png" srcset="/img/loading.gif" lazyload alt="C++11通用观察者模式">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2022/03/23/00010.%20C++11%E9%80%9A%E7%94%A8%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" target="_self">
+          C++11通用观察者模式
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2022/03/23/00010.%20C++11%E9%80%9A%E7%94%A8%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" target="_self">
+        <div>
+          C++11通用观察者模式 观察者模式是用来解决观察者和被观察者紧耦合的问题，我们需要实现一个观察者管理类，来避免耦合。但同时引入了新问题。管理类在注册以及移除观察者时，在多线程下是不安全的，所以我们需要用mutex来保证管理类是线程安全的。 另外观察者管理类只负责广播注册过的观察者，它不对观察者的生命周期负责，如果观察者已经被销毁，管理类还继续调用该观察者的接口，core dump就是迟早的事
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2022-03-23 08:40" pubdate>
+              2022-03-23
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
         <a href="/2022/03/22/00011.%20C++11%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" target="_self">
           <img src="/img/00011/result.png" srcset="/img/loading.gif" lazyload alt="C++11单例模式">
         </a>
@@ -758,66 +818,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2022-03-20 11:10" pubdate>
               2022-03-20
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2022/02/19/00006.%20c++%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B%E4%B9%8B%E8%99%9A%E8%A1%A8%EF%BC%8C%E8%99%9A%E8%A1%A8%E6%8C%87%E9%92%88%E7%AD%89/" target="_self">
-          <img src="/img/00006/index.png" srcset="/img/loading.gif" lazyload alt="c++对象模型之虚表，虚表指针，thunk，多态，多重继承this指针偏移，多重继承virtual析构函数，多重虚继承下的访问虚基类成员变量时虚表的工作原理">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2022/02/19/00006.%20c++%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B%E4%B9%8B%E8%99%9A%E8%A1%A8%EF%BC%8C%E8%99%9A%E8%A1%A8%E6%8C%87%E9%92%88%E7%AD%89/" target="_self">
-          c++对象模型之虚表，虚表指针，thunk，多态，多重继承this指针偏移，多重继承virtual析构函数，多重虚继承下的访问虚基类成员变量时虚表的工作原理
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2022/02/19/00006.%20c++%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B%E4%B9%8B%E8%99%9A%E8%A1%A8%EF%BC%8C%E8%99%9A%E8%A1%A8%E6%8C%87%E9%92%88%E7%AD%89/" target="_self">
-        <div>
-          前言 上两篇文章将c++的核心部件（Value categories）讲清楚了，这篇文章将会带大家分析c++对象模型的底层原理。笔者这里用的编译器是clang version 10.0.0-4ubuntu1，不同编译器对数据布局的处理可能会不同（《深度探索c++对象模型》中已阐述原因，感兴趣的读者可以自行阅读）。 友情提示：本文章涉及ATT式和intel式汇编代码的相关知识。 虚表和虚表指
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-02-19 10:12" pubdate>
-              2022-02-19
             </time>
           </div>
         
