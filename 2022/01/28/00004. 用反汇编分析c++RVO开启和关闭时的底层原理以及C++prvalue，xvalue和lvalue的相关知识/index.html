@@ -26,7 +26,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://howl144.github.io/img/00004/index.png">
 <meta property="article:published_time" content="2022-01-28T00:51:32.000Z">
-<meta property="article:modified_time" content="2023-10-03T11:06:38.222Z">
+<meta property="article:modified_time" content="2023-10-10T06:34:11.549Z">
 <meta property="article:author" content="Deng Ye">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://howl144.github.io/img/00004/index.png">
@@ -251,7 +251,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          17k words
+          19k words
         
       </span>
     
@@ -262,7 +262,7 @@
         
         
         
-          143 mins
+          156 mins
         
       </span>
     
@@ -333,8 +333,7 @@ eg:<code>clang++ -g -fno-elide-constructors /home/dengye/test/test.cpp -o /home/
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">B</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">B</span>(<span class="hljs-type">int</span> val=<span class="hljs-number">0</span>):<span class="hljs-built_in">bVal</span>(val)&#123;&#125;<br>    <span class="hljs-comment">// B(const B&amp; tmp):bVal(tmp.bVal)&#123;&#125;</span><br>    ~<span class="hljs-built_in">B</span>()&#123;&#125;<br>    <span class="hljs-type">int</span> bVal;<br>&#125;;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Foo</span><br>&#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">Foo</span>(<span class="hljs-type">int</span> tmp = <span class="hljs-number">0</span>):<span class="hljs-built_in">ptrb</span>(<span class="hljs-keyword">new</span> <span class="hljs-built_in">B</span>(tmp))<br>    &#123;<br>        std::cout&lt;&lt;<span class="hljs-string">&quot;构造函数&quot;</span>&lt;&lt;std::endl;<br>    &#125;<br>    <span class="hljs-built_in">Foo</span>(<span class="hljs-type">const</span> Foo&amp; src):<span class="hljs-built_in">ptrb</span>(<span class="hljs-keyword">new</span> <span class="hljs-built_in">B</span>(*(src.ptrb)))<span class="hljs-comment">//会继续调用B的拷贝构造函数</span><br>    &#123;<br>        std::cout&lt;&lt;<span class="hljs-string">&quot;拷贝构造函数&quot;</span>&lt;&lt;std::endl;<br>    &#125;<br>    Foo&amp; <span class="hljs-keyword">operator</span>=(<span class="hljs-type">const</span> Foo&amp; src)<br>    &#123;<br>        std::cout&lt;&lt;<span class="hljs-string">&quot;拷贝赋值函数&quot;</span>&lt;&lt;std::endl;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span> == &amp;src)<br>            <span class="hljs-keyword">return</span> *<span class="hljs-keyword">this</span>;<span class="hljs-comment">//防止自己给自己赋值。</span><br>        <span class="hljs-keyword">delete</span> ptrb;<span class="hljs-comment">//先把自己的这块内存干掉</span><br>        ptrb = <span class="hljs-keyword">new</span> <span class="hljs-built_in">B</span>(*(src.ptrb));<br>        <span class="hljs-keyword">return</span> *<span class="hljs-keyword">this</span>;    <br>    &#125;<br>    <span class="hljs-built_in">Foo</span>(Foo&amp;&amp; src) <span class="hljs-keyword">noexcept</span> :<span class="hljs-built_in">ptrb</span>(src.ptrb)<span class="hljs-comment">//noexcept:通知标准库我们这个移动构造函数不抛出任何异常（如果编译器确认函数不会抛出异常，它就能执行某些特殊的优化操作，而这些操作不适合用于可能出错的代码），例如我们希望在vector重新分配内存这类情况下对我们自定义类型的对象进行移动而不是拷贝，就必须显式地告诉标准库我们的移动构造函数可以安全使用。《c++primer》p474，690。</span><br>    &#123;<br>        std::cout&lt;&lt;<span class="hljs-string">&quot;移动构造函数&quot;</span>&lt;&lt;std::endl;        <br>        src.ptrb = <span class="hljs-literal">nullptr</span>;<span class="hljs-comment">//记得将原来指向堆内存的指针置空.</span><br>    &#125;<br>    Foo&amp; <span class="hljs-keyword">operator</span>=(Foo&amp;&amp; src) <span class="hljs-keyword">noexcept</span><br>    &#123;<br>        std::cout&lt;&lt;<span class="hljs-string">&quot;移动赋值函数&quot;</span>&lt;&lt;std::endl;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span> == &amp;src)<br>            <span class="hljs-keyword">return</span> *<span class="hljs-keyword">this</span>;<br>        <span class="hljs-keyword">delete</span> ptrb;<br>        ptrb = src.ptrb;<span class="hljs-comment">//这里不需要在new，直接从src那里拿来</span><br>        src.ptrb = <span class="hljs-literal">nullptr</span>;<span class="hljs-comment">//记得置空</span><br>        <span class="hljs-keyword">return</span> *<span class="hljs-keyword">this</span>;<br>    &#125;<br>    ~<span class="hljs-built_in">Foo</span>()<br>    &#123;<br>        std::cout&lt;&lt;<span class="hljs-string">&quot;析构函数&quot;</span>&lt;&lt;std::endl;<br>        <span class="hljs-keyword">delete</span> ptrb;<span class="hljs-comment">//删一个空指针没任何反应</span><br>    &#125;<br>    B *ptrb;<br>&#125;;<br><span class="hljs-function">Foo <span class="hljs-title">RVO_test</span><span class="hljs-params">(<span class="hljs-type">int</span> val)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-function">Foo <span class="hljs-title">foo</span><span class="hljs-params">(val)</span></span>;<br>    <span class="hljs-keyword">return</span> foo;<br>&#125;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    Foo fooRvo = <span class="hljs-built_in">RVO_test</span>(<span class="hljs-number">100</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>在分析之前我先把该程序的内存分布图画出来帮大家理解，见下图：<br />
 <img src="/img/00004/1.png" srcset="/img/loading.gif" lazyload /><br />
-像这种random
-offset的出现，就是为了避免溢出攻击。画这张图要用到<code>nm</code>命令（寻找代码段，bss段和data段的起始地址），gdb的<code>vmmap</code>命令（寻找堆栈的起始和结束地址）。灰色部分表示这些范围在进程虚拟地址空间中不可用，也就是说，没有为这些区域创建页表（page
+像这种<code>random offset</code>的出现，就是为了避免溢出攻击。画这张图要用到<code>nm</code>命令（寻找代码段，bss段和data段的起始地址），gdb的<code>vmmap</code>命令（寻找堆栈的起始和结束地址）。灰色部分表示这些范围在进程虚拟地址空间中不可用，也就是说，没有为这些区域创建页表（page
 table）。</p>
 <h2 id="反汇编配合堆栈图分析流程">反汇编配合堆栈图分析流程</h2>
 <p><strong>友情提醒：请配合附件中的反汇编代码进行分析。</strong><br />
@@ -400,11 +399,10 @@ expression），etc.）都会有两个独立的属性：一种类型，一个值
 target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/value_category">Value
 categories</a>）：<br />
 （补充一句，检测表达式的值类别的相关代码，我放在了附录中，感兴趣的读者可以自行验证感到疑惑的地方）</p>
+<h2 id="lvalue">lvalue</h2>
+<p>所谓左值，从历史的角度来考虑，它可以出现在一个赋值表达式的左边。资源可以被重用（resources
+can be reused）。有空间地址但不能被移动</p>
 <ul>
-<li>lvalue<br />
-所谓左值，从历史的角度来考虑，它可以出现在一个赋值表达式的左边。资源可以被重用（resources
-can be reused）。有空间地址但不能被移动<br />
-</li>
 <li>一般有名字，除了 unamed
 lvalue（<code>*ptr</code>是一个没有名字的lvalue，一个返回值为lvalue
 reference的函数调用表达式也是没名字的lvalue），如果有单独的一个identifier
@@ -436,7 +434,7 @@ lvalue：<code>cout &lt;&lt; &amp;"dy" &lt;&lt; endl</code>;（其他
 literal 是 rvalue：<code>cout &lt;&lt; &amp;'d' &lt;&lt; endl</code>;
 非法）</li>
 </ul>
-<h2 id="lvalue的特性">lvalue的特性：</h2>
+<h3 id="lvalue的特性">lvalue的特性：</h3>
 <ul>
 <li>可以通过取址运算符获取其地址，<code>&amp;++i[1]</code> and
 <code>&amp;std::endl</code>像这样的表达式都是合法的<br />
@@ -455,16 +453,16 @@ target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/
 target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/type#Dynamic_type">动态类型</a>和静态类型可以不一样，例如：一个指向子类的父类指针<br />
 </li>
 <li>可以是<a
-target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/type#Incomplete_type">不完整类型</a>，只要表达式允许。例如：由前置声明但未定义的类类型<br />
-</li>
-<li>xvalue<br />
-一个将要到期的值（生命周期被延长），资源可以被重用的对象。有空间地址可以被移动。<br />
-</li>
+target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/type#Incomplete_type">不完整类型</a>，只要表达式允许。例如：由前置声明但未定义的类类型</li>
+</ul>
+<h2 id="xvalue">xvalue</h2>
+<p>一个将要到期的值（生命周期被延长），资源可以被重用的对象。有空间地址可以被移动。</p>
+<ul>
 <li>一个函数调用或者重载操作符函数表达式的返回值为rvalue reference<br />
 例如 <code>std::move(x)</code>；<br />
 </li>
 <li>将表达式的类型强制转换为右值引用类型。<br />
-例如<code>(int&amp;&amp;)a</code>，<code>static_cast&lt;int&amp;&amp;(a)</code>。<br />
+例如<code>(int&amp;&amp;)a</code>，<code>static_cast&lt;int&amp;&amp;&gt;(a)</code>。<br />
 </li>
 <li>内置下标表达式（<code>a[n]</code>为一个xvalue的情况下）。<br />
 </li>
@@ -479,7 +477,7 @@ member（《c++primer》p739）。<br />
 <li>指定临时对象的任何表达式（除了prvalue initializes an
 object的情况）(since C++17)</li>
 </ul>
-<h2 id="xvalue的特性">xvalue的特性：</h2>
+<h3 id="xvalue的特性">xvalue的特性：</h3>
 <ul>
 <li>可以被绑定到右值引用和const左值引用，同时生命周期被延长到这个引用的作用域结束<br />
 </li>
@@ -501,11 +499,11 @@ function-to-pointer的隐式转换（<code>int ival = 1;if((int&amp;&amp;)ival)&
 <li>不能是内置赋值和<a
 target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/operator_assignment#Builtin_compound_assignment">内置复合赋值运算</a>符的左操作数<br />
 </li>
-<li>当作用在函数参数时，有两个函数重载都可用，一个是右值引用参数，另一个是const左值引用参数，一个xrvalue会绑定到参数为右值引用的重载函数上（因此，拷贝和移动构造函数都存在时，一个xrvalue会去调用移动构造而不是拷贝构造，同理作用于拷贝和移动赋值运算符）<br />
-</li>
-<li>prvalue<br />
-一个将要消亡的值（生命周期马上结束），资源不可以被重用（想要被重用必须转化成xvalue）的对象。一部分有空间地址但马上就会被回收（空间地址可以被后面的新数据覆盖），一部分没有空间地址。可以被移动。<br />
-</li>
+<li>当作用在函数参数时，有两个函数重载都可用，一个是右值引用参数，另一个是const左值引用参数，一个xrvalue会绑定到参数为右值引用的重载函数上（因此，拷贝和移动构造函数都存在时，一个xrvalue会去调用移动构造而不是拷贝构造，同理作用于拷贝和移动赋值运算符）</li>
+</ul>
+<h2 id="prvalue">prvalue</h2>
+<p>一个将要消亡的值（生命周期马上结束），资源不可以被重用（想要被重用必须转化成xvalue）的对象。一部分有空间地址但马上就会被回收（空间地址可以被后面的新数据覆盖），一部分没有空间地址。可以被移动。</p>
+<ul>
 <li>所有 literals：bool literal (例如<code>true</code>)，integer literal
 (例如 <code>42</code>) 等等（无空间地址）。<br />
 </li>
@@ -543,7 +541,7 @@ a function</a>）（无空间地址）<br />
 <li>this 指针（有空间地址）<br />
 被当做参数传进去放在栈帧上。</li>
 </ul>
-<h2 id="prvalue的特性">prvalue的特性：</h2>
+<h3 id="prvalue的特性">prvalue的特性：</h3>
 <ul>
 <li>不会是多态的<br />
 </li>
@@ -608,6 +606,7 @@ prvalue is said to have a result object</a>））<br />
 从一个任何完整类型T的prvalue转换为相同类型T的xvalue的过程被称为临时物化<br />
 从一个任何完整类型T的prvalue转换为相同类型T的xvalue的过程被称为临时物化<br />
 从一个任何完整类型T的prvalue转换为相同类型T的xvalue的过程被称为临时物化</p>
+<p>说下我们平时口头说的<code>左值右值</code>（特别是面试），根据<code>Value categories</code>文档的描述，<code>xvalue</code>即既包含部分左值的特性（非类类型的xvalue可以被const和volatile修饰）又包含部分右值的特性(可以被右值引用绑定)。但是在程序中<code>xvalue</code>因为临时物化这个过程的存在，它表现得更像右值。所以我们口头说右值的时候通常吧xvalue归类到右值里面去。</p>
 <h1 id="引用折叠万能引用引用塌缩">引用折叠（万能引用，引用塌缩）</h1>
 <p>上面说过移动操作的出现提高了类内存转让的效率，而支承这一技术的基础就是prvalue,xvalue,lvalue。但右值引用才是移动操作能实现的根本原因。这里咱们好好讲一讲右值引用的相关知识引用折叠（关于右值引用的基础知识请参看《c++primer》p471这里不多赘述）。<br />
 引用折叠的两个规则被称为C++语言在正常绑定规则之外定义的两个例外规则，允许这种绑定。而这两个例外规则是move这种标准模板库设施正确工作的基础。<br />
@@ -619,11 +618,13 @@ prvalue is said to have a result object</a>））<br />
 &amp;、T&amp; &amp;&amp;、 T&amp;&amp;
 &amp;都会折叠成类型T&amp;），右值引用和右值引用，则折叠成右值引用（T&amp;&amp;
 &amp;&amp;折叠成T&amp;&amp;）。《c++primer》p608</p>
+<p>测试代码如下：<br />
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/type_index.hpp&gt;</span></span><br><span class="hljs-function"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">testfunc</span><span class="hljs-params">(T&amp;&amp; tmp)</span> </span>&#123;<br><br>	std::cout &lt;&lt; <span class="hljs-string">&quot;--------------------------------begin----------------&quot;</span> &lt;&lt; std::endl;<br>	<span class="hljs-keyword">using</span> boost::typeindex::type_id_with_cvr;<br>	std::cout &lt;&lt; <span class="hljs-string">&quot;T=&quot;</span> &lt;&lt; <span class="hljs-built_in">type_id_with_cvr</span>&lt;T&gt;().<span class="hljs-built_in">pretty_name</span>() &lt;&lt; std::endl; <span class="hljs-comment">//显示T的类型</span><br>	std::cout &lt;&lt; <span class="hljs-string">&quot;tmprv=&quot;</span> &lt;&lt; <span class="hljs-built_in">type_id_with_cvr</span>&lt;<span class="hljs-keyword">decltype</span>(tmp)&gt;().<span class="hljs-built_in">pretty_name</span>() &lt;&lt; std::endl; <span class="hljs-comment">//显示tmprv的类型</span><br>	std::cout &lt;&lt; <span class="hljs-string">&quot;--------------------------------end------------------&quot;</span> &lt;&lt; std::endl;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">testStruct</span> &#123;<br>	<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>;<br>&#125;;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;	<br>	testStruct i,j;<br>	testStruct&amp;&amp; pi = testStruct&#123;&#125;;<br>	testStruct&amp; ri = i;<br><br>	<span class="hljs-comment">//pi的是左值，T被推断为 testStruct&amp;，引用折叠后的类型为testStruct&amp;</span><br>	<span class="hljs-built_in">testfunc</span>(pi);<br>	<span class="hljs-comment">//ri是左值，T被推断为 testStruct&amp;，引用折叠后的类型为testStruct&amp;</span><br>	<span class="hljs-built_in">testfunc</span>(ri);<br>	<br>	<span class="hljs-comment">//std::move(i)返回的是一个xvalue（一般将其归类到右值里面）</span><br>	<span class="hljs-comment">//显示指定T为testStruct&amp;&amp;，引用折叠后的类型为testStruct&amp;&amp;</span><br>	<span class="hljs-built_in">testfunc</span>&lt;testStruct&amp;&amp;&gt;(std::<span class="hljs-built_in">move</span>(i));<br>	<span class="hljs-comment">//testStruct&#123;&#125;构造函数返回的是一个prvalue（右值）</span><br>	<span class="hljs-comment">//显示指定T为testStruct&amp;&amp;，引用折叠后的类型为testStruct&amp;&amp;</span><br>	<span class="hljs-built_in">testfunc</span>&lt;testStruct&amp;&amp;&gt;(testStruct&#123;&#125;);<br>	<br>	<span class="hljs-comment">//不显示指定T为testStruct&amp;&amp;时，根据万能引用第一个规则可知，当我们将一个右值传进去时T被推断出来的类型为T，即testStruct</span><br>	<span class="hljs-comment">//此时没有发生引用折叠，decltype(tmp)结果为testStruct&amp;&amp;。</span><br>	<span class="hljs-built_in">testfunc</span>(std::<span class="hljs-built_in">move</span>(j));<br>	<span class="hljs-built_in">testfunc</span>(testStruct&#123;&#125;);<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure></p>
 <h2
 id="对上面两个规则熟练后我们来分析一下标准库move函数">对上面两个规则熟练后，我们来分析一下标准库move函数:</h2>
 <p>虽然不能直接将一个右值引用绑定到一个左值上，但可以用move获得一个绑定到左值上的xvalue。由于move本质上可以接受任何类型的实参，因此我们不会惊讶于他一个函数模板。</p>
 <p>std::move是如何定义的<br />
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-keyword">constexpr</span> <span class="hljs-keyword">typename</span> std::remove_reference&lt;T&gt;::<span class="hljs-function">type&amp;&amp;</span><br><span class="hljs-function"><span class="hljs-title">move</span><span class="hljs-params">(T&amp;&amp; t)</span> <span class="hljs-keyword">noexcept</span></span><br><span class="hljs-function"></span>&#123; <br><span class="hljs-keyword">return</span> <span class="hljs-keyword">static_cast</span>&lt;<span class="hljs-keyword">typename</span> std::remove_reference&lt;T&gt;::type&amp;&amp;(t); <br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">template</span>&lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-keyword">constexpr</span> <span class="hljs-keyword">typename</span> std::remove_reference&lt;T&gt;::<span class="hljs-function">type&amp;&amp;</span><br><span class="hljs-function"><span class="hljs-title">move</span><span class="hljs-params">(T&amp;&amp; t)</span> <span class="hljs-keyword">noexcept</span></span><br><span class="hljs-function"></span>&#123; <br><span class="hljs-keyword">return</span> <span class="hljs-keyword">static_cast</span>&lt;<span class="hljs-keyword">typename</span> std::remove_reference&lt;T&gt;::type&amp;&amp;&gt;(t); <br>&#125;<br></code></pre></td></tr></table></figure>
 在返回类型和类型转换中也要用到<code>typename</code>（《c++primer》p593）。<code>std::remove_reference&lt;T&gt;::type</code>的用处就是去除类型的引用（《c++primer》p605）。<code>static_cast</code>静态类型转换（《c++primer》p145）。</p>
 <p>std::move是如何工作的<br />
 这段代码很短，但其中有些微妙之处。首先，move的函数参数<code>T&amp;&amp;</code>是一个指向模板类型参数的右值引用。通过引用折叠，此参数可以与任何类型的实参匹配。特别是，我们既可以传递给move一个左值，也可以传递给它一个右值:<br />
