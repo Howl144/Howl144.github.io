@@ -26,7 +26,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://howl144.github.io/img/00004/index.png">
 <meta property="article:published_time" content="2022-01-28T00:51:32.000Z">
-<meta property="article:modified_time" content="2023-10-10T06:52:21.317Z">
+<meta property="article:modified_time" content="2023-10-10T07:08:55.171Z">
 <meta property="article:author" content="Deng Ye">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://howl144.github.io/img/00004/index.png">
@@ -504,7 +504,7 @@ target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/language/
 <li>当作用在函数参数时，有两个函数重载都可用，一个是右值引用参数，另一个是const左值引用参数，一个xrvalue会绑定到参数为右值引用的重载函数上（因此，拷贝和移动构造函数都存在时，一个xrvalue会去调用移动构造而不是拷贝构造，同理作用于拷贝和移动赋值运算符）</li>
 </ul>
 <h2 id="prvalue">prvalue</h2>
-<p>一个将要消亡的值（生命周期马上结束），资源不可以被重用（想要被重用必须转化成xvalue）的对象。一部分有空间地址但马上就会被回收（空间地址可以被后面的新数据覆盖），一部分没有空间地址。</p>
+<p>一个将要消亡的值（生命周期马上结束），资源不可以被重用（想要被重用必须转化成xvalue）的对象。一部分有空间地址但马上就会被回收（空间地址可以被后面当前栈内的新数据覆盖掉），一部分没有空间地址。</p>
 <ul>
 <li>所有 literals：bool literal (例如<code>true</code>)，integer literal
 (例如 <code>42</code>) 等等（无空间地址）。<br />
