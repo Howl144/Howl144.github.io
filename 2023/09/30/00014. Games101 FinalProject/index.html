@@ -26,7 +26,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://howl144.github.io/img/00014/MIS-1024spp-1.png">
 <meta property="article:published_time" content="2023-09-30T01:23:12.000Z">
-<meta property="article:modified_time" content="2023-10-24T10:39:56.438Z">
+<meta property="article:modified_time" content="2023-10-24T11:15:39.694Z">
 <meta property="article:author" content="Deng Ye">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://howl144.github.io/img/00014/MIS-1024spp-1.png">
@@ -262,7 +262,7 @@
         
         
         
-          212 mins
+          213 mins
         
       </span>
     
@@ -616,7 +616,7 @@ class="math inline">\(O(\log_{2}n)\)</span>：<br />
 <p>第二种方法则是物体划分法，以<code>BVH</code>为例，现在基本上只要是跟光线追踪有关的加速结构，都是用的类似<code>BVH</code>来解决的，可见其重要性。<br />
 <code>BVH</code>的划分思路和<code>KD-Tree</code>是类似的，即对物体的三角形进行二分（后面说具体的划分法），然后分别求子节点的包围盒，非叶子节点也是一样不存储三角形只用于判断是否相交，叶子节点在包围盒内三角形比较少时停止划分：<br />
 <img src="/img/00014/image-28.png" srcset="/img/loading.gif" lazyload alt="31" /><br />
-用<code>BVH</code>划分也会有点小问题，那就是包围盒重叠，重叠部分越多需要访问的节点数量就越多，求交的效率就越低，我们需要一个好的方法去尽量避免重叠，一个还算不错且比较通用的手段是对物体先进行排序，然后取中间物体作为分割线，在此之前还要向<code>KD-Tree</code>学习，我们找到当前节点下能包围所有三角形的包围盒中心位置，然后判断该位置的<code>xyz</code>分量，取最大分量的轴为排序轴：<br />
+用<code>BVH</code>划分也会有点小问题，那就是包围盒重叠，重叠部分越多需要访问的节点数量就越多，求交的效率就越低，我们需要一个好的方法去尽量避免重叠，一个还算不错且比较通用的手段是对物体先进行排序，然后取中间物体作为分割线，在此之前还要向<code>KD-Tree</code>学习，我们找到当前节点下能包围所有三角形的包围盒，获取包围盒的<code>pMAX-pMin</code>向量，然后判断该向量的<code>xyz</code>分量，取最大分量的轴为排序轴：<br />
 <img src="/img/00014/image-29.png" srcset="/img/loading.gif" lazyload alt="32" /><br />
 需要注意的是我上面说的<code>分别求子节点的包围盒</code>这过程是在回溯过程中完成的，递归完成的是排序和划分，为了限制文章长度，就不贴代码了。</p>
 <p>相比于<code>BVH</code>，还有一个更加高效的方法<code>Surface Area Heuristic</code>：<br />
