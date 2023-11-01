@@ -26,7 +26,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://howl144.github.io/img/00018/result.png">
 <meta property="article:published_time" content="2023-06-30T23:34:10.000Z">
-<meta property="article:modified_time" content="2023-09-18T19:25:42.119Z">
+<meta property="article:modified_time" content="2023-11-01T01:50:30.295Z">
 <meta property="article:author" content="Deng Ye">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://howl144.github.io/img/00018/result.png">
@@ -527,7 +527,7 @@ h\rVert^{2}}=\frac{1}{4\vert o\cdot h\vert} \tag{17}
 \]</span>
 其中<code>i</code>，<code>o</code>和<code>没箭头的h</code>，都是归一化后的向量。这只是反射模型的<code>pdf</code>，以同样的计算方法论文作者还给出了折射的<code>pdf</code>，感兴趣可以去看下。需要注意的是这里推导涉及的i，o和代码中的v，L没关系，只是单纯用来推导的,一般来说我们视<code>i</code>为光照方向，<code>o</code>为视角方向。</p>
 <p>代码中<a
-target="_blank" rel="noopener" href="https://developer.nvidia.com/gpugems/gpugems3/part-iii-rendering/chapter-20-gpu-based-importance-sampling">采样</a>是对<code>uEnvironmentMap</code>的<code>mipmap</code>来采样，而不是直接去获取清晰度最高的<code>uEnvironmentMap</code>,这样做的原因是<code>pdf</code>越低，样本所对应的环境贴图中平均像素数就越多，使用的<code>mipmap</code>层级应该越大，这可以做到少采样数量达到多采样数量的效果，并减少伪影。我们用与样本相关的实体角来定义这种关系，计算方法是<code>pdf</code>与样本总数<code>N</code>之间乘积的倒数：<br />
+target="_blank" rel="noopener" href="https://developer.nvidia.com/gpugems/gpugems3/part-iii-rendering/chapter-20-gpu-based-importance-sampling">采样</a>是对<code>uEnvironmentMap</code>的<code>mipmap</code>来采样，而不是直接去获取清晰度最高的<code>uEnvironmentMap</code>,这样做的原因是<code>pdf</code>越低，样本所对应的环境贴图中要平均的纹理像素数就越多，使用的<code>mipmap</code>层级应该越大，<code>mimap</code>第<code>0</code>层级被平均的纹理像素就越多，这可以做到少采样数量达到多采样数量的效果，并减少伪影。我们用与样本相关的实体角来定义这种关系，计算方法是<code>pdf</code>与样本总数<code>N</code>之间乘积的倒数：<br />
 <span class="math display">\[
 \Omega_{s}=\frac{1}{N\cdot p_{L}(\theta,\phi)} \tag{18}
 \]</span>
