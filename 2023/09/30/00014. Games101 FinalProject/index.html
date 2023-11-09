@@ -26,7 +26,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://howl144.github.io/img/00014/MIS-1024spp-1.png">
 <meta property="article:published_time" content="2023-09-30T01:23:12.000Z">
-<meta property="article:modified_time" content="2023-11-01T01:11:59.649Z">
+<meta property="article:modified_time" content="2023-11-09T10:38:12.322Z">
 <meta property="article:author" content="Deng Ye">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://howl144.github.io/img/00014/MIS-1024spp-1.png">
@@ -629,7 +629,8 @@ class="math inline">\(O(\log_{2}n)\)</span>：<br />
 <span class="math display">\[
 \begin{align}
 \text{cost}(A,B)=t_{trav}+p_A\sum_{i=1}^{N_A}t_{isect}(a_i)+p_B\sum_{i=1}^{N_B}t_{isect}(b_i)
-\end{align} \tag{22}
+\tag{22}
+\end{align}
 \]</span> 其中<code>A</code>，<code>B</code>是分割后的两个包围盒。<br />
 <code>t_trav</code>代表访问该节点的开销，不是求交，就是单纯的获取数据读取数据，我们一般把它设为<code>0.125</code>。<br />
 <code>t_isect(a_i)</code>代表对包围盒<code>A</code>内的某个三角形求交的开销，我们一般将其设为<code>1</code>，<code>t_isect(b_i)</code>同理。<br />
